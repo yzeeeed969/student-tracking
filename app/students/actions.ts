@@ -24,12 +24,22 @@ export async function addStudent(formData: FormData) {
     .from(classRooms)
     .where(eq(classRooms.id, classId));
   const prefix = cls[0]?.name.includes("2") ? "2" : "1";
-  const countRows = await db
-    .select({ c: sql<number>`count(*)::int` })
-    .from(students)
-    .where(eq(students.classId, classId));
-  const n = (countRows[0]?.c ?? 0) + 1;
-  const code = `${prefix}-${String(n).padStart(2, "0")}`;
+
+  // توليد كود جديد لا يتعارض مع أي كود موجود:
+  // نأخذ أكبر رقم مستخدم لنفس البادئة (عبر كل الفصول) ثم نزيد عليه واحدًا.
+  const all = await db.select({ code: students.code }).from(students);
+  const used = new Set(all.map((r) => r.code));
+  let n = all
+    .map((r) => r.code)
+    .filter((c) => c.startsWith(prefix + "-"))
+    .map((c) => parseInt(c.slice(prefix.length + 1), 10))
+    .filter((x) => !Number.isNaN(x))
+    .reduce((mx, x) => Math.max(mx, x), 0);
+  let code: string;
+  do {
+    n += 1;
+    code = `${prefix}-${String(n).padStart(2, "0")}`;
+  } while (used.has(code));
 
   await db
     .insert(students)
