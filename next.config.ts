@@ -1,6 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    serverActions: {
+      allowedOrigins: ["*.up.railway.app", "*.railway.app"],
+    },
+  },
   turbopack: {
     rules: {
       "*.css": {
