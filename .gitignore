@@ -5,3 +5,6 @@ node_modules/
 *.log
 .DS_Store
 /drizzle
+
+# بيانات الطلاب الحقيقية لا تُرفع إلى GitHub
+scripts/seed_students.json
