@@ -12,10 +12,12 @@ export async function GET(req: Request) {
   const kind = url.searchParams.get("kind") || "عام";
   const lesson = url.searchParams.get("lesson") || "";
   const violation = url.searchParams.get("violation") || "";
-  if (!studentId) return NextResponse.redirect(new URL("/behavior", req.url));
+  if (!studentId)
+    return new NextResponse(null, { status: 303, headers: { Location: "/behavior" } });
 
   const [st] = await db.select().from(students).where(eq(students.id, studentId));
-  if (!st) return NextResponse.redirect(new URL("/behavior", req.url));
+  if (!st)
+    return new NextResponse(null, { status: 303, headers: { Location: "/behavior" } });
 
   const s = await getSettings();
   const base = {

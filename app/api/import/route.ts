@@ -18,18 +18,24 @@ type Row = {
 
 export async function POST(req: Request) {
   if (!(await isAuthed()))
-    return NextResponse.redirect(new URL("/login", req.url));
+    return new NextResponse(null, {
+      status: 303,
+      headers: { Location: "/login" },
+    });
+
+  const redirectTo = (path: string) =>
+    new NextResponse(null, { status: 303, headers: { Location: path } });
 
   const form = await req.formData();
   const file = form.get("file") as File | null;
-  if (!file) return NextResponse.redirect(new URL("/import?e=nofile", req.url));
+  if (!file) return redirectTo("/import?e=nofile");
 
   let rows: Row[];
   try {
     rows = JSON.parse(await file.text());
     if (!Array.isArray(rows)) throw new Error("not array");
   } catch {
-    return NextResponse.redirect(new URL("/import?e=badjson", req.url));
+    return redirectTo("/import?e=badjson");
   }
 
   // الفصول
@@ -79,8 +85,5 @@ export async function POST(req: Request) {
     if (marks.length) await db.insert(homeworkMarks).values(marks);
   }
 
-  return NextResponse.redirect(
-    new URL(`/students?imported=${added}`, req.url),
-    303
-  );
+  return redirectTo(`/students?imported=${added}`);
 }

@@ -7,12 +7,17 @@ export async function POST(req: Request) {
   const expected = process.env.AUTH_PASSWORD || "admin123";
 
   if (password !== expected) {
-    const url = new URL("/login?e=1", req.url);
-    return NextResponse.redirect(url, 303);
+    return new NextResponse(null, {
+      status: 303,
+      headers: { Location: "/login?e=1" },
+    });
   }
 
   const token = await makeToken();
-  const res = NextResponse.redirect(new URL("/", req.url), 303);
+  const res = new NextResponse(null, {
+    status: 303,
+    headers: { Location: "/" },
+  });
   res.cookies.set(SESSION_COOKIE, token, {
     httpOnly: true,
     sameSite: "lax",
