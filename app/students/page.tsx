@@ -3,10 +3,16 @@ import { db } from "@/db";
 import { students, classRooms } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { addStudent, addClass, deleteStudent } from "./actions";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
-export default async function StudentsPage() {
+export default async function StudentsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ imported?: string }>;
+}) {
+  const { imported } = await searchParams;
   const classes = await db
     .select()
     .from(classRooms)
@@ -29,7 +35,15 @@ export default async function StudentsPage() {
       <main className="p-4 space-y-5">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <h1 className="text-xl font-bold">الطلاب والفصول</h1>
+          <Link href="/import" className="btn-ghost btn text-sm">
+            استيراد من ملف
+          </Link>
         </div>
+        {imported && (
+          <div className="card p-3 text-brand bg-brandsoft text-sm">
+            تم استيراد {imported} طالبًا بنجاح.
+          </div>
+        )}
 
         {/* إضافة فصل + طالب */}
         <div className="grid md:grid-cols-2 gap-3">
