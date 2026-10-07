@@ -3,6 +3,7 @@ import {
   students,
   homeworkMarks,
   participation,
+  quranMarks,
   classRooms,
 } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
@@ -14,7 +15,9 @@ export type StudentGrade = {
   name: string;
   phone: string;
   guardianName: string;
-  quran: number | null;
+  quran: number | null; // محسوبة: حفظ + تلاوة المدثر
+  quranHifz: number; // مجموع حفظ السور
+  recitation: number | null; // تلاوة المدثر 0..4
   oralWritten: number | null;
   homeworkScore: number; // مجموع الواجبات المرصودة
   homeworkDone: number; // عدد الواجبات المرصودة
@@ -74,6 +77,23 @@ export async function computeClassGrades(
 
   const maxPart = Math.max(0, ...ids.map((i) => ptMap.get(i) ?? 0));
 
+  // حفظ القرآن: مجموع (points/3) لكل طالب
+  const qr = await db
+    .select({
+      studentId: quranMarks.studentId,
+      hifz: sql<number>`coalesce(sum(${quranMarks.points}),0)`,
+      cnt: sql<number>`count(*)::int`,
+    })
+    .from(quranMarks)
+    .where(
+      sql`${quranMarks.studentId} in (${sql.join(
+        ids.map((i) => sql`${i}`),
+        sql`, `
+      )})`
+    )
+    .groupBy(quranMarks.studentId);
+  const qrMap = new Map(qr.map((r) => [r.studentId, r]));
+
   const rows: StudentGrade[] = studentRows.map((st) => {
     const h = hwMap.get(st.id);
     const homeworkScore = Number(h?.total ?? 0);
@@ -84,14 +104,24 @@ export async function computeClassGrades(
         ? Math.round((participationRaw / maxPart) * w.participation * 100) / 100
         : 0;
 
+    // القرآن = حفظ (مجموع points/3) + تلاوة المدثر
+    const q = qrMap.get(st.id);
+    const quranHifz = Math.round((Number(q?.hifz ?? 0) / 3) * 100) / 100;
+    const quranCnt = Number(q?.cnt ?? 0);
+    const recitation = st.recitation ?? null;
+    const quranComputed =
+      quranCnt > 0 || recitation != null
+        ? Math.round((quranHifz + (recitation ?? 0)) * 100) / 100
+        : null;
+
     const hasAny =
-      st.quran != null ||
+      quranComputed != null ||
       st.oralWritten != null ||
       homeworkDone > 0 ||
       participationRaw > 0;
 
     const total = hasAny
-      ? (st.quran ?? 0) +
+      ? (quranComputed ?? 0) +
         (st.oralWritten ?? 0) +
         homeworkScore +
         participationGrade
@@ -103,7 +133,9 @@ export async function computeClassGrades(
       name: st.name,
       phone: st.phone,
       guardianName: st.guardianName,
-      quran: st.quran,
+      quran: quranComputed,
+      quranHifz,
+      recitation,
       oralWritten: st.oralWritten,
       homeworkScore,
       homeworkDone,

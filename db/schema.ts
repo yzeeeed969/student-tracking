@@ -28,8 +28,25 @@ export const students = pgTable("students", {
   active: boolean("active").notNull().default(true),
   quran: doublePrecision("quran"),
   oralWritten: doublePrecision("oral_written"),
+  recitation: doublePrecision("recitation"), // تلاوة سورة المدثر 0..4
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+// درجات حفظ السور: points 1=جيد، 2=جيد جدًا، 3=ممتاز (القيمة = points/3)
+export const quranMarks = pgTable(
+  "quran_marks",
+  {
+    id: serial("id").primaryKey(),
+    studentId: integer("student_id")
+      .notNull()
+      .references(() => students.id, { onDelete: "cascade" }),
+    surah: integer("surah").notNull(), // رقم السورة 99..114
+    points: integer("points").notNull(), // 1..3
+  },
+  (t) => ({
+    uq: uniqueIndex("quran_student_surah").on(t.studentId, t.surah),
+  })
+);
 
 export const homeworkMarks = pgTable(
   "homework_marks",

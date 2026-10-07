@@ -41,7 +41,7 @@ export default async function GradesPage({
                 <tr>
                   <th>#</th>
                   <th>الطالب</th>
-                  <th>القرآن ({w.quran})</th>
+                  <th>القرآن ({w.quran}) تلقائي</th>
                   <th>الشفهي والتحريري ({w.oralWritten})</th>
                   <th>الواجبات ({w.homework})</th>
                   <th>المشاركة ({w.participation})</th>
@@ -53,16 +53,8 @@ export default async function GradesPage({
                   <tr key={r.id}>
                     <td>{r.code}</td>
                     <td>{r.name}</td>
-                    <td>
-                      <input
-                        type="number"
-                        step="0.25"
-                        min="0"
-                        max={w.quran}
-                        name={`quran_${r.id}`}
-                        defaultValue={r.quran ?? ""}
-                        className="w-20 text-center"
-                      />
+                    <td className="text-center text-muted">
+                      {r.quran ?? "—"}
                     </td>
                     <td>
                       <input

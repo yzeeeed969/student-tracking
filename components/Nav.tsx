@@ -7,6 +7,7 @@ const links = [
   { href: "/students", label: "الطلاب" },
   { href: "/grades", label: "الدرجات" },
   { href: "/homework", label: "الواجبات" },
+  { href: "/quran", label: "القرآن" },
   { href: "/participation", label: "المشاركة" },
   { href: "/behavior", label: "السلوك والملاحظات" },
   { href: "/reports", label: "التقارير" },

@@ -12,15 +12,12 @@ export async function saveGrades(formData: FormData) {
     .filter(Boolean);
 
   for (const id of ids) {
-    const qRaw = formData.get(`quran_${id}`);
     const oRaw = formData.get(`oral_${id}`);
-    const quran =
-      qRaw === null || String(qRaw).trim() === "" ? null : Number(qRaw);
     const oralWritten =
       oRaw === null || String(oRaw).trim() === "" ? null : Number(oRaw);
     await db
       .update(students)
-      .set({ quran, oralWritten })
+      .set({ oralWritten })
       .where(eq(students.id, id));
   }
   revalidatePath("/grades");
