@@ -5,10 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "tsx scripts/migrate.ts && next start",
     "lint": "eslint",
     "db:push": "drizzle-kit push",
-    "db:seed": "tsx scripts/seed.ts"
+    "db:seed": "tsx scripts/seed.ts",
+    "db:migrate": "tsx scripts/migrate.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -16,7 +17,8 @@
     "next": "16.4.0",
     "pg": "^8.23.1",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "tsx": "^4.23.15"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",
@@ -30,7 +32,6 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.0",
     "tailwindcss": "^4",
-    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }
