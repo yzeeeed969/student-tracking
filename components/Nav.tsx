@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ThemeToggle from "./ThemeToggle";
+import { VERSION } from "@/lib/version";
 
 const links = [
   { href: "/", label: "الرئيسية" },
@@ -15,7 +16,10 @@ const links = [
 export default function Nav() {
   return (
     <header className="card m-3 mb-0 px-4 py-3 flex items-center gap-4 flex-wrap">
-      <div className="font-bold text-brand text-lg">متابعة الطلاب</div>
+      <div className="flex items-center gap-2">
+        <span className="font-bold text-brand text-lg">متابعة الطلاب</span>
+        <span className="text-muted text-xs">v{VERSION}</span>
+      </div>
       <nav className="flex gap-1 flex-wrap flex-1">
         {links.map((l) => (
           <Link
