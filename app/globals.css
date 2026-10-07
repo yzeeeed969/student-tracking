@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --bg: #f6f7f9;
+  --card: #ffffff;
+  --text: #15201c;
+  --muted: #667085;
+  --border: #e4e7ec;
+  --brand: #0f6e63;
+  --brand-soft: #e3f1ee;
+}
+
+.dark {
+  --bg: #0f1512;
+  --card: #18201d;
+  --text: #e8efec;
+  --muted: #94a3a0;
+  --border: #2a332f;
+  --brand: #2bb3a3;
+  --brand-soft: #16251f;
+}
+
+@theme inline {
+  --font-sans: "Segoe UI", Tahoma, system-ui, "Noto Kufi Arabic", sans-serif;
+  --color-bg: var(--bg);
+  --color-card: var(--card);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-brand: var(--brand);
+  --color-brandsoft: var(--brand-soft);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+}
+
+.btn {
+  background: var(--brand);
+  color: #fff;
+  border-radius: 0.65rem;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: opacity 0.15s;
+}
+.btn:hover {
+  opacity: 0.9;
+}
+.btn-ghost {
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+
+input,
+select,
+textarea {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 0.6rem;
+  padding: 0.45rem 0.7rem;
+}
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--brand);
+  outline-offset: -1px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+th,
+td {
+  border: 1px solid var(--border);
+  padding: 0.5rem 0.6rem;
+  text-align: right;
+}
+th {
+  background: var(--brand);
+  color: #fff;
+  font-weight: 500;
+  white-space: nowrap;
+}
