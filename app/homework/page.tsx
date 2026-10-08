@@ -82,9 +82,7 @@ export default async function HomeworkPage({
                         <div className="flex items-center gap-2 mt-1">
                           <button
                             type="submit"
-                            name="saveStudentId"
-                            value={st.id}
-                            formAction={saveOneHomework}
+                            formAction={saveOneHomework.bind(null, st.id)}
                             className="text-xs bg-brand text-white rounded px-2 py-0.5 hover:opacity-90"
                           >
                             حفظ

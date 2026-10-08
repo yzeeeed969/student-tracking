@@ -5,8 +5,7 @@ import { and, eq, inArray, lte } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 // حفظ درجات واجبات طالب واحد فقط (زر الحفظ بجانب اسم الطالب)
-export async function saveOneHomework(formData: FormData) {
-  const studentId = Number(formData.get("saveStudentId"));
+export async function saveOneHomework(studentId: number, formData: FormData) {
   const count = Number(formData.get("count") || 18);
   if (!studentId) return;
 
