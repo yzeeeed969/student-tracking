@@ -5,7 +5,7 @@ import { db } from "@/db";
 import { students, homeworkMarks } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { getSettings } from "@/lib/settings";
-import { saveHomework } from "./actions";
+import { saveHomework, saveOneHomework } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -79,19 +79,30 @@ export default async function HomeworkPage({
                     <tr key={st.id}>
                       <td className="sticky right-0 bg-card whitespace-nowrap">
                         <div>{st.name}</div>
-                        {st.phone ? (
-                          <a
-                            href={`/api/whatsapp?studentId=${st.id}&kind=${encodeURIComponent(
-                              "واجبات"
-                            )}`}
-                            target="_blank"
-                            className="text-xs text-green-600 hover:underline"
+                        <div className="flex items-center gap-2 mt-1">
+                          <button
+                            type="submit"
+                            name="saveStudentId"
+                            value={st.id}
+                            formAction={saveOneHomework}
+                            className="text-xs bg-brand text-white rounded px-2 py-0.5 hover:opacity-90"
                           >
-                            إرسال واتساب (الواجبات)
-                          </a>
-                        ) : (
-                          <span className="text-xs text-muted">لا يوجد جوال</span>
-                        )}
+                            حفظ
+                          </button>
+                          {st.phone ? (
+                            <a
+                              href={`/api/whatsapp?studentId=${st.id}&kind=${encodeURIComponent(
+                                "واجبات"
+                              )}`}
+                              target="_blank"
+                              className="text-xs text-green-600 hover:underline"
+                            >
+                              واتساب
+                            </a>
+                          ) : (
+                            <span className="text-xs text-muted">لا جوال</span>
+                          )}
+                        </div>
                       </td>
                       {nums.map((n) => {
                         const v = markMap.get(`${st.id}_${n}`);
