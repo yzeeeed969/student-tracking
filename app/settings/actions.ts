@@ -25,6 +25,7 @@ export async function saveSettings(formData: FormData) {
     "tpl_homework",
     "tpl_homework_status",
     "tpl_violation",
+    "custom_templates",
   ];
   for (const k of simple) {
     const v = formData.get(k);

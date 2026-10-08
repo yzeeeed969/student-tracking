@@ -9,9 +9,10 @@ import { fillTemplate, waLink } from "@/lib/whatsapp";
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const studentId = Number(url.searchParams.get("studentId"));
-  const kind = url.searchParams.get("kind") || "عام";
+  let kind = url.searchParams.get("kind") || "عام";
   const lesson = url.searchParams.get("lesson") || "";
   const violation = url.searchParams.get("violation") || "";
+  const tplIdx = url.searchParams.get("tpl"); // قالب مخصّص بالفهرس
   if (!studentId)
     return new NextResponse(null, { status: 303, headers: { Location: "/behavior" } });
 
@@ -69,7 +70,17 @@ export async function GET(req: Request) {
   };
 
   let tpl = s.tpl_taazeez || "";
-  if (kind === "عدم الإجابة") tpl = s.tpl_homework || "";
+  if (tplIdx !== null) {
+    // قالب مخصّص من الإعدادات
+    try {
+      const list = JSON.parse(s.custom_templates || "[]");
+      const idx = Number(tplIdx);
+      if (list[idx]?.body) {
+        tpl = list[idx].body;
+        kind = list[idx].label || "رسالة مخصصة";
+      }
+    } catch {}
+  } else if (kind === "عدم الإجابة") tpl = s.tpl_homework || "";
   else if (kind === "واجبات") tpl = s.tpl_homework_status || "";
   else if (kind === "مخالفة") tpl = s.tpl_violation || "";
 

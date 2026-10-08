@@ -1,6 +1,7 @@
 import Nav from "@/components/Nav";
 import { getSettings, weights } from "@/lib/settings";
 import { saveSettings } from "./actions";
+import TemplatesEditor from "@/components/TemplatesEditor";
 
 export const dynamic = "force-dynamic";
 
@@ -8,6 +9,12 @@ export default async function SettingsPage() {
   const s = await getSettings();
   const w = weights(s);
   const types: string[] = JSON.parse(s.behavior_types || "[]");
+  let customTemplates: { label: string; body: string }[] = [];
+  try {
+    customTemplates = JSON.parse(s.custom_templates || "[]");
+  } catch {
+    customTemplates = [];
+  }
   const sum = w.quran + w.oralWritten + w.homework + w.participation;
 
   return (
@@ -94,6 +101,10 @@ export default async function SettingsPage() {
               label="قالب المخالفة"
               value={s.tpl_violation}
             />
+            <div className="pt-2 border-t border-black/10 dark:border-white/10 space-y-2">
+              <h3 className="font-bold text-sm">قوالب إضافية (تُرسَل من صفحة الطلاب)</h3>
+              <TemplatesEditor initial={customTemplates} />
+            </div>
           </div>
 
           <div className="flex justify-end">

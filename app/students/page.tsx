@@ -7,6 +7,7 @@ import Link from "next/link";
 import ToastForm from "@/components/ToastForm";
 import StudentRow from "@/components/StudentRow";
 import StudentSearch from "@/components/StudentSearch";
+import { getSettings } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,13 @@ export default async function StudentsPage({
     .select()
     .from(classRooms)
     .orderBy(classRooms.order);
+  const settings = await getSettings();
+  let templates: { label: string; body: string }[] = [];
+  try {
+    templates = JSON.parse(settings.custom_templates || "[]");
+  } catch {
+    templates = [];
+  }
 
   const byClass = await Promise.all(
     classes.map(async (c) => ({
@@ -118,6 +126,7 @@ export default async function StudentsPage({
                       classes={classes}
                       updateStudent={updateStudent}
                       deleteStudent={deleteStudent}
+                      templates={templates}
                     />
                   ))}
                 </tbody>
