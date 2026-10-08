@@ -5,9 +5,11 @@ import { db } from "@/db";
 import { students, quranMarks } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { SURAHS, LEVELS } from "@/lib/surahs";
-import { saveQuran } from "./actions";
+import { saveQuran, bulkSetSurah } from "./actions";
 import RowSaveButton from "@/components/RowSaveButton";
 import StudentSearch from "@/components/StudentSearch";
+import SelectAllCheckbox from "@/components/SelectAllCheckbox";
+import QuranBulk from "@/components/QuranBulk";
 
 export const dynamic = "force-dynamic";
 
@@ -57,13 +59,17 @@ export default async function QuranPage({
           <StudentSearch />
         </div>
 
+        <QuranBulk surahs={SURAHS} levels={LEVELS} bulkSetSurah={bulkSetSurah} />
+
         <form className="card p-3 space-y-3">
           <input type="hidden" name="ids" value={ids.join(",")} />
           <div className="overflow-x-auto">
             <table className="text-sm">
               <thead>
                 <tr>
-                  <th className="sticky right-0 bg-brand">الطالب</th>
+                  <th className="sticky right-0 bg-brand">
+                    <SelectAllCheckbox /> الطالب
+                  </th>
                   {SURAHS.map((s) => (
                     <th key={s.num} className="whitespace-nowrap">
                       {s.name}
@@ -85,6 +91,11 @@ export default async function QuranPage({
                   return (
                     <tr key={st.id} data-name={st.name}>
                       <td className="sticky right-0 bg-card whitespace-nowrap">
+                        <input
+                          type="checkbox"
+                          className="rowchk ml-1"
+                          value={st.id}
+                        />
                         {st.name}
                       </td>
                       {SURAHS.map((s) => {

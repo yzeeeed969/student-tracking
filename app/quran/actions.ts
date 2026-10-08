@@ -5,6 +5,29 @@ import { and, eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { SURAHS } from "@/lib/surahs";
 
+// تطبيق مستوى سورة واحدة على مجموعة طلاب محدّدين
+export async function bulkSetSurah(fd: FormData) {
+  const ids = String(fd.get("ids") || "")
+    .split(",")
+    .map((x) => Number(x))
+    .filter(Boolean);
+  const surah = Number(fd.get("surah"));
+  const raw = fd.get("points");
+  const points = raw === null || String(raw).trim() === "" ? null : Number(raw);
+  if (!ids.length || !surah) return;
+  await db.transaction(async (tx) => {
+    await tx
+      .delete(quranMarks)
+      .where(and(inArray(quranMarks.studentId, ids), eq(quranMarks.surah, surah)));
+    if (points !== null)
+      await tx
+        .insert(quranMarks)
+        .values(ids.map((studentId) => ({ studentId, surah, points })));
+  });
+  revalidatePath("/quran");
+  revalidatePath("/grades");
+}
+
 export async function saveQuran(formData: FormData) {
   const ids = String(formData.get("ids") || "")
     .split(",")

@@ -8,7 +8,14 @@ import {
   timestamp,
   uniqueIndex,
   index,
+  customType,
 } from "drizzle-orm/pg-core";
+
+const bytea = customType<{ data: Buffer; notNull: true; default: false }>({
+  dataType() {
+    return "bytea";
+  },
+});
 
 export const classRooms = pgTable("class_rooms", {
   id: serial("id").primaryKey(),
@@ -104,4 +111,35 @@ export const contactLogs = pgTable("contact_logs", {
 export const settings = pgTable("settings", {
   key: text("key").primaryKey(),
   value: text("value").notNull(),
+});
+
+// مكتبة يوتيوب: مجلدات ومقاطع
+export const videoFolders = pgTable("video_folders", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  order: integer("order").notNull().default(0),
+});
+
+export const videos = pgTable(
+  "videos",
+  {
+    id: serial("id").primaryKey(),
+    folderId: integer("folder_id")
+      .notNull()
+      .references(() => videoFolders.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    url: text("url").notNull(),
+    order: integer("order").notNull().default(0),
+  },
+  (t) => ({ idx: index("video_folder").on(t.folderId) })
+);
+
+// الكتب (ملفات PDF مخزّنة في قاعدة البيانات)
+export const books = pgTable("books", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  mime: text("mime").notNull().default("application/pdf"),
+  size: integer("size").notNull().default(0),
+  data: bytea("data").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });

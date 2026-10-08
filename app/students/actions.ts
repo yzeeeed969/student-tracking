@@ -1,8 +1,31 @@
 "use server";
 import { db } from "@/db";
 import { students, classRooms } from "@/db/schema";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+
+function parseIds(fd: FormData): number[] {
+  return String(fd.get("ids") || "")
+    .split(",")
+    .map((x) => Number(x))
+    .filter(Boolean);
+}
+
+export async function bulkMoveStudents(fd: FormData) {
+  const ids = parseIds(fd);
+  const classId = Number(fd.get("classId"));
+  if (!ids.length || !classId) return;
+  await db.update(students).set({ classId }).where(inArray(students.id, ids));
+  revalidatePath("/students");
+  revalidatePath("/grades");
+}
+
+export async function bulkDeleteStudents(fd: FormData) {
+  const ids = parseIds(fd);
+  if (!ids.length) return;
+  await db.delete(students).where(inArray(students.id, ids));
+  revalidatePath("/students");
+}
 
 function normalizePhone(raw: string): string {
   let p = (raw || "").replace(/[^\d]/g, "");

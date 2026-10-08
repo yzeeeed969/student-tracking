@@ -23,6 +23,23 @@ export async function addParticipation(formData: FormData) {
   revalidatePath("/grades");
 }
 
+// منح/خصم جماعي للمحدّدين
+export async function bulkParticipation(fd: FormData) {
+  const ids = String(fd.get("ids") || "")
+    .split(",")
+    .map((x) => Number(x))
+    .filter(Boolean);
+  const dateStr = String(fd.get("date"));
+  const points = Number(fd.get("points"));
+  if (!ids.length || !dateStr || !points) return;
+  const when = new Date(dateStr + "T08:00:00");
+  await db
+    .insert(participation)
+    .values(ids.map((studentId) => ({ studentId, points, date: when })));
+  revalidatePath("/participation");
+  revalidatePath("/grades");
+}
+
 // خصم نقطة (مخالفة): يُسجّل نقطة سالبة بنفس طريقة المنح
 export async function deductParticipation(formData: FormData) {
   const studentId = Number(formData.get("studentId"));

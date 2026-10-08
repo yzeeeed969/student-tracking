@@ -4,6 +4,29 @@ import { homeworkMarks } from "@/db/schema";
 import { and, eq, inArray, lte } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
+// تطبيق درجة واجب واحد على مجموعة طلاب محدّدين
+export async function bulkSetHomework(fd: FormData) {
+  const ids = String(fd.get("ids") || "")
+    .split(",")
+    .map((x) => Number(x))
+    .filter(Boolean);
+  const num = Number(fd.get("num"));
+  const raw = fd.get("score");
+  const score = raw === null || String(raw).trim() === "" ? null : Number(raw);
+  if (!ids.length || !num) return;
+  await db.transaction(async (tx) => {
+    await tx
+      .delete(homeworkMarks)
+      .where(and(inArray(homeworkMarks.studentId, ids), eq(homeworkMarks.num, num)));
+    if (score !== null)
+      await tx
+        .insert(homeworkMarks)
+        .values(ids.map((studentId) => ({ studentId, num, score })));
+  });
+  revalidatePath("/homework");
+  revalidatePath("/grades");
+}
+
 // حفظ درجات واجبات طالب واحد فقط (زر الحفظ بجانب اسم الطالب)
 export async function saveOneHomework(studentId: number, formData: FormData) {
   const count = Number(formData.get("count") || 18);

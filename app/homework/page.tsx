@@ -5,9 +5,11 @@ import { db } from "@/db";
 import { students, homeworkMarks } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { getSettings } from "@/lib/settings";
-import { saveHomework, saveOneHomework } from "./actions";
+import { saveHomework, saveOneHomework, bulkSetHomework } from "./actions";
 import RowSaveButton from "@/components/RowSaveButton";
 import StudentSearch from "@/components/StudentSearch";
+import SelectAllCheckbox from "@/components/SelectAllCheckbox";
+import HomeworkBulk from "@/components/HomeworkBulk";
 
 export const dynamic = "force-dynamic";
 
@@ -62,6 +64,8 @@ export default async function HomeworkPage({
           <StudentSearch />
         </div>
 
+        <HomeworkBulk count={count} bulkSetHomework={bulkSetHomework} />
+
         <form className="card p-3 space-y-3">
           <input type="hidden" name="count" value={count} />
           <input type="hidden" name="ids" value={ids.join(",")} />
@@ -69,7 +73,9 @@ export default async function HomeworkPage({
             <table className="text-sm">
               <thead>
                 <tr>
-                  <th className="sticky right-0 bg-brand">الطالب</th>
+                  <th className="sticky right-0 bg-brand">
+                    <SelectAllCheckbox /> الطالب
+                  </th>
                   {nums.map((n) => (
                     <th key={n}>{n}</th>
                   ))}
@@ -83,7 +89,14 @@ export default async function HomeworkPage({
                   return (
                     <tr key={st.id} data-name={st.name}>
                       <td className="sticky right-0 bg-card whitespace-nowrap">
-                        <div>{st.name}</div>
+                        <div>
+                          <input
+                            type="checkbox"
+                            className="rowchk ml-1"
+                            value={st.id}
+                          />
+                          {st.name}
+                        </div>
                         <div className="flex items-center gap-2 mt-1">
                           <RowSaveButton
                             action={saveOneHomework.bind(null, st.id)}

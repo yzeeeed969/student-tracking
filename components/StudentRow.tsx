@@ -35,7 +35,7 @@ export default function StudentRow({
   if (editing) {
     return (
       <tr data-name={s.name}>
-        <td colSpan={5}>
+        <td colSpan={6}>
           <form className="flex flex-wrap items-center gap-2 py-1">
             <input type="hidden" name="id" value={s.id} />
             <input
@@ -87,6 +87,9 @@ export default function StudentRow({
 
   return (
     <tr data-name={s.name}>
+      <td>
+        <input type="checkbox" className="rowchk" value={s.id} />
+      </td>
       <td>{s.code}</td>
       <td>{s.name}</td>
       <td>{s.guardianName}</td>

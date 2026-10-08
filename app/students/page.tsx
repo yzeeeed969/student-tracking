@@ -2,11 +2,20 @@ import Nav from "@/components/Nav";
 import { db } from "@/db";
 import { students, classRooms } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { addStudent, addClass, updateStudent, deleteStudent } from "./actions";
+import {
+  addStudent,
+  addClass,
+  updateStudent,
+  deleteStudent,
+  bulkMoveStudents,
+  bulkDeleteStudents,
+} from "./actions";
 import Link from "next/link";
 import ToastForm from "@/components/ToastForm";
 import StudentRow from "@/components/StudentRow";
 import StudentSearch from "@/components/StudentSearch";
+import SelectAllCheckbox from "@/components/SelectAllCheckbox";
+import StudentsBulk from "@/components/StudentsBulk";
 import { getSettings } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
@@ -100,6 +109,12 @@ export default async function StudentsPage({
           </ToastForm>
         </div>
 
+        <StudentsBulk
+          classes={classes}
+          bulkMove={bulkMoveStudents}
+          bulkDelete={bulkDeleteStudents}
+        />
+
         {/* جداول الفصول */}
         {byClass.map(({ cls, rows }) => (
           <div key={cls.id} className="card p-4 space-y-3">
@@ -111,6 +126,9 @@ export default async function StudentsPage({
               <table>
                 <thead>
                   <tr>
+                    <th>
+                      <SelectAllCheckbox />
+                    </th>
                     <th>الرقم</th>
                     <th>اسم الطالب</th>
                     <th>ولي الأمر</th>

@@ -10,6 +10,8 @@ const links = [
   { href: "/quran", label: "القرآن" },
   { href: "/participation", label: "المشاركة" },
   { href: "/behavior", label: "السلوك والملاحظات" },
+  { href: "/youtube", label: "المقاطع" },
+  { href: "/books", label: "الكتب" },
   { href: "/reports", label: "التقارير" },
   { href: "/settings", label: "الإعدادات" },
 ];

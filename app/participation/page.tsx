@@ -9,9 +9,12 @@ import {
   addParticipation,
   removeLastParticipation,
   deductParticipation,
+  bulkParticipation,
 } from "./actions";
 import ToastForm from "@/components/ToastForm";
 import StudentSearch from "@/components/StudentSearch";
+import SelectAllCheckbox from "@/components/SelectAllCheckbox";
+import ParticipationBulk from "@/components/ParticipationBulk";
 
 export const dynamic = "force-dynamic";
 
@@ -105,10 +108,15 @@ export default async function ParticipationPage({
           بالموازنة النسبية إلى الأعلى في الفصل.
         </div>
 
+        <ParticipationBulk date={dateStr} bulkParticipation={bulkParticipation} />
+
         <div className="card p-3 overflow-x-auto">
           <table>
             <thead>
               <tr>
+                <th>
+                  <SelectAllCheckbox />
+                </th>
                 <th>#</th>
                 <th>الطالب</th>
                 <th>نقاط اليوم</th>
@@ -126,6 +134,9 @@ export default async function ParticipationPage({
                     : 0;
                 return (
                   <tr key={st.id} data-name={st.name}>
+                    <td>
+                      <input type="checkbox" className="rowchk" value={st.id} />
+                    </td>
                     <td>{st.code}</td>
                     <td>{st.name}</td>
                     <td className="text-center font-bold">

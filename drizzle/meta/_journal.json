@@ -15,6 +15,13 @@
       "when": 1791400886714,
       "tag": "0001_amused_moonstone",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791451578517,
+      "tag": "0002_add_videos_books",
+      "breakpoints": true
     }
   ]
 }
