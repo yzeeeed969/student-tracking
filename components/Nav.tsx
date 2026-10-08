@@ -26,6 +26,7 @@ export default function Nav() {
           <Link
             key={l.href}
             href={l.href}
+            prefetch={false}
             className="px-3 py-1.5 rounded-lg hover:bg-brandsoft text-sm"
           >
             {l.label}
