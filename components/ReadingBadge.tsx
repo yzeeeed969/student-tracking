@@ -17,11 +17,10 @@ export default function ReadingBadge({ level }: { level: number }) {
   if (!m) return null;
   return (
     <span
-      className={`reading-badge items-center gap-1 text-xs rounded-full px-2 py-0.5 align-middle ${m.cls}`}
+      className="reading-badge align-middle text-sm leading-none"
       title={`مستوى القراءة: ${m.label}`}
     >
-      <span>{m.dot}</span>
-      <span>{m.label}</span>
+      {m.dot}
     </span>
   );
 }
