@@ -2,6 +2,7 @@
 import { db } from "@/db";
 import { settings } from "@/db/schema";
 import { revalidatePath } from "next/cache";
+import { backOk } from "@/lib/flash";
 
 async function setKey(key: string, value: string) {
   await db
@@ -37,4 +38,5 @@ export async function saveSettings(formData: FormData) {
   revalidatePath("/settings");
   revalidatePath("/behavior");
   revalidatePath("/grades");
+  backOk(formData, "/settings", "تم حفظ الإعدادات");
 }

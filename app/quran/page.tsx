@@ -54,6 +54,7 @@ export default async function QuranPage({
 
         <form action={saveQuran} className="card p-3 space-y-3">
           <input type="hidden" name="ids" value={ids.join(",")} />
+          <input type="hidden" name="_back" value={`/quran?class=${activeId}`} />
           <div className="overflow-x-auto">
             <table className="text-sm">
               <thead>

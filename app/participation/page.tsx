@@ -5,7 +5,11 @@ import { db } from "@/db";
 import { students, participation } from "@/db/schema";
 import { eq, sql, and, gte, lt } from "drizzle-orm";
 import { getSettings, weights } from "@/lib/settings";
-import { addParticipation, removeLastParticipation } from "./actions";
+import {
+  addParticipation,
+  removeLastParticipation,
+  deductParticipation,
+} from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -76,6 +80,7 @@ export default async function ParticipationPage({
         .groupBy(participation.studentId)
     : [];
   const todayMap = new Map(todayRows.map((t) => [t.studentId, Number(t.total)]));
+  const back = `/participation?class=${activeId}&date=${dateStr}`;
 
   return (
     <div className="min-h-screen">
@@ -123,11 +128,12 @@ export default async function ParticipationPage({
                       {todayMap.get(st.id) ?? 0}
                     </td>
                     <td>
-                      <div className="flex gap-1 justify-center">
+                      <div className="flex gap-1 justify-center items-center flex-wrap">
                         <form action={addParticipation}>
                           <input type="hidden" name="studentId" value={st.id} />
                           <input type="hidden" name="date" value={dateStr} />
                           <input type="hidden" name="points" value="1" />
+                          <input type="hidden" name="_back" value={back} />
                           <button className="btn-ghost btn text-xs px-2 py-1">
                             +1
                           </button>
@@ -136,17 +142,46 @@ export default async function ParticipationPage({
                           <input type="hidden" name="studentId" value={st.id} />
                           <input type="hidden" name="date" value={dateStr} />
                           <input type="hidden" name="points" value="2" />
+                          <input type="hidden" name="_back" value={back} />
                           <button className="btn-ghost btn text-xs px-2 py-1">
                             +2
+                          </button>
+                        </form>
+                        <form action={deductParticipation}>
+                          <input type="hidden" name="studentId" value={st.id} />
+                          <input type="hidden" name="date" value={dateStr} />
+                          <input type="hidden" name="amount" value="1" />
+                          <input type="hidden" name="_back" value={back} />
+                          <button
+                            className="btn-ghost btn text-xs px-2 py-1 text-red-600"
+                            title="خصم نقطة (مخالفة)"
+                          >
+                            −1
                           </button>
                         </form>
                         <form action={removeLastParticipation}>
                           <input type="hidden" name="studentId" value={st.id} />
                           <input type="hidden" name="date" value={dateStr} />
-                          <button className="text-red-500 text-xs px-2">
+                          <input type="hidden" name="_back" value={back} />
+                          <button
+                            className="text-muted text-xs px-2"
+                            title="تراجع عن آخر إدخال لليوم"
+                          >
                             ↩
                           </button>
                         </form>
+                        {st.phone && (
+                          <a
+                            href={`/api/whatsapp?studentId=${st.id}&kind=${encodeURIComponent(
+                              "عام"
+                            )}`}
+                            target="_blank"
+                            className="text-xs text-green-600 hover:underline px-1"
+                            title="إرسال تعزيز لولي الأمر"
+                          >
+                            واتساب
+                          </a>
+                        )}
                       </div>
                     </td>
                     <td className="text-center text-muted">{tot}</td>

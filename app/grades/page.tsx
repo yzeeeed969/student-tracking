@@ -35,6 +35,7 @@ export default async function GradesPage({
             name="ids"
             value={rows.map((r) => r.id).join(",")}
           />
+          <input type="hidden" name="_back" value={`/grades?class=${activeId}`} />
           <div className="overflow-x-auto">
             <table>
               <thead>

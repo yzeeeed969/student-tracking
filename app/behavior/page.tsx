@@ -1,6 +1,8 @@
 import Nav from "@/components/Nav";
+import ClassTabs from "@/components/ClassTabs";
+import { getClasses } from "@/lib/grades";
 import { db } from "@/db";
-import { students, behaviorNotes, contactLogs, classRooms } from "@/db/schema";
+import { students, behaviorNotes, contactLogs } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
 import { getSettings } from "@/lib/settings";
 import { addNote, deleteNote } from "./actions";
@@ -11,17 +13,21 @@ function fmt(d: Date) {
   return new Date(d).toLocaleDateString("ar-SA-u-nu-latn");
 }
 
-export default async function BehaviorPage() {
+export default async function BehaviorPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ class?: string }>;
+}) {
+  const classes = await getClasses();
+  const sp = await searchParams;
+  const activeId = Number(sp.class) || classes[0]?.id;
   const s = await getSettings();
   const types: string[] = JSON.parse(s.behavior_types || "[]");
-  const allStudents = await db
-    .select({
-      id: students.id,
-      name: students.name,
-      className: classRooms.name,
-    })
+
+  const classStudents = await db
+    .select({ id: students.id, name: students.name })
     .from(students)
-    .leftJoin(classRooms, eq(students.classId, classRooms.id))
+    .where(eq(students.classId, activeId))
     .orderBy(students.code);
 
   const notes = await db
@@ -34,7 +40,8 @@ export default async function BehaviorPage() {
       studentName: students.name,
     })
     .from(behaviorNotes)
-    .leftJoin(students, eq(behaviorNotes.studentId, students.id))
+    .innerJoin(students, eq(behaviorNotes.studentId, students.id))
+    .where(eq(students.classId, activeId))
     .orderBy(desc(behaviorNotes.date))
     .limit(50);
 
@@ -47,7 +54,8 @@ export default async function BehaviorPage() {
       studentName: students.name,
     })
     .from(contactLogs)
-    .leftJoin(students, eq(contactLogs.studentId, students.id))
+    .innerJoin(students, eq(contactLogs.studentId, students.id))
+    .where(eq(students.classId, activeId))
     .orderBy(desc(contactLogs.date))
     .limit(50);
 
@@ -55,22 +63,25 @@ export default async function BehaviorPage() {
   const dateStr = `${today.getFullYear()}-${String(
     today.getMonth() + 1
   ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+  const back = `/behavior?class=${activeId}`;
 
   return (
     <div className="min-h-screen">
       <Nav />
       <main className="p-4 space-y-5">
         <h1 className="text-xl font-bold">السلوك والملاحظات</h1>
+        <ClassTabs classes={classes} active={activeId} base="/behavior" />
 
         {/* إضافة ملاحظة */}
         <form action={addNote} className="card p-4 space-y-3">
           <h2 className="font-bold">تسجيل سلوك / ملاحظة</h2>
+          <input type="hidden" name="_back" value={back} />
           <div className="grid md:grid-cols-4 gap-2">
             <select name="studentId" required>
               <option value="">اختر الطالب…</option>
-              {allStudents.map((st) => (
+              {classStudents.map((st) => (
                 <option key={st.id} value={st.id}>
-                  {st.name} ({st.className})
+                  {st.name}
                 </option>
               ))}
             </select>
@@ -128,6 +139,7 @@ export default async function BehaviorPage() {
                     <td>
                       <form action={deleteNote}>
                         <input type="hidden" name="id" value={n.id} />
+                        <input type="hidden" name="_back" value={back} />
                         <button className="text-red-500 text-xs">حذف</button>
                       </form>
                     </td>

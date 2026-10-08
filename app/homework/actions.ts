@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { homeworkMarks } from "@/db/schema";
 import { and, eq, inArray, lte } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { backOk } from "@/lib/flash";
 
 // حفظ درجات واجبات طالب واحد فقط (زر الحفظ بجانب اسم الطالب)
 export async function saveOneHomework(studentId: number, formData: FormData) {
@@ -27,6 +28,7 @@ export async function saveOneHomework(studentId: number, formData: FormData) {
 
   revalidatePath("/homework");
   revalidatePath("/grades");
+  backOk(formData, "/homework", "تم حفظ درجات الطالب");
 }
 
 export async function saveHomework(formData: FormData) {
@@ -59,4 +61,5 @@ export async function saveHomework(formData: FormData) {
 
   revalidatePath("/homework");
   revalidatePath("/grades");
+  backOk(formData, "/homework", "تم حفظ الواجبات");
 }

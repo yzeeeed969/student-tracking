@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { behaviorNotes } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { backOk } from "@/lib/flash";
 
 export async function addNote(formData: FormData) {
   const studentId = Number(formData.get("studentId"));
@@ -18,6 +19,7 @@ export async function addNote(formData: FormData) {
     date: dateStr ? new Date(dateStr + "T08:00:00") : new Date(),
   });
   revalidatePath("/behavior");
+  backOk(formData, "/behavior", "تم تسجيل الملاحظة");
 }
 
 export async function deleteNote(formData: FormData) {
@@ -25,4 +27,5 @@ export async function deleteNote(formData: FormData) {
   if (!id) return;
   await db.delete(behaviorNotes).where(eq(behaviorNotes.id, id));
   revalidatePath("/behavior");
+  backOk(formData, "/behavior", "تم حذف الملاحظة");
 }

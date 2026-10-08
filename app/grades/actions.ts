@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { students } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { backOk } from "@/lib/flash";
 
 export async function saveGrades(formData: FormData) {
   const classId = Number(formData.get("classId"));
@@ -21,4 +22,5 @@ export async function saveGrades(formData: FormData) {
       .where(eq(students.id, id));
   }
   revalidatePath("/grades");
+  backOk(formData, "/grades", "تم حفظ الدرجات");
 }

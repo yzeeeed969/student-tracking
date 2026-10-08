@@ -60,6 +60,7 @@ export default async function HomeworkPage({
         <form action={saveHomework} className="card p-3 space-y-3">
           <input type="hidden" name="count" value={count} />
           <input type="hidden" name="ids" value={ids.join(",")} />
+          <input type="hidden" name="_back" value={`/homework?class=${activeId}`} />
           <div className="overflow-x-auto">
             <table className="text-sm">
               <thead>
