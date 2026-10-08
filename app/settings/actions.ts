@@ -22,6 +22,7 @@ export async function saveSettings(formData: FormData) {
     "homework_count",
     "tpl_taazeez",
     "tpl_homework",
+    "tpl_homework_status",
     "tpl_violation",
   ];
   for (const k of simple) {

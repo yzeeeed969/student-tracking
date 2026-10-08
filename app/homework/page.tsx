@@ -52,6 +52,7 @@ export default async function HomeworkPage({
           <h1 className="text-xl font-bold">الواجبات</h1>
           <div className="text-muted text-sm">
             كل خانة واجب: اختر 1 أو 0.5، والفراغ = لم يُرصد. يُجمع تلقائيًا.
+            احفظ الواجبات قبل إرسال الواتساب ليُحتسب آخر رصد.
           </div>
         </div>
         <ClassTabs classes={classes} active={activeId} base="/homework" />
@@ -77,7 +78,20 @@ export default async function HomeworkPage({
                   return (
                     <tr key={st.id}>
                       <td className="sticky right-0 bg-card whitespace-nowrap">
-                        {st.name}
+                        <div>{st.name}</div>
+                        {st.phone ? (
+                          <a
+                            href={`/api/whatsapp?studentId=${st.id}&kind=${encodeURIComponent(
+                              "واجبات"
+                            )}`}
+                            target="_blank"
+                            className="text-xs text-green-600 hover:underline"
+                          >
+                            إرسال واتساب (الواجبات)
+                          </a>
+                        ) : (
+                          <span className="text-xs text-muted">لا يوجد جوال</span>
+                        )}
                       </td>
                       {nums.map((n) => {
                         const v = markMap.get(`${st.id}_${n}`);

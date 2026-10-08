@@ -76,13 +76,18 @@ export default async function SettingsPage() {
           <div className="card p-4 space-y-3">
             <h2 className="font-bold">قوالب رسائل واتساب</h2>
             <div className="text-muted text-sm">
-              المتغيّرات: {"{student} {subject} {teacher} {school} {date} {lesson} {violation}"}
+              المتغيّرات: {"{student} {subject} {teacher} {school} {date} {lesson} {violation} {solved} {unsolved}"}
             </div>
             <TplField name="tpl_taazeez" label="قالب التعزيز" value={s.tpl_taazeez} />
             <TplField
               name="tpl_homework"
               label="قالب عدم الإجابة"
               value={s.tpl_homework}
+            />
+            <TplField
+              name="tpl_homework_status"
+              label="قالب حالة الواجبات (المحلولة/غير المحلولة) — يستخدم {solved} و {unsolved}"
+              value={s.tpl_homework_status}
             />
             <TplField
               name="tpl_violation"
