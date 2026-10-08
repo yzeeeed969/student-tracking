@@ -8,6 +8,7 @@ export default function Toaster() {
   const pathname = usePathname();
   const [msg, setMsg] = useState<string | null>(null);
   const [kind, setKind] = useState<"ok" | "err">("ok");
+  const [seq, setSeq] = useState(0);
 
   // عند وجود رسالة في الرابط: اعرضها ثم نظّف الرابط
   useEffect(() => {
@@ -16,6 +17,7 @@ export default function Toaster() {
     if (!ok && !err) return;
     setKind(err ? "err" : "ok");
     setMsg(err || ok);
+    setSeq((s) => s + 1);
     const params = new URLSearchParams(Array.from(sp.entries()));
     params.delete("ok");
     params.delete("err");
@@ -23,12 +25,25 @@ export default function Toaster() {
     router.replace(pathname + (q ? `?${q}` : ""), { scroll: false });
   }, [sp, pathname, router]);
 
-  // مؤقّت الإخفاء — مستقل تمامًا عن تنظيف الرابط حتى لا يُلغى
+  // إشعارات داخل الصفحة (دون إعادة تحميل) عبر حدث مخصّص
+  useEffect(() => {
+    function onToast(e: Event) {
+      const d = (e as CustomEvent).detail || {};
+      setKind(d.kind === "err" ? "err" : "ok");
+      setMsg(d.msg || "تم");
+      setSeq((s) => s + 1);
+    }
+    window.addEventListener("app:toast", onToast as EventListener);
+    return () =>
+      window.removeEventListener("app:toast", onToast as EventListener);
+  }, []);
+
+  // مؤقّت الإخفاء — يُعاد ضبطه مع كل إشعار جديد
   useEffect(() => {
     if (!msg) return;
     const t = setTimeout(() => setMsg(null), 3500);
     return () => clearTimeout(t);
-  }, [msg]);
+  }, [msg, seq]);
 
   if (!msg) return null;
 

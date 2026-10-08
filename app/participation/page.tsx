@@ -10,6 +10,7 @@ import {
   removeLastParticipation,
   deductParticipation,
 } from "./actions";
+import ToastForm from "@/components/ToastForm";
 
 export const dynamic = "force-dynamic";
 
@@ -80,7 +81,6 @@ export default async function ParticipationPage({
         .groupBy(participation.studentId)
     : [];
   const todayMap = new Map(todayRows.map((t) => [t.studentId, Number(t.total)]));
-  const back = `/participation?class=${activeId}&date=${dateStr}`;
 
   return (
     <div className="min-h-screen">
@@ -129,47 +129,43 @@ export default async function ParticipationPage({
                     </td>
                     <td>
                       <div className="flex gap-1 justify-center items-center flex-wrap">
-                        <form action={addParticipation}>
+                        <ToastForm action={addParticipation} toast="تم تسجيل مشاركة (+1)">
                           <input type="hidden" name="studentId" value={st.id} />
                           <input type="hidden" name="date" value={dateStr} />
                           <input type="hidden" name="points" value="1" />
-                          <input type="hidden" name="_back" value={back} />
                           <button className="btn-ghost btn text-xs px-2 py-1">
                             +1
                           </button>
-                        </form>
-                        <form action={addParticipation}>
+                        </ToastForm>
+                        <ToastForm action={addParticipation} toast="تم تسجيل مشاركة (+2)">
                           <input type="hidden" name="studentId" value={st.id} />
                           <input type="hidden" name="date" value={dateStr} />
                           <input type="hidden" name="points" value="2" />
-                          <input type="hidden" name="_back" value={back} />
                           <button className="btn-ghost btn text-xs px-2 py-1">
                             +2
                           </button>
-                        </form>
-                        <form action={deductParticipation}>
+                        </ToastForm>
+                        <ToastForm action={deductParticipation} toast="تم خصم نقطة (−1)">
                           <input type="hidden" name="studentId" value={st.id} />
                           <input type="hidden" name="date" value={dateStr} />
                           <input type="hidden" name="amount" value="1" />
-                          <input type="hidden" name="_back" value={back} />
                           <button
                             className="btn-ghost btn text-xs px-2 py-1 text-red-600"
                             title="خصم نقطة (مخالفة)"
                           >
                             −1
                           </button>
-                        </form>
-                        <form action={removeLastParticipation}>
+                        </ToastForm>
+                        <ToastForm action={removeLastParticipation} toast="تم التراجع عن آخر إدخال لليوم">
                           <input type="hidden" name="studentId" value={st.id} />
                           <input type="hidden" name="date" value={dateStr} />
-                          <input type="hidden" name="_back" value={back} />
                           <button
                             className="text-muted text-xs px-2"
                             title="تراجع عن آخر إدخال لليوم"
                           >
                             ↩
                           </button>
-                        </form>
+                        </ToastForm>
                         {st.phone && (
                           <a
                             href={`/api/whatsapp?studentId=${st.id}&kind=${encodeURIComponent(

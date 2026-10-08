@@ -3,7 +3,6 @@ import { db } from "@/db";
 import { participation } from "@/db/schema";
 import { and, eq, gte, lt, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { backOk } from "@/lib/flash";
 
 function dayRange(dateStr: string) {
   const start = new Date(dateStr + "T00:00:00");
@@ -22,7 +21,6 @@ export async function addParticipation(formData: FormData) {
     .values({ studentId, points, date: new Date(dateStr + "T08:00:00") });
   revalidatePath("/participation");
   revalidatePath("/grades");
-  backOk(formData, "/participation", `تم تسجيل مشاركة (+${points})`);
 }
 
 // خصم نقطة (مخالفة): يُسجّل نقطة سالبة بنفس طريقة المنح
@@ -36,7 +34,6 @@ export async function deductParticipation(formData: FormData) {
     .values({ studentId, points: -Math.abs(amount), date: new Date(dateStr + "T08:00:00") });
   revalidatePath("/participation");
   revalidatePath("/grades");
-  backOk(formData, "/participation", `تم خصم (${Math.abs(amount)})`);
 }
 
 export async function removeLastParticipation(formData: FormData) {
@@ -60,5 +57,4 @@ export async function removeLastParticipation(formData: FormData) {
     await db.delete(participation).where(eq(participation.id, rows[0].id));
   revalidatePath("/participation");
   revalidatePath("/grades");
-  backOk(formData, "/participation", "تم التراجع عن آخر إدخال لليوم");
 }
