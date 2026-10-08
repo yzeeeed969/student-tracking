@@ -2,6 +2,7 @@ import Nav from "@/components/Nav";
 import ClassTabs from "@/components/ClassTabs";
 import { computeClassGrades, getClasses } from "@/lib/grades";
 import { saveGrades } from "./actions";
+import RowSaveButton from "@/components/RowSaveButton";
 
 export const dynamic = "force-dynamic";
 
@@ -28,14 +29,13 @@ export default async function GradesPage({
         </div>
         <ClassTabs classes={classes} active={activeId} base="/grades" />
 
-        <form action={saveGrades} className="card p-4 space-y-3">
+        <form className="card p-4 space-y-3">
           <input type="hidden" name="classId" value={activeId} />
           <input
             type="hidden"
             name="ids"
             value={rows.map((r) => r.id).join(",")}
           />
-          <input type="hidden" name="_back" value={`/grades?class=${activeId}`} />
           <div className="overflow-x-auto">
             <table>
               <thead>
@@ -83,7 +83,9 @@ export default async function GradesPage({
             </table>
           </div>
           <div className="flex justify-end">
-            <button className="btn">حفظ الدرجات</button>
+            <RowSaveButton action={saveGrades} toast="تم حفظ الدرجات" className="btn">
+              حفظ الدرجات
+            </RowSaveButton>
           </div>
         </form>
       </main>

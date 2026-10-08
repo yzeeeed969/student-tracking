@@ -4,7 +4,6 @@ import { quranMarks, students } from "@/db/schema";
 import { and, eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { SURAHS } from "@/lib/surahs";
-import { backOk } from "@/lib/flash";
 
 export async function saveQuran(formData: FormData) {
   const ids = String(formData.get("ids") || "")
@@ -46,5 +45,4 @@ export async function saveQuran(formData: FormData) {
 
   revalidatePath("/quran");
   revalidatePath("/grades");
-  backOk(formData, "/quran", "تم حفظ درجات القرآن");
 }

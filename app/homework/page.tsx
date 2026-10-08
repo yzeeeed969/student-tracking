@@ -6,6 +6,7 @@ import { students, homeworkMarks } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { getSettings } from "@/lib/settings";
 import { saveHomework, saveOneHomework } from "./actions";
+import RowSaveButton from "@/components/RowSaveButton";
 
 export const dynamic = "force-dynamic";
 
@@ -57,10 +58,9 @@ export default async function HomeworkPage({
         </div>
         <ClassTabs classes={classes} active={activeId} base="/homework" />
 
-        <form action={saveHomework} className="card p-3 space-y-3">
+        <form className="card p-3 space-y-3">
           <input type="hidden" name="count" value={count} />
           <input type="hidden" name="ids" value={ids.join(",")} />
-          <input type="hidden" name="_back" value={`/homework?class=${activeId}`} />
           <div className="overflow-x-auto">
             <table className="text-sm">
               <thead>
@@ -81,13 +81,13 @@ export default async function HomeworkPage({
                       <td className="sticky right-0 bg-card whitespace-nowrap">
                         <div>{st.name}</div>
                         <div className="flex items-center gap-2 mt-1">
-                          <button
-                            type="submit"
-                            formAction={saveOneHomework.bind(null, st.id)}
+                          <RowSaveButton
+                            action={saveOneHomework.bind(null, st.id)}
+                            toast="تم حفظ درجات الطالب"
                             className="text-xs bg-brand text-white rounded px-2 py-0.5 hover:opacity-90"
                           >
                             حفظ
-                          </button>
+                          </RowSaveButton>
                           {st.phone ? (
                             <a
                               href={`/api/whatsapp?studentId=${st.id}&kind=${encodeURIComponent(
@@ -129,7 +129,13 @@ export default async function HomeworkPage({
             </table>
           </div>
           <div className="flex justify-end">
-            <button className="btn">حفظ الواجبات</button>
+            <RowSaveButton
+              action={saveHomework}
+              toast="تم حفظ الواجبات"
+              className="btn"
+            >
+              حفظ الواجبات
+            </RowSaveButton>
           </div>
         </form>
       </main>

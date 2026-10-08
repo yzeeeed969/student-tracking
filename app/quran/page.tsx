@@ -6,6 +6,7 @@ import { students, quranMarks } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { SURAHS, LEVELS } from "@/lib/surahs";
 import { saveQuran } from "./actions";
+import RowSaveButton from "@/components/RowSaveButton";
 
 export const dynamic = "force-dynamic";
 
@@ -52,9 +53,8 @@ export default async function QuranPage({
         </div>
         <ClassTabs classes={classes} active={activeId} base="/quran" />
 
-        <form action={saveQuran} className="card p-3 space-y-3">
+        <form className="card p-3 space-y-3">
           <input type="hidden" name="ids" value={ids.join(",")} />
-          <input type="hidden" name="_back" value={`/quran?class=${activeId}`} />
           <div className="overflow-x-auto">
             <table className="text-sm">
               <thead>
@@ -124,7 +124,9 @@ export default async function QuranPage({
             </table>
           </div>
           <div className="flex justify-end">
-            <button className="btn">حفظ القرآن</button>
+            <RowSaveButton action={saveQuran} toast="تم حفظ درجات القرآن" className="btn">
+              حفظ القرآن
+            </RowSaveButton>
           </div>
         </form>
       </main>
