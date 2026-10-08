@@ -3,6 +3,7 @@ import ClassTabs from "@/components/ClassTabs";
 import { computeClassGrades, getClasses } from "@/lib/grades";
 import { saveGrades } from "./actions";
 import RowSaveButton from "@/components/RowSaveButton";
+import StudentSearch from "@/components/StudentSearch";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +28,10 @@ export default async function GradesPage({
             {w.homework} + المشاركة {w.participation} = 100
           </div>
         </div>
-        <ClassTabs classes={classes} active={activeId} base="/grades" />
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <ClassTabs classes={classes} active={activeId} base="/grades" />
+          <StudentSearch />
+        </div>
 
         <form className="card p-4 space-y-3">
           <input type="hidden" name="classId" value={activeId} />
@@ -51,7 +55,7 @@ export default async function GradesPage({
               </thead>
               <tbody>
                 {rows.map((r) => (
-                  <tr key={r.id}>
+                  <tr key={r.id} data-name={r.name}>
                     <td>{r.code}</td>
                     <td>{r.name}</td>
                     <td className="text-center text-muted">

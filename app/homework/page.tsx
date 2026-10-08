@@ -7,6 +7,7 @@ import { eq, sql } from "drizzle-orm";
 import { getSettings } from "@/lib/settings";
 import { saveHomework, saveOneHomework } from "./actions";
 import RowSaveButton from "@/components/RowSaveButton";
+import StudentSearch from "@/components/StudentSearch";
 
 export const dynamic = "force-dynamic";
 
@@ -56,7 +57,10 @@ export default async function HomeworkPage({
             احفظ الواجبات قبل إرسال الواتساب ليُحتسب آخر رصد.
           </div>
         </div>
-        <ClassTabs classes={classes} active={activeId} base="/homework" />
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <ClassTabs classes={classes} active={activeId} base="/homework" />
+          <StudentSearch />
+        </div>
 
         <form className="card p-3 space-y-3">
           <input type="hidden" name="count" value={count} />
@@ -77,7 +81,7 @@ export default async function HomeworkPage({
                   let sum = 0;
                   for (const n of nums) sum += markMap.get(`${st.id}_${n}`) ?? 0;
                   return (
-                    <tr key={st.id}>
+                    <tr key={st.id} data-name={st.name}>
                       <td className="sticky right-0 bg-card whitespace-nowrap">
                         <div>{st.name}</div>
                         <div className="flex items-center gap-2 mt-1">

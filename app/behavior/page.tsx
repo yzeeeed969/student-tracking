@@ -6,6 +6,7 @@ import { students, behaviorNotes, contactLogs } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
 import { getSettings } from "@/lib/settings";
 import { addNote, deleteNote } from "./actions";
+import StudentSearch from "@/components/StudentSearch";
 
 export const dynamic = "force-dynamic";
 
@@ -69,7 +70,10 @@ export default async function BehaviorPage({
     <div className="min-h-screen">
       <Nav />
       <main className="p-4 space-y-5">
-        <h1 className="text-xl font-bold">السلوك والملاحظات</h1>
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <h1 className="text-xl font-bold">السلوك والملاحظات</h1>
+          <StudentSearch placeholder="ابحث باسم الطالب في السجل…" />
+        </div>
         <ClassTabs classes={classes} active={activeId} base="/behavior" />
 
         {/* إضافة ملاحظة */}
@@ -116,7 +120,7 @@ export default async function BehaviorPage({
               </thead>
               <tbody>
                 {notes.map((n) => (
-                  <tr key={n.id}>
+                  <tr key={n.id} data-name={n.studentName || ""}>
                     <td className="whitespace-nowrap">{fmt(n.date)}</td>
                     <td>{n.studentName}</td>
                     <td>{n.type}</td>
@@ -175,7 +179,7 @@ export default async function BehaviorPage({
               </thead>
               <tbody>
                 {logs.map((l) => (
-                  <tr key={l.id}>
+                  <tr key={l.id} data-name={l.studentName || ""}>
                     <td className="whitespace-nowrap">{fmt(l.date)}</td>
                     <td>{l.studentName}</td>
                     <td>{l.kind}</td>

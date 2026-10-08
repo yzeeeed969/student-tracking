@@ -7,6 +7,7 @@ import { eq, sql } from "drizzle-orm";
 import { SURAHS, LEVELS } from "@/lib/surahs";
 import { saveQuran } from "./actions";
 import RowSaveButton from "@/components/RowSaveButton";
+import StudentSearch from "@/components/StudentSearch";
 
 export const dynamic = "force-dynamic";
 
@@ -51,7 +52,10 @@ export default async function QuranPage({
             المجموع /20 تلقائيًا.
           </div>
         </div>
-        <ClassTabs classes={classes} active={activeId} base="/quran" />
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <ClassTabs classes={classes} active={activeId} base="/quran" />
+          <StudentSearch />
+        </div>
 
         <form className="card p-3 space-y-3">
           <input type="hidden" name="ids" value={ids.join(",")} />
@@ -79,7 +83,7 @@ export default async function QuranPage({
                   const rec = st.recitation ?? 0;
                   const totalQ = Math.round((hifz + rec) * 100) / 100;
                   return (
-                    <tr key={st.id}>
+                    <tr key={st.id} data-name={st.name}>
                       <td className="sticky right-0 bg-card whitespace-nowrap">
                         {st.name}
                       </td>

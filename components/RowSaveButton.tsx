@@ -8,12 +8,14 @@ export default function RowSaveButton({
   className,
   children,
   title,
+  onDone,
 }: {
   action: (fd: FormData) => Promise<void>;
   toast: string;
   className?: string;
   children: React.ReactNode;
   title?: string;
+  onDone?: () => void;
 }) {
   const [pending, startTransition] = useTransition();
   const ref = useRef<HTMLButtonElement>(null);
@@ -33,6 +35,7 @@ export default function RowSaveButton({
           window.dispatchEvent(
             new CustomEvent("app:toast", { detail: { msg: toast } })
           );
+          onDone?.();
         });
       }}
     >

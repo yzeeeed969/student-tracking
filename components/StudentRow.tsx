@@ -1,0 +1,114 @@
+"use client";
+import { useState } from "react";
+import ToastForm from "./ToastForm";
+import RowSaveButton from "./RowSaveButton";
+
+type S = {
+  id: number;
+  code: string;
+  name: string;
+  guardianName: string;
+  phone: string;
+  classId: number;
+};
+
+export default function StudentRow({
+  s,
+  classes,
+  updateStudent,
+  deleteStudent,
+}: {
+  s: S;
+  classes: { id: number; name: string }[];
+  updateStudent: (fd: FormData) => Promise<void>;
+  deleteStudent: (fd: FormData) => Promise<void>;
+}) {
+  const [editing, setEditing] = useState(false);
+
+  if (editing) {
+    return (
+      <tr data-name={s.name}>
+        <td colSpan={5}>
+          <form className="flex flex-wrap items-center gap-2 py-1">
+            <input type="hidden" name="id" value={s.id} />
+            <input
+              name="name"
+              defaultValue={s.name}
+              placeholder="الاسم"
+              className="w-44"
+            />
+            <input
+              name="guardianName"
+              defaultValue={s.guardianName}
+              placeholder="ولي الأمر"
+              className="w-44"
+            />
+            <input
+              name="phone"
+              defaultValue={s.phone}
+              placeholder="الجوال (05...)"
+              dir="ltr"
+              className="w-36 text-right"
+            />
+            <select name="classId" defaultValue={s.classId} className="w-28">
+              {classes.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            <RowSaveButton
+              action={updateStudent}
+              toast="تم حفظ التعديل"
+              className="btn text-xs px-3 py-1"
+              onDone={() => setEditing(false)}
+            >
+              حفظ
+            </RowSaveButton>
+            <button
+              type="button"
+              onClick={() => setEditing(false)}
+              className="text-muted text-xs px-2"
+            >
+              إلغاء
+            </button>
+          </form>
+        </td>
+      </tr>
+    );
+  }
+
+  return (
+    <tr data-name={s.name}>
+      <td>{s.code}</td>
+      <td>{s.name}</td>
+      <td>{s.guardianName}</td>
+      <td dir="ltr" className="text-right">
+        {s.phone}
+      </td>
+      <td>
+        <div className="flex gap-3 items-center">
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            className="text-brand text-sm hover:underline"
+          >
+            تعديل
+          </button>
+          <ToastForm action={deleteStudent} toast="تم حذف الطالب">
+            <input type="hidden" name="id" value={s.id} />
+            <button
+              className="text-red-500 text-sm hover:underline"
+              onClick={(e) => {
+                if (!confirm(`تأكيد حذف الطالب: ${s.name}؟`))
+                  e.preventDefault();
+              }}
+            >
+              حذف
+            </button>
+          </ToastForm>
+        </div>
+      </td>
+    </tr>
+  );
+}

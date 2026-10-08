@@ -2,8 +2,11 @@ import Nav from "@/components/Nav";
 import { db } from "@/db";
 import { students, classRooms } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { addStudent, addClass, deleteStudent } from "./actions";
+import { addStudent, addClass, updateStudent, deleteStudent } from "./actions";
 import Link from "next/link";
+import ToastForm from "@/components/ToastForm";
+import StudentRow from "@/components/StudentRow";
+import StudentSearch from "@/components/StudentSearch";
 
 export const dynamic = "force-dynamic";
 
@@ -35,9 +38,12 @@ export default async function StudentsPage({
       <main className="p-4 space-y-5">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <h1 className="text-xl font-bold">الطلاب والفصول</h1>
-          <Link href="/import" className="btn-ghost btn text-sm">
-            استيراد من ملف
-          </Link>
+          <div className="flex items-center gap-2 flex-wrap">
+            <StudentSearch />
+            <Link href="/import" className="btn-ghost btn text-sm">
+              استيراد من ملف
+            </Link>
+          </div>
         </div>
         {imported && (
           <div className="card p-3 text-brand bg-brandsoft text-sm">
@@ -47,7 +53,11 @@ export default async function StudentsPage({
 
         {/* إضافة فصل + طالب */}
         <div className="grid md:grid-cols-2 gap-3">
-          <form action={addClass} className="card p-4 space-y-3">
+          <ToastForm
+            action={addClass}
+            toast="تمت إضافة الفصل"
+            className="card p-4 space-y-3"
+          >
             <h2 className="font-bold">إضافة فصل جديد</h2>
             <div className="flex gap-2">
               <input
@@ -58,9 +68,13 @@ export default async function StudentsPage({
               />
               <button className="btn">إضافة</button>
             </div>
-          </form>
+          </ToastForm>
 
-          <form action={addStudent} className="card p-4 space-y-3">
+          <ToastForm
+            action={addStudent}
+            toast="تمت إضافة الطالب"
+            className="card p-4 space-y-3"
+          >
             <h2 className="font-bold">إضافة طالب جديد</h2>
             <div className="grid grid-cols-2 gap-2">
               <input name="name" placeholder="اسم الطالب" required />
@@ -75,7 +89,7 @@ export default async function StudentsPage({
               <input name="phone" placeholder="جوال ولي الأمر (05...)" />
             </div>
             <button className="btn">إضافة الطالب</button>
-          </form>
+          </ToastForm>
         </div>
 
         {/* جداول الفصول */}
@@ -93,27 +107,18 @@ export default async function StudentsPage({
                     <th>اسم الطالب</th>
                     <th>ولي الأمر</th>
                     <th>الجوال</th>
-                    <th></th>
+                    <th>إجراءات</th>
                   </tr>
                 </thead>
                 <tbody>
                   {rows.map((s) => (
-                    <tr key={s.id}>
-                      <td>{s.code}</td>
-                      <td>{s.name}</td>
-                      <td>{s.guardianName}</td>
-                      <td dir="ltr" className="text-right">
-                        {s.phone}
-                      </td>
-                      <td>
-                        <form action={deleteStudent}>
-                          <input type="hidden" name="id" value={s.id} />
-                          <button className="text-red-500 text-sm hover:underline">
-                            حذف
-                          </button>
-                        </form>
-                      </td>
-                    </tr>
+                    <StudentRow
+                      key={s.id}
+                      s={s}
+                      classes={classes}
+                      updateStudent={updateStudent}
+                      deleteStudent={deleteStudent}
+                    />
                   ))}
                 </tbody>
               </table>

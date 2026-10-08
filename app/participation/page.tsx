@@ -11,6 +11,7 @@ import {
   deductParticipation,
 } from "./actions";
 import ToastForm from "@/components/ToastForm";
+import StudentSearch from "@/components/StudentSearch";
 
 export const dynamic = "force-dynamic";
 
@@ -95,7 +96,10 @@ export default async function ParticipationPage({
             <button className="btn-ghost btn">عرض</button>
           </form>
         </div>
-        <ClassTabs classes={classes} active={activeId} base="/participation" />
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <ClassTabs classes={classes} active={activeId} base="/participation" />
+          <StudentSearch />
+        </div>
         <div className="text-muted text-sm">
           اضغط +1 أو +2 لمن شارك في اليوم المحدّد. الدرجة النهائية /{w.participation}{" "}
           بالموازنة النسبية إلى الأعلى في الفصل.
@@ -121,7 +125,7 @@ export default async function ParticipationPage({
                     ? Math.round((tot / maxPart) * w.participation * 100) / 100
                     : 0;
                 return (
-                  <tr key={st.id}>
+                  <tr key={st.id} data-name={st.name}>
                     <td>{st.code}</td>
                     <td>{st.name}</td>
                     <td className="text-center font-bold">

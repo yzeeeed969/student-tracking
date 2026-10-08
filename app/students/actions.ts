@@ -3,7 +3,6 @@ import { db } from "@/db";
 import { students, classRooms } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { backOk } from "@/lib/flash";
 
 function normalizePhone(raw: string): string {
   let p = (raw || "").replace(/[^\d]/g, "");
@@ -46,7 +45,6 @@ export async function addStudent(formData: FormData) {
     .insert(students)
     .values({ code, name, classId, guardianName, phone });
   revalidatePath("/students");
-  backOk(formData, "/students", `تمت إضافة الطالب: ${name}`);
 }
 
 export async function updateStudent(formData: FormData) {
@@ -62,7 +60,6 @@ export async function updateStudent(formData: FormData) {
     .where(eq(students.id, id));
   revalidatePath("/students");
   revalidatePath("/grades");
-  backOk(formData, "/students", "تم حفظ تعديل بيانات الطالب");
 }
 
 export async function deleteStudent(formData: FormData) {
@@ -70,7 +67,6 @@ export async function deleteStudent(formData: FormData) {
   if (!id) return;
   await db.delete(students).where(eq(students.id, id));
   revalidatePath("/students");
-  backOk(formData, "/students", "تم حذف الطالب");
 }
 
 export async function addClass(formData: FormData) {
@@ -88,5 +84,4 @@ export async function addClass(formData: FormData) {
     .insert(classRooms)
     .values({ name, order: countRows[0]?.c ?? 0 });
   revalidatePath("/students");
-  backOk(formData, "/students", `تمت إضافة الفصل: ${name}`);
 }
