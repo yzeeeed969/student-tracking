@@ -15,6 +15,7 @@ import ToastForm from "@/components/ToastForm";
 import StudentSearch from "@/components/StudentSearch";
 import SelectAllCheckbox from "@/components/SelectAllCheckbox";
 import ParticipationBulk from "@/components/ParticipationBulk";
+import ReadingBadge from "@/components/ReadingBadge";
 
 export const dynamic = "force-dynamic";
 
@@ -138,7 +139,9 @@ export default async function ParticipationPage({
                       <input type="checkbox" className="rowchk" value={st.id} />
                     </td>
                     <td>{st.code}</td>
-                    <td>{st.name}</td>
+                    <td>
+                      {st.name} <ReadingBadge level={st.readingLevel} />
+                    </td>
                     <td className="text-center font-bold">
                       {todayMap.get(st.id) ?? 0}
                     </td>

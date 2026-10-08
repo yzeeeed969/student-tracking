@@ -92,3 +92,11 @@ th {
   font-weight: 500;
   white-space: nowrap;
 }
+
+/* شارة مستوى القراءة — مخفية افتراضيًا، تظهر عند تفعيل الزر */
+.reading-badge {
+  display: none;
+}
+html.show-reading .reading-badge {
+  display: inline-flex;
+}

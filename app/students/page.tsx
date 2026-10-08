@@ -9,6 +9,7 @@ import {
   deleteStudent,
   bulkMoveStudents,
   bulkDeleteStudents,
+  bulkSetReading,
 } from "./actions";
 import Link from "next/link";
 import ToastForm from "@/components/ToastForm";
@@ -113,6 +114,7 @@ export default async function StudentsPage({
           classes={classes}
           bulkMove={bulkMoveStudents}
           bulkDelete={bulkDeleteStudents}
+          bulkSetReading={bulkSetReading}
         />
 
         {/* جداول الفصول */}

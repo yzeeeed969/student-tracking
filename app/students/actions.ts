@@ -76,13 +76,26 @@ export async function updateStudent(formData: FormData) {
   const classId = Number(formData.get("classId"));
   const guardianName = String(formData.get("guardianName") || "").trim();
   const phone = normalizePhone(String(formData.get("phone") || ""));
+  const readingLevel = Number(formData.get("readingLevel") || 0);
   if (!id) return;
   await db
     .update(students)
-    .set({ name, classId, guardianName, phone })
+    .set({ name, classId, guardianName, phone, readingLevel })
     .where(eq(students.id, id));
   revalidatePath("/students");
   revalidatePath("/grades");
+}
+
+// تعيين مستوى القراءة لمجموعة طلاب محدّدين
+export async function bulkSetReading(fd: FormData) {
+  const ids = parseIds(fd);
+  const readingLevel = Number(fd.get("readingLevel") || 0);
+  if (!ids.length) return;
+  await db
+    .update(students)
+    .set({ readingLevel })
+    .where(inArray(students.id, ids));
+  revalidatePath("/students");
 }
 
 export async function deleteStudent(formData: FormData) {

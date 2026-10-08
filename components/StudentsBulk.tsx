@@ -1,6 +1,7 @@
 "use client";
 import { useTransition } from "react";
 import { useSelectedIds, fireToast } from "./useSelection";
+import { READING_LEVELS } from "./ReadingBadge";
 
 const BAR =
   "card p-3 flex items-center gap-2 flex-wrap sticky top-2 z-30 border-2 border-brand shadow-lg";
@@ -9,10 +10,12 @@ export default function StudentsBulk({
   classes,
   bulkMove,
   bulkDelete,
+  bulkSetReading,
 }: {
   classes: { id: number; name: string }[];
   bulkMove: (fd: FormData) => Promise<void>;
   bulkDelete: (fd: FormData) => Promise<void>;
+  bulkSetReading: (fd: FormData) => Promise<void>;
 }) {
   const { ids, clear } = useSelectedIds();
   const [pending, start] = useTransition();
@@ -61,6 +64,33 @@ export default function StudentsBulk({
       >
         نقل إلى الفصل
       </button>
+      <span className="text-muted text-xs">|</span>
+      <select id="bulkReading" className="text-sm">
+        {READING_LEVELS.filter((l) => l.v > 0).map((l) => (
+          <option key={l.v} value={l.v}>
+            {l.label}
+          </option>
+        ))}
+      </select>
+      <button
+        type="button"
+        disabled={pending}
+        onClick={() =>
+          run(
+            bulkSetReading,
+            {
+              readingLevel: (
+                document.getElementById("bulkReading") as HTMLSelectElement
+              ).value,
+            },
+            "تم تعيين مستوى القراءة"
+          )
+        }
+        className="btn text-xs"
+      >
+        تعيين مستوى القراءة
+      </button>
+      <span className="text-muted text-xs">|</span>
       <button
         type="button"
         disabled={pending}

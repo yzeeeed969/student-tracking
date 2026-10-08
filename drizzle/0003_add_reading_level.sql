@@ -1,0 +1,1 @@
+ALTER TABLE "students" ADD COLUMN "reading_level" integer DEFAULT 0 NOT NULL;

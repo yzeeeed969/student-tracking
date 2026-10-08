@@ -3,6 +3,7 @@ import { useState } from "react";
 import ToastForm from "./ToastForm";
 import RowSaveButton from "./RowSaveButton";
 import SendMenu from "./SendMenu";
+import ReadingBadge, { READING_LEVELS } from "./ReadingBadge";
 
 type S = {
   id: number;
@@ -11,6 +12,7 @@ type S = {
   guardianName: string;
   phone: string;
   classId: number;
+  readingLevel: number;
 };
 
 export default function StudentRow({
@@ -64,6 +66,13 @@ export default function StudentRow({
                 </option>
               ))}
             </select>
+            <select name="readingLevel" defaultValue={s.readingLevel} className="w-32" title="مستوى القراءة">
+              {READING_LEVELS.map((l) => (
+                <option key={l.v} value={l.v}>
+                  {l.label}
+                </option>
+              ))}
+            </select>
             <RowSaveButton
               action={updateStudent}
               toast="تم حفظ التعديل"
@@ -91,7 +100,9 @@ export default function StudentRow({
         <input type="checkbox" className="rowchk" value={s.id} />
       </td>
       <td>{s.code}</td>
-      <td>{s.name}</td>
+      <td>
+        {s.name} <ReadingBadge level={s.readingLevel} />
+      </td>
       <td>{s.guardianName}</td>
       <td dir="ltr" className="text-right">
         {s.phone}

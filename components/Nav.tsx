@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ThemeToggle from "./ThemeToggle";
+import ReadingToggle from "./ReadingToggle";
 import { VERSION } from "@/lib/version";
 
 const links = [
@@ -36,6 +37,7 @@ export default function Nav() {
         ))}
       </nav>
       <div className="flex items-center gap-2">
+        <ReadingToggle />
         <ThemeToggle />
         <Link href="/showcase" className="btn-ghost btn text-sm" target="_blank">
           صفحة العرض

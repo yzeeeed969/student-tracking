@@ -10,6 +10,7 @@ import RowSaveButton from "@/components/RowSaveButton";
 import StudentSearch from "@/components/StudentSearch";
 import SelectAllCheckbox from "@/components/SelectAllCheckbox";
 import HomeworkBulk from "@/components/HomeworkBulk";
+import ReadingBadge from "@/components/ReadingBadge";
 
 export const dynamic = "force-dynamic";
 
@@ -95,7 +96,7 @@ export default async function HomeworkPage({
                             className="rowchk ml-1"
                             value={st.id}
                           />
-                          {st.name}
+                          {st.name} <ReadingBadge level={st.readingLevel} />
                         </div>
                         <div className="flex items-center gap-2 mt-1">
                           <RowSaveButton

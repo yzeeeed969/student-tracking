@@ -11,6 +11,7 @@ import { eq, desc, sql } from "drizzle-orm";
 import { computeClassGrades } from "@/lib/grades";
 import { getSettings } from "@/lib/settings";
 import Link from "next/link";
+import ReadingBadge from "@/components/ReadingBadge";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +31,7 @@ export default async function ReportsPage({
       name: students.name,
       classId: students.classId,
       className: classRooms.name,
+      readingLevel: students.readingLevel,
     })
     .from(students)
     .leftJoin(classRooms, eq(students.classId, classRooms.id))
@@ -93,7 +95,7 @@ export default async function ReportsPage({
             <div className="grid md:grid-cols-2 gap-3">
               <div className="card p-5 space-y-2">
                 <div className="text-lg font-bold text-brand">
-                  {current.name}
+                  {current.name} <ReadingBadge level={current.readingLevel} />
                 </div>
                 <div className="text-muted text-sm">
                   الفصل: {current.className}

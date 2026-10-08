@@ -10,6 +10,7 @@ import RowSaveButton from "@/components/RowSaveButton";
 import StudentSearch from "@/components/StudentSearch";
 import SelectAllCheckbox from "@/components/SelectAllCheckbox";
 import QuranBulk from "@/components/QuranBulk";
+import ReadingBadge from "@/components/ReadingBadge";
 
 export const dynamic = "force-dynamic";
 
@@ -96,7 +97,7 @@ export default async function QuranPage({
                           className="rowchk ml-1"
                           value={st.id}
                         />
-                        {st.name}
+                        {st.name} <ReadingBadge level={st.readingLevel} />
                       </td>
                       {SURAHS.map((s) => {
                         const v = markMap.get(`${st.id}_${s.num}`);
