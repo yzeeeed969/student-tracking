@@ -1,4 +1,3 @@
-import Nav from "@/components/Nav";
 import { getSettings, weights } from "@/lib/settings";
 import { saveSettings } from "./actions";
 import TemplatesEditor from "@/components/TemplatesEditor";
@@ -19,7 +18,6 @@ export default async function SettingsPage() {
 
   return (
     <div className="min-h-screen">
-      <Nav />
       <main className="p-4 space-y-4">
         <h1 className="text-xl font-bold">الإعدادات</h1>
         <form action={saveSettings} className="space-y-4">

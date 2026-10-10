@@ -1,4 +1,3 @@
-import Nav from "@/components/Nav";
 import ClassTabs from "@/components/ClassTabs";
 import { getClasses } from "@/lib/grades";
 import { db } from "@/db";
@@ -7,6 +6,7 @@ import { desc, eq } from "drizzle-orm";
 import { getSettings } from "@/lib/settings";
 import { addNote, deleteNote } from "./actions";
 import StudentSearch from "@/components/StudentSearch";
+import { orderByName } from "@/lib/order";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +29,7 @@ export default async function BehaviorPage({
     .select({ id: students.id, name: students.name })
     .from(students)
     .where(eq(students.classId, activeId))
-    .orderBy(students.code);
+    .orderBy(orderByName);
 
   const notes = await db
     .select({
@@ -60,6 +60,10 @@ export default async function BehaviorPage({
     .orderBy(desc(contactLogs.date))
     .limit(50);
 
+  // نعرض أحدث 50 لكن بترتيب تصاعدي (الأقدم أعلى، الأحدث أسفل)
+  notes.reverse();
+  logs.reverse();
+
   const today = new Date();
   const dateStr = `${today.getFullYear()}-${String(
     today.getMonth() + 1
@@ -68,7 +72,6 @@ export default async function BehaviorPage({
 
   return (
     <div className="min-h-screen">
-      <Nav />
       <main className="p-4 space-y-5">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <h1 className="text-xl font-bold">السلوك والملاحظات</h1>

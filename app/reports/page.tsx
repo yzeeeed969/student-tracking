@@ -1,4 +1,3 @@
-import Nav from "@/components/Nav";
 import { db } from "@/db";
 import {
   students,
@@ -12,6 +11,8 @@ import { computeClassGrades } from "@/lib/grades";
 import { getSettings } from "@/lib/settings";
 import Link from "next/link";
 import ReadingBadge from "@/components/ReadingBadge";
+import ReportStudentPicker from "@/components/ReportStudentPicker";
+import { orderByName } from "@/lib/order";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +36,7 @@ export default async function ReportsPage({
     })
     .from(students)
     .leftJoin(classRooms, eq(students.classId, classRooms.id))
-    .orderBy(students.code);
+    .orderBy(orderByName);
 
   const sid = Number(sp.student) || all[0]?.id;
   const current = all.find((a) => a.id === sid);
@@ -74,20 +75,15 @@ export default async function ReportsPage({
 
   return (
     <div className="min-h-screen">
-      <Nav />
       <main className="p-4 space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <h1 className="text-xl font-bold">تقرير الطالب</h1>
-          <form className="flex items-center gap-2 text-sm">
-            <select name="student" defaultValue={sid} className="min-w-64">
-              {all.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.name} ({a.className})
-                </option>
-              ))}
-            </select>
-            <button className="btn-ghost btn">عرض</button>
-          </form>
+          <div className="flex items-center gap-2 text-sm">
+            <ReportStudentPicker students={all} current={sid} />
+            <span className="text-muted text-xs hidden sm:inline">
+              (تنقّل بالأسهم ↑ ↓)
+            </span>
+          </div>
         </div>
 
         {card && current && (

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import Toaster from "@/components/Toaster";
+import AppFrame from "@/components/AppFrame";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -24,7 +25,7 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <Toaster />
         </Suspense>
-        {children}
+        <AppFrame>{children}</AppFrame>
       </body>
     </html>
   );

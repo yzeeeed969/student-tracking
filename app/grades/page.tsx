@@ -1,4 +1,3 @@
-import Nav from "@/components/Nav";
 import ClassTabs from "@/components/ClassTabs";
 import { computeClassGrades, getClasses } from "@/lib/grades";
 import { saveGrades } from "./actions";
@@ -19,7 +18,6 @@ export default async function GradesPage({
 
   return (
     <div className="min-h-screen">
-      <Nav />
       <main className="p-4 space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <h1 className="text-xl font-bold">الدرجات</h1>

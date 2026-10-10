@@ -2,7 +2,6 @@
 import { useState } from "react";
 import ToastForm from "./ToastForm";
 import RowSaveButton from "./RowSaveButton";
-import SendMenu from "./SendMenu";
 import ReadingBadge, { READING_LEVELS } from "./ReadingBadge";
 
 type S = {
@@ -29,10 +28,6 @@ export default function StudentRow({
   templates?: { label: string }[];
 }) {
   const [editing, setEditing] = useState(false);
-  const sendOptions = [
-    { label: "تعزيز", kind: "عام" },
-    ...templates.map((t, i) => ({ label: t.label, tpl: i })),
-  ];
 
   if (editing) {
     return (
@@ -116,7 +111,6 @@ export default function StudentRow({
           >
             تعديل
           </button>
-          {s.phone && <SendMenu studentId={s.id} options={sendOptions} />}
           <ToastForm action={deleteStudent} toast="تم حذف الطالب">
             <input type="hidden" name="id" value={s.id} />
             <button

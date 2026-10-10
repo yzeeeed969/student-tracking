@@ -1,4 +1,3 @@
-import Nav from "@/components/Nav";
 import { db } from "@/db";
 import { students, classRooms } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -18,6 +17,7 @@ import StudentSearch from "@/components/StudentSearch";
 import SelectAllCheckbox from "@/components/SelectAllCheckbox";
 import StudentsBulk from "@/components/StudentsBulk";
 import { getSettings } from "@/lib/settings";
+import { orderByName } from "@/lib/order";
 
 export const dynamic = "force-dynamic";
 
@@ -46,13 +46,12 @@ export default async function StudentsPage({
         .select()
         .from(students)
         .where(eq(students.classId, c.id))
-        .orderBy(students.code),
+        .orderBy(orderByName),
     }))
   );
 
   return (
     <div className="min-h-screen">
-      <Nav />
       <main className="p-4 space-y-5">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <h1 className="text-xl font-bold">الطلاب والفصول</h1>

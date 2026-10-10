@@ -1,4 +1,3 @@
-import Nav from "@/components/Nav";
 import { db } from "@/db";
 import { students, classRooms, behaviorNotes, contactLogs } from "@/db/schema";
 import { sql, eq } from "drizzle-orm";
@@ -47,7 +46,6 @@ export default async function Dashboard() {
 
   return (
     <div className="min-h-screen">
-      <Nav />
       <main className="p-4 space-y-5">
         <h1 className="text-xl font-bold">لوحة المتابعة</h1>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

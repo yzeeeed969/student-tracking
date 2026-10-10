@@ -1,4 +1,3 @@
-import Nav from "@/components/Nav";
 import { db } from "@/db";
 import { videoFolders, videos } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -27,7 +26,6 @@ export default async function YoutubePage() {
 
   return (
     <div className="min-h-screen">
-      <Nav />
       <main className="p-4 space-y-5">
         <h1 className="text-xl font-bold">مكتبة المقاطع (يوتيوب)</h1>
 

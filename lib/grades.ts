@@ -8,6 +8,7 @@ import {
 } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { getSettings, weights } from "./settings";
+import { orderByName } from "@/lib/order";
 
 export type StudentGrade = {
   id: number;
@@ -37,7 +38,7 @@ export async function computeClassGrades(
     .select()
     .from(students)
     .where(eq(students.classId, classId))
-    .orderBy(students.code);
+    .orderBy(orderByName);
 
   const ids = studentRows.map((r) => r.id);
   if (ids.length === 0) return { rows: [], w };

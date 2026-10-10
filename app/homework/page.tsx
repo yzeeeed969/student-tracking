@@ -1,4 +1,3 @@
-import Nav from "@/components/Nav";
 import ClassTabs from "@/components/ClassTabs";
 import { getClasses } from "@/lib/grades";
 import { db } from "@/db";
@@ -11,6 +10,7 @@ import StudentSearch from "@/components/StudentSearch";
 import SelectAllCheckbox from "@/components/SelectAllCheckbox";
 import HomeworkBulk from "@/components/HomeworkBulk";
 import ReadingBadge from "@/components/ReadingBadge";
+import { orderByName } from "@/lib/order";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +29,7 @@ export default async function HomeworkPage({
     .select()
     .from(students)
     .where(eq(students.classId, activeId))
-    .orderBy(students.code);
+    .orderBy(orderByName);
   const ids = rows.map((r) => r.id);
 
   const marks = ids.length
@@ -51,7 +51,6 @@ export default async function HomeworkPage({
 
   return (
     <div className="min-h-screen">
-      <Nav />
       <main className="p-4 space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <h1 className="text-xl font-bold">الواجبات</h1>

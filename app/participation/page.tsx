@@ -1,4 +1,3 @@
-import Nav from "@/components/Nav";
 import ClassTabs from "@/components/ClassTabs";
 import { getClasses } from "@/lib/grades";
 import { db } from "@/db";
@@ -16,6 +15,7 @@ import StudentSearch from "@/components/StudentSearch";
 import SelectAllCheckbox from "@/components/SelectAllCheckbox";
 import ParticipationBulk from "@/components/ParticipationBulk";
 import ReadingBadge from "@/components/ReadingBadge";
+import { orderByName } from "@/lib/order";
 
 export const dynamic = "force-dynamic";
 
@@ -40,7 +40,7 @@ export default async function ParticipationPage({
     .select()
     .from(students)
     .where(eq(students.classId, activeId))
-    .orderBy(students.code);
+    .orderBy(orderByName);
   const ids = rows.map((r) => r.id);
 
   // مجموع المشاركة الكلي لكل طالب
@@ -89,7 +89,6 @@ export default async function ParticipationPage({
 
   return (
     <div className="min-h-screen">
-      <Nav />
       <main className="p-4 space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <h1 className="text-xl font-bold">المشاركة</h1>

@@ -1,4 +1,3 @@
-import Nav from "@/components/Nav";
 import { db } from "@/db";
 import { books } from "@/db/schema";
 import { desc } from "drizzle-orm";
@@ -27,7 +26,6 @@ export default async function BooksPage({
 
   return (
     <div className="min-h-screen">
-      <Nav />
       <main className="p-4 space-y-5">
         <h1 className="text-xl font-bold">الكتب</h1>
 

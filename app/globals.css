@@ -100,3 +100,40 @@ th {
 html.show-reading .reading-badge {
   display: inline-flex;
 }
+
+/* القائمة الجانبية */
+:root { --sbw: 240px; }
+.app-sidebar {
+  position: fixed;
+  inset-block: 0;              /* top & bottom = 0 */
+  inset-inline-start: 0;       /* يمين في RTL */
+  width: var(--sbw);
+  background: var(--card);
+  border-inline-end: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 40;
+  transition: transform .2s ease;
+}
+.sidebar-collapsed .app-sidebar { transform: translateX(100%); }
+
+.sidebar-reveal {
+  position: fixed;
+  top: .75rem;
+  inset-inline-start: .6rem;
+  z-index: 41;
+  display: none;
+  background: var(--brand);
+  color: #fff;
+  border-radius: .6rem;
+  padding: .35rem .7rem;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+}
+.sidebar-collapsed .sidebar-reveal { display: block; }
+
+/* إزاحة المحتوى على الشاشات المتوسطة فأكبر */
+@media (min-width: 768px) {
+  .has-sidebar main { margin-inline-start: var(--sbw); transition: margin .2s ease; }
+  .sidebar-collapsed.has-sidebar main { margin-inline-start: 0; }
+}
