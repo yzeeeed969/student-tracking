@@ -8,13 +8,9 @@ import { VERSION } from "@/lib/version";
 const links = [
   { href: "/", label: "الرئيسية" },
   { href: "/students", label: "الطلاب" },
-  { href: "/grades", label: "الدرجات" },
-  { href: "/homework", label: "الواجبات" },
-  { href: "/quran", label: "القرآن" },
-  { href: "/participation", label: "المشاركة" },
+  { href: "/record", label: "الرصد" },
   { href: "/behavior", label: "السلوك والملاحظات" },
-  { href: "/youtube", label: "المقاطع" },
-  { href: "/books", label: "الكتب" },
+  { href: "/library", label: "المكتبة" },
   { href: "/reports", label: "التقارير" },
   { href: "/settings", label: "الإعدادات" },
 ];

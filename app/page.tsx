@@ -60,10 +60,10 @@ export default async function Dashboard() {
         <div className="card p-5">
           <h2 className="font-bold mb-3">روابط سريعة</h2>
           <div className="flex gap-2 flex-wrap">
-            <Link href="/grades" className="btn">
+            <Link href="/record?view=grades" className="btn">
               إدخال الدرجات
             </Link>
-            <Link href="/homework" className="btn btn-ghost">
+            <Link href="/record?view=homework" className="btn btn-ghost">
               الواجبات
             </Link>
             <Link href="/behavior" className="btn btn-ghost">

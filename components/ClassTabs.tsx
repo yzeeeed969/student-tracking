@@ -14,7 +14,7 @@ export default function ClassTabs({
       {classes.map((c) => (
         <Link
           key={c.id}
-          href={`${base}?class=${c.id}`}
+          href={`${base}${base.includes("?") ? "&" : "?"}class=${c.id}`}
           className={`px-4 py-2 rounded-lg text-sm font-medium ${
             c.id === active
               ? "bg-brand text-white"

@@ -14,7 +14,7 @@ export async function POST(req: Request) {
   if (!file)
     return new NextResponse(null, {
       status: 303,
-      headers: { Location: "/books?e=nofile" },
+      headers: { Location: "/library?view=books&e=nofile" },
     });
 
   const buf = Buffer.from(await file.arrayBuffer());
@@ -27,6 +27,10 @@ export async function POST(req: Request) {
 
   return new NextResponse(null, {
     status: 303,
-    headers: { Location: `/books?ok=${encodeURIComponent("تمت إضافة الكتاب")}` },
+    headers: {
+      Location: `/library?view=books&ok=${encodeURIComponent(
+        "تمت إضافة الكتاب"
+      )}`,
+    },
   });
 }
