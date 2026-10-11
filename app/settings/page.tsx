@@ -1,4 +1,4 @@
-import { getSettings, weights } from "@/lib/settings";
+import { getSettings, weights, parentView } from "@/lib/settings";
 import { saveSettings } from "./actions";
 import TemplatesEditor from "@/components/TemplatesEditor";
 
@@ -8,6 +8,7 @@ export default async function SettingsPage() {
   const s = await getSettings();
   const w = weights(s);
   const types: string[] = JSON.parse(s.behavior_types || "[]");
+  const pv = parentView(s);
   let customTemplates: { label: string; body: string }[] = [];
   try {
     customTemplates = JSON.parse(s.custom_templates || "[]");
@@ -66,6 +67,42 @@ export default async function SettingsPage() {
               value={s.homework_count ?? "18"}
               type="number"
             />
+          </div>
+
+          <div className="card p-4 space-y-3">
+            <h2 className="font-bold">نافذة ولي الأمر (صفحة العرض)</h2>
+            <p className="text-muted text-sm">
+              تحكّم في البيانات التي تظهر لولي الأمر عند إدخاله رقم جواله. (رقم
+              الجوال لا يظهر أبدًا.)
+            </p>
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-2">
+              <Check name="parent_show_quran" label="درجة القرآن" checked={pv.quran} />
+              <Check
+                name="parent_show_oral"
+                label="الشفهي والتحريري"
+                checked={pv.oral}
+              />
+              <Check
+                name="parent_show_homework"
+                label="الواجبات"
+                checked={pv.homework}
+              />
+              <Check
+                name="parent_show_participation"
+                label="المشاركة"
+                checked={pv.participation}
+              />
+              <Check
+                name="parent_show_total"
+                label="المجموع (100)"
+                checked={pv.total}
+              />
+              <Check
+                name="parent_show_notes"
+                label="الملاحظات والسلوك"
+                checked={pv.notes}
+              />
+            </div>
           </div>
 
           <div className="card p-4 space-y-3">
@@ -129,6 +166,29 @@ function Field({
     <label className="block space-y-1">
       <span className="text-sm text-muted">{label}</span>
       <input name={name} type={type} defaultValue={value ?? ""} className="w-full" />
+    </label>
+  );
+}
+
+function Check({
+  name,
+  label,
+  checked,
+}: {
+  name: string;
+  label: string;
+  checked: boolean;
+}) {
+  return (
+    <label className="flex items-center gap-2 cursor-pointer card p-3">
+      <input
+        type="checkbox"
+        name={name}
+        value="1"
+        defaultChecked={checked}
+        className="w-5 h-5"
+      />
+      <span className="text-sm">{label}</span>
     </label>
   );
 }

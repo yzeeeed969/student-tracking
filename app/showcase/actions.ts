@@ -4,7 +4,7 @@ import { db } from "@/db";
 import { students, classRooms, homeworkMarks, behaviorNotes } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { computeClassGrades } from "@/lib/grades";
-import { getSettings } from "@/lib/settings";
+import { getSettings, parentView } from "@/lib/settings";
 
 export type ParentNote = {
   id: number;
@@ -28,10 +28,20 @@ export type ParentReport = {
   w: { quran: number; oralWritten: number; homework: number; participation: number };
 };
 
+export type ParentShow = {
+  quran: boolean;
+  oral: boolean;
+  homework: boolean;
+  participation: boolean;
+  total: boolean;
+  notes: boolean;
+};
+
 export type LookupState = {
   ok: boolean;
   message?: string;
   reports?: ParentReport[];
+  show?: ParentShow;
 };
 
 // يُبقي آخر 9 أرقام فقط (يتجاهل 966 أو الصفر الأول والمسافات)
@@ -77,6 +87,7 @@ export async function lookupParent(
 
   const s = await getSettings();
   const homeworkCount = Number(s.homework_count ?? 18);
+  const show = parentView(s);
 
   // نحسب درجات الفصل مرة واحدة لكل فصل
   const gradeCache = new Map<
@@ -102,17 +113,19 @@ export async function lookupParent(
     for (let i = 1; i <= homeworkCount; i++)
       if (!recorded.has(i)) missing.push(i);
 
-    const notesRaw = await db
-      .select({
-        id: behaviorNotes.id,
-        date: behaviorNotes.date,
-        type: behaviorNotes.type,
-        description: behaviorNotes.description,
-      })
-      .from(behaviorNotes)
-      .where(eq(behaviorNotes.studentId, m.id))
-      .orderBy(desc(behaviorNotes.date))
-      .limit(50);
+    const notesRaw = show.notes
+      ? await db
+          .select({
+            id: behaviorNotes.id,
+            date: behaviorNotes.date,
+            type: behaviorNotes.type,
+            description: behaviorNotes.description,
+          })
+          .from(behaviorNotes)
+          .where(eq(behaviorNotes.studentId, m.id))
+          .orderBy(desc(behaviorNotes.date))
+          .limit(50)
+      : [];
 
     reports.push({
       name: m.name,
@@ -135,5 +148,5 @@ export async function lookupParent(
     });
   }
 
-  return { ok: true, reports };
+  return { ok: true, reports, show };
 }

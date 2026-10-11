@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { settings } from "@/db/schema";
 import { revalidatePath } from "next/cache";
 import { backOk } from "@/lib/flash";
+import { PARENT_VIEW_KEYS } from "@/lib/settings";
 
 async function setKey(key: string, value: string) {
   await db
@@ -36,8 +37,15 @@ export async function saveSettings(formData: FormData) {
     .map((x) => x.trim())
     .filter(Boolean);
   await setKey("behavior_types", JSON.stringify(behavior));
+
+  // مفاتيح الظهور في نافذة ولي الأمر (مربّع اختيار: يرسل "1" عند التفعيل، ولا شيء عند الإلغاء)
+  for (const k of PARENT_VIEW_KEYS) {
+    await setKey(k, formData.get(k) ? "1" : "0");
+  }
+
   revalidatePath("/settings");
   revalidatePath("/behavior");
   revalidatePath("/grades");
+  revalidatePath("/showcase");
   backOk(formData, "/settings", "تم حفظ الإعدادات");
 }
