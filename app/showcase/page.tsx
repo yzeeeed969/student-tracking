@@ -10,6 +10,7 @@ import {
 } from "@/db/schema";
 import { eq, desc, sql } from "drizzle-orm";
 import ThemeToggle from "@/components/ThemeToggle";
+import ParentLookup from "@/components/ParentLookup";
 
 export const dynamic = "force-dynamic";
 
@@ -70,6 +71,9 @@ export default async function Showcase() {
         <ThemeToggle />
       </header>
       <main className="p-4 space-y-5">
+        {/* نافذة ولي الأمر */}
+        <ParentLookup />
+
         <div className="card p-6 text-center">
           <div className="text-muted">نظام متابعة طلاب الصف الثالث الابتدائي</div>
           <div className="text-4xl font-bold text-brand mt-2">{totalStudents}</div>
