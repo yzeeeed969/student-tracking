@@ -1,7 +1,5 @@
 import ClassTabs from "@/components/ClassTabs";
 import { computeClassGrades } from "@/lib/grades";
-import { saveGrades } from "@/app/grades/actions";
-import RowSaveButton from "@/components/RowSaveButton";
 import StudentSearch from "@/components/StudentSearch";
 
 export default async function GradesSection({
@@ -18,7 +16,8 @@ export default async function GradesSection({
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="text-muted text-sm">
           القرآن {w.quran} + الشفهي والتحريري {w.oralWritten} + الواجبات{" "}
-          {w.homework} + المشاركة {w.participation} = 100
+          {w.homework} + المشاركة {w.participation} = 100. تُحسب كل درجة تلقائيًا من
+          تبويبها (الاختبارات، الواجبات، القرآن، المشاركة).
         </div>
       </div>
       <div className="flex items-center justify-between flex-wrap gap-2">
@@ -26,57 +25,40 @@ export default async function GradesSection({
         <StudentSearch />
       </div>
 
-      <form className="card p-4 space-y-3">
-        <input type="hidden" name="classId" value={activeId} />
-        <input type="hidden" name="ids" value={rows.map((r) => r.id).join(",")} />
-        <div className="overflow-x-auto">
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>الطالب</th>
-                <th>القرآن ({w.quran}) تلقائي</th>
-                <th>الشفهي والتحريري ({w.oralWritten})</th>
-                <th>الواجبات ({w.homework})</th>
-                <th>المشاركة ({w.participation})</th>
-                <th>المجموع (100)</th>
+      <div className="card p-4 overflow-x-auto">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>الطالب</th>
+              <th>القرآن ({w.quran})</th>
+              <th>الشفهي والتحريري ({w.oralWritten})</th>
+              <th>الواجبات ({w.homework})</th>
+              <th>المشاركة ({w.participation})</th>
+              <th>المجموع (100)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr key={r.id} data-name={r.name}>
+                <td>{r.code}</td>
+                <td>{r.name}</td>
+                <td className="text-center text-muted">{r.quran ?? "—"}</td>
+                <td className="text-center text-muted">
+                  {r.oralWritten ?? "—"}
+                </td>
+                <td className="text-center text-muted">{r.homeworkScore}</td>
+                <td className="text-center text-muted">
+                  {r.participationGrade}
+                </td>
+                <td className="text-center font-bold text-brand">
+                  {r.total ?? "—"}
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr key={r.id} data-name={r.name}>
-                  <td>{r.code}</td>
-                  <td>{r.name}</td>
-                  <td className="text-center text-muted">{r.quran ?? "—"}</td>
-                  <td>
-                    <input
-                      type="number"
-                      step="0.25"
-                      min="0"
-                      max={w.oralWritten}
-                      name={`oral_${r.id}`}
-                      defaultValue={r.oralWritten ?? ""}
-                      className="w-20 text-center"
-                    />
-                  </td>
-                  <td className="text-center text-muted">{r.homeworkScore}</td>
-                  <td className="text-center text-muted">
-                    {r.participationGrade}
-                  </td>
-                  <td className="text-center font-bold text-brand">
-                    {r.total ?? "—"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="flex justify-end">
-          <RowSaveButton action={saveGrades} toast="تم حفظ الدرجات" className="btn">
-            حفظ الدرجات
-          </RowSaveButton>
-        </div>
-      </form>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

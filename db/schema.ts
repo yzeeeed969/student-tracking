@@ -35,6 +35,11 @@ export const students = pgTable("students", {
   active: boolean("active").notNull().default(true),
   quran: doublePrecision("quran"),
   oralWritten: doublePrecision("oral_written"),
+  // اختبارات الشفهي والتحريري: عمودان شفهي وعمودان تحريري (كل منها من 10)
+  oral1: doublePrecision("oral1"),
+  oral2: doublePrecision("oral2"),
+  written1: doublePrecision("written1"),
+  written2: doublePrecision("written2"),
   recitation: doublePrecision("recitation"), // تلاوة سورة المدثر 0..4
   readingLevel: integer("reading_level").notNull().default(0), // 0 غير محدد،1 لا يقرأ،2 متوسط،3 يقرأ جيدًا
   createdAt: timestamp("created_at").notNull().defaultNow(),

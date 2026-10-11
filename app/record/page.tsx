@@ -1,6 +1,7 @@
 import { getClasses } from "@/lib/grades";
 import SubTabs from "@/components/SubTabs";
 import GradesSection from "@/components/sections/GradesSection";
+import ExamsSection from "@/components/sections/ExamsSection";
 import HomeworkSection from "@/components/sections/HomeworkSection";
 import QuranSection from "@/components/sections/QuranSection";
 import ParticipationSection from "@/components/sections/ParticipationSection";
@@ -9,6 +10,7 @@ export const dynamic = "force-dynamic";
 
 const TABS = [
   { view: "grades", label: "الدرجات" },
+  { view: "exams", label: "الاختبارات" },
   { view: "homework", label: "الواجبات" },
   { view: "quran", label: "القرآن" },
   { view: "participation", label: "المشاركة" },
@@ -32,6 +34,9 @@ export default async function RecordPage({
 
         {view === "grades" && (
           <GradesSection classes={classes} activeId={activeId} />
+        )}
+        {view === "exams" && (
+          <ExamsSection classes={classes} activeId={activeId} />
         )}
         {view === "homework" && (
           <HomeworkSection classes={classes} activeId={activeId} />

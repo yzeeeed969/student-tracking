@@ -29,6 +29,13 @@
       "when": 1791455407490,
       "tag": "0003_add_reading_level",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791749298026,
+      "tag": "0004_add_exam_columns",
+      "breakpoints": true
     }
   ]
 }

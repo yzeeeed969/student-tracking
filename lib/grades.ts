@@ -115,15 +115,22 @@ export async function computeClassGrades(
         ? Math.round((quranHifz + (recitation ?? 0)) * 100) / 100
         : null;
 
+    // الشفهي والتحريري = مجموع الاختبارات الأربعة (شفهي1+شفهي2+تحريري1+تحريري2)
+    const owParts = [st.oral1, st.oral2, st.written1, st.written2];
+    const owAny = owParts.some((v) => v != null);
+    const oralWrittenComputed = owAny
+      ? Math.round(owParts.reduce<number>((a, v) => a + (v ?? 0), 0) * 100) / 100
+      : null;
+
     const hasAny =
       quranComputed != null ||
-      st.oralWritten != null ||
+      oralWrittenComputed != null ||
       homeworkDone > 0 ||
       participationRaw > 0;
 
     const total = hasAny
       ? (quranComputed ?? 0) +
-        (st.oralWritten ?? 0) +
+        (oralWrittenComputed ?? 0) +
         homeworkScore +
         participationGrade
       : null;
@@ -137,7 +144,7 @@ export async function computeClassGrades(
       quran: quranComputed,
       quranHifz,
       recitation,
-      oralWritten: st.oralWritten,
+      oralWritten: oralWrittenComputed,
       homeworkScore,
       homeworkDone,
       participationRaw,
