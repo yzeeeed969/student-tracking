@@ -17,7 +17,8 @@ export function weights(s: Record<string, string>) {
   };
 }
 
-// ما الذي يظهر في نافذة ولي الأمر (صفحة العرض). الافتراضي: الدرجات تظهر والملاحظات مخفية.
+// ما الذي يظهر في نافذة ولي الأمر (صفحة العرض).
+// الافتراضي: القرآن والواجبات يظهران، ومن الاختبارات تحريري١ فقط، والباقي مخفي.
 export function parentView(s: Record<string, string>) {
   const on = (k: string, def: boolean) => {
     const v = s[k];
@@ -26,10 +27,13 @@ export function parentView(s: Record<string, string>) {
   };
   return {
     quran: on("parent_show_quran", true),
-    oral: on("parent_show_oral", true),
     homework: on("parent_show_homework", true),
-    participation: on("parent_show_participation", true),
-    total: on("parent_show_total", true),
+    examW1: on("parent_show_exam_w1", true), // اختبار الفترة الأولى (تحريري ١)
+    examW2: on("parent_show_exam_w2", false), // اختبار الفترة الثانية (تحريري ٢)
+    examO1: on("parent_show_exam_o1", false), // الشفهي الأول
+    examO2: on("parent_show_exam_o2", false), // الشفهي الثاني
+    participation: on("parent_show_participation", false),
+    total: on("parent_show_total", false),
     notes: on("parent_show_notes", false),
   };
 }
@@ -37,8 +41,11 @@ export function parentView(s: Record<string, string>) {
 // مفاتيح إعدادات الظهور (تُحفظ كـ "1"/"0" في جدول الإعدادات)
 export const PARENT_VIEW_KEYS = [
   "parent_show_quran",
-  "parent_show_oral",
   "parent_show_homework",
+  "parent_show_exam_w1",
+  "parent_show_exam_w2",
+  "parent_show_exam_o1",
+  "parent_show_exam_o2",
   "parent_show_participation",
   "parent_show_total",
   "parent_show_notes",

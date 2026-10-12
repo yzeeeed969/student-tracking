@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { lookupParent, type LookupState } from "@/app/showcase/actions";
+import { lookupParent, type LookupState, type ParentReport } from "@/app/showcase/actions";
 
 const initial: LookupState = { ok: false };
 
@@ -13,7 +13,7 @@ export default function ParentLookup() {
       <div>
         <h2 className="font-bold text-lg text-brand">استعلام ولي الأمر</h2>
         <p className="text-muted text-sm mt-1">
-          أدخل رقم جوالك المسجّل لدى المعلم لعرض درجات ابنك وملاحظاته.
+          أدخل رقم جوالك المسجّل لدى المعلم لعرض تقرير ابنك.
         </p>
       </div>
 
@@ -36,114 +36,200 @@ export default function ParentLookup() {
         <div className="text-red-500 text-sm">{state.message}</div>
       )}
 
-      {state.ok && state.reports && (() => {
-        const show = state.show ?? {
-          quran: true,
-          oral: true,
-          homework: true,
-          participation: true,
-          total: true,
-          notes: false,
-        };
-        return (
-        <div className="space-y-4">
+      {state.ok && state.reports && (
+        <div className="space-y-5">
           {state.reports.map((r, i) => (
-            <div key={i} className="rounded-xl bg-brandsoft/40 p-4 space-y-3">
-              <div className="flex items-center justify-between flex-wrap gap-2">
-                <div className="font-bold text-lg">{r.name}</div>
-                <div className="text-muted text-sm">{r.className}</div>
-              </div>
-
-              {/* الدرجات */}
-              <div className="flex flex-wrap gap-2 text-center text-sm">
-                {show.quran && (
-                  <Cell label={`القرآن (${r.w.quran})`} value={r.quran ?? "—"} />
-                )}
-                {show.oral && (
-                  <Cell
-                    label={`الشفهي والتحريري (${r.w.oralWritten})`}
-                    value={r.oralWritten ?? "—"}
-                  />
-                )}
-                {show.homework && (
-                  <Cell
-                    label={`الواجبات (${r.w.homework})`}
-                    value={r.homeworkScore}
-                  />
-                )}
-                {show.participation && (
-                  <Cell
-                    label={`المشاركة (${r.w.participation})`}
-                    value={r.participationGrade}
-                  />
-                )}
-                {show.total && (
-                  <div className="rounded-lg bg-brand text-white p-2 min-w-24 flex-1">
-                    <div className="text-xl font-bold">{r.total ?? "—"}</div>
-                    <div className="text-xs opacity-90">المجموع /100</div>
-                  </div>
-                )}
-              </div>
-
-              {/* تفصيل الواجبات */}
-              {show.homework && (
-                <div className="text-sm">
-                  <span className="font-bold">الواجبات المرصودة: </span>
-                  {r.homeworkDone} من {r.homeworkCount}
-                  {r.missing.length > 0 && (
-                    <span className="text-red-500">
-                      {"  —  غير المرصودة: "}
-                      {r.missing.join("، ")}
-                    </span>
-                  )}
-                </div>
-              )}
-
-              {/* الملاحظات */}
-              {show.notes && (
-                <div className="space-y-1">
-                  <div className="font-bold text-sm">الملاحظات السلوكية</div>
-                  {r.notes.length === 0 ? (
-                    <div className="text-muted text-sm">لا توجد ملاحظات.</div>
-                  ) : (
-                    <div className="overflow-x-auto">
-                      <table className="text-sm w-full">
-                        <tbody>
-                          {r.notes.map((n) => (
-                            <tr key={n.id}>
-                              <td className="whitespace-nowrap text-muted">
-                                {n.date}
-                              </td>
-                              <td className="font-medium">{n.type}</td>
-                              <td className="text-muted">{n.description}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
+            <ReportCard key={i} r={r} show={state.show} />
           ))}
         </div>
-        );
-      })()}
+      )}
     </div>
   );
 }
 
-function Cell({
-  label,
-  value,
+function ReportCard({
+  r,
+  show,
 }: {
-  label: string;
-  value: React.ReactNode;
+  r: ParentReport;
+  show: LookupState["show"];
+}) {
+  const s = show ?? {
+    quran: true,
+    homework: true,
+    examW1: true,
+    examW2: false,
+    examO1: false,
+    examO2: false,
+    participation: false,
+    total: false,
+    notes: false,
+  };
+
+  return (
+    <div className="rounded-xl bg-brandsoft/40 p-4 space-y-3">
+      <div className="flex items-center justify-between flex-wrap gap-2 border-b border-[var(--border)] pb-2">
+        <div className="font-bold text-lg">{r.name}</div>
+        <div className="text-muted text-sm">{r.className}</div>
+      </div>
+
+      {/* القرآن */}
+      {s.quran && (
+        <Section
+          title="القرآن الكريم"
+          value={r.quran != null ? `${r.quran} / 20` : "—"}
+        >
+          <div className="space-y-1">
+            {r.surahs.map((su) => (
+              <div
+                key={su.num}
+                className="flex items-center justify-between gap-2 text-sm rounded-md bg-card/60 px-3 py-1.5"
+              >
+                <span className="font-medium">سورة {su.name}</span>
+                {su.done ? (
+                  <span className="rounded-full bg-brand text-white text-xs px-2 py-0.5">
+                    {su.grade}
+                  </span>
+                ) : (
+                  <span className="rounded-full bg-black/10 dark:bg-white/10 text-muted text-xs px-2 py-0.5">
+                    ⏳ بالانتظار
+                  </span>
+                )}
+              </div>
+            ))}
+            {r.recitation != null && (
+              <div className="flex items-center justify-between gap-2 text-sm rounded-md bg-card/60 px-3 py-1.5">
+                <span className="font-medium">تلاوة سورة المدثر</span>
+                <span className="rounded-full bg-brand text-white text-xs px-2 py-0.5">
+                  {r.recitation} / 4
+                </span>
+              </div>
+            )}
+          </div>
+        </Section>
+      )}
+
+      {/* الاختبارات الشفهية والتحريرية */}
+      {r.exams.length > 0 && (
+        <Section title="الاختبارات الشفهية والتحريرية">
+          <div className="space-y-1">
+            {r.exams.map((e, idx) => (
+              <div
+                key={idx}
+                className="flex items-center justify-between gap-2 text-sm rounded-md bg-card/60 px-3 py-1.5"
+              >
+                <span className="font-medium">{e.label}</span>
+                {e.value != null ? (
+                  <span className="rounded-full bg-brand text-white text-xs px-2 py-0.5">
+                    {e.value} / 10
+                  </span>
+                ) : (
+                  <span className="rounded-full bg-black/10 dark:bg-white/10 text-muted text-xs px-2 py-0.5">
+                    لم يُرصد بعد
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {/* الواجبات (التقاويم) */}
+      {s.homework && (
+        <Section
+          title="الواجبات (التقاويم)"
+          value={`${r.homeworkDone} / ${r.homeworkCount}`}
+        >
+          <div className="space-y-1">
+            {r.homeworkItems.map((h) => (
+              <div
+                key={h.num}
+                className="flex items-center justify-between gap-2 text-sm rounded-md bg-card/60 px-3 py-1.5"
+              >
+                <span className="font-medium">الواجب {h.num}</span>
+                <span className="text-muted text-xs">
+                  {h.page != null ? `التقويم ص ${h.page}` : "التقويم —"}
+                </span>
+                {h.done ? (
+                  <span className="rounded-full bg-brand text-white text-xs px-2 py-0.5">
+                    ✓ تم الحل
+                  </span>
+                ) : (
+                  <span className="rounded-full bg-black/10 dark:bg-white/10 text-muted text-xs px-2 py-0.5">
+                    ⏳ لم يُرصد
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {/* المشاركة (اختياري) */}
+      {s.participation && (
+        <div className="rounded-lg bg-card p-2 text-center">
+          <div className="text-lg font-bold text-brand">
+            {r.participationGrade}
+          </div>
+          <div className="text-xs text-muted">المشاركة ({r.w.participation})</div>
+        </div>
+      )}
+
+      {/* المجموع (اختياري) */}
+      {s.total && (
+        <div className="rounded-lg bg-brand text-white p-2 text-center">
+          <div className="text-2xl font-bold">{r.total ?? "—"}</div>
+          <div className="text-xs opacity-90">المجموع / 100</div>
+        </div>
+      )}
+
+      {/* الملاحظات (اختياري) */}
+      {s.notes && (
+        <Section title="الملاحظات السلوكية">
+          {r.notes.length === 0 ? (
+            <div className="text-muted text-sm px-1">لا توجد ملاحظات.</div>
+          ) : (
+            <div className="space-y-1">
+              {r.notes.map((n) => (
+                <div
+                  key={n.id}
+                  className="flex items-center justify-between gap-2 text-sm rounded-md bg-card/60 px-3 py-1.5"
+                >
+                  <span className="font-medium">{n.type}</span>
+                  <span className="text-muted">{n.description}</span>
+                  <span className="text-muted text-xs whitespace-nowrap">
+                    {n.date}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </Section>
+      )}
+    </div>
+  );
+}
+
+// بطاقة قابلة للضغط: الضغط على العنوان يفتح التفاصيل
+function Section({
+  title,
+  value,
+  children,
+}: {
+  title: string;
+  value?: string;
+  children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-lg bg-card p-2">
-      <div className="text-lg font-bold text-brand">{value}</div>
-      <div className="text-xs text-muted">{label}</div>
-    </div>
+    <details className="rounded-lg bg-card/40 overflow-hidden">
+      <summary className="flex items-center justify-between gap-2 cursor-pointer select-none px-3 py-2 font-bold hover:bg-brandsoft/60">
+        <span className="flex items-center gap-2">
+          <span className="chev text-brand">▸</span>
+          {title}
+        </span>
+        {value && <span className="text-brand">{value}</span>}
+      </summary>
+      <div className="p-2 pt-0">{children}</div>
+    </details>
   );
 }

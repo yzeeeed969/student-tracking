@@ -109,6 +109,18 @@ th {
   z-index: 30;
 }
 
+/* سهم البطاقات القابلة للطيّ في نافذة ولي الأمر */
+.chev {
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+details[open] > summary .chev {
+  transform: rotate(90deg);
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+
 /* شارة مستوى القراءة — مخفية افتراضيًا، تظهر عند تفعيل الزر */
 .reading-badge {
   display: none;

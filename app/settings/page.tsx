@@ -76,16 +76,31 @@ export default async function SettingsPage() {
               الجوال لا يظهر أبدًا.)
             </p>
             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-2">
-              <Check name="parent_show_quran" label="درجة القرآن" checked={pv.quran} />
-              <Check
-                name="parent_show_oral"
-                label="الشفهي والتحريري"
-                checked={pv.oral}
-              />
+              <Check name="parent_show_quran" label="القرآن (السور ودرجاتها)" checked={pv.quran} />
               <Check
                 name="parent_show_homework"
-                label="الواجبات"
+                label="الواجبات (مع صفحات التقويم)"
                 checked={pv.homework}
+              />
+              <Check
+                name="parent_show_exam_w1"
+                label="اختبار الفترة الأولى (تحريري ١)"
+                checked={pv.examW1}
+              />
+              <Check
+                name="parent_show_exam_w2"
+                label="اختبار الفترة الثانية (تحريري ٢)"
+                checked={pv.examW2}
+              />
+              <Check
+                name="parent_show_exam_o1"
+                label="الاختبار الشفهي الأول"
+                checked={pv.examO1}
+              />
+              <Check
+                name="parent_show_exam_o2"
+                label="الاختبار الشفهي الثاني"
+                checked={pv.examO2}
               />
               <Check
                 name="parent_show_participation"

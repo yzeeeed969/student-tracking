@@ -1,10 +1,18 @@
 "use server";
 
 import { db } from "@/db";
-import { students, classRooms, homeworkMarks, behaviorNotes } from "@/db/schema";
+import {
+  students,
+  classRooms,
+  homeworkMarks,
+  behaviorNotes,
+  quranMarks,
+} from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { computeClassGrades } from "@/lib/grades";
 import { getSettings, parentView } from "@/lib/settings";
+import { SURAHS } from "@/lib/surahs";
+import { TAQWEEM_PAGES } from "@/lib/taqweemPages";
 
 export type ParentNote = {
   id: number;
@@ -13,25 +21,41 @@ export type ParentNote = {
   description: string | null;
 };
 
+export type SurahItem = {
+  num: number;
+  name: string;
+  done: boolean;
+  grade: string | null; // ممتاز / جيد جدًا / جيد
+};
+
+export type ExamItem = { label: string; value: number | null };
+
+export type HwItem = { num: number; done: boolean; page: number | null };
+
 export type ParentReport = {
   name: string;
   className: string | null;
   quran: number | null;
-  oralWritten: number | null;
+  recitation: number | null;
+  surahs: SurahItem[];
   homeworkScore: number;
-  participationGrade: number;
-  total: number | null;
   homeworkDone: number;
   homeworkCount: number;
-  missing: number[];
+  homeworkItems: HwItem[];
+  exams: ExamItem[];
+  participationGrade: number;
+  total: number | null;
   notes: ParentNote[];
   w: { quran: number; oralWritten: number; homework: number; participation: number };
 };
 
 export type ParentShow = {
   quran: boolean;
-  oral: boolean;
   homework: boolean;
+  examW1: boolean;
+  examW2: boolean;
+  examO1: boolean;
+  examO2: boolean;
   participation: boolean;
   total: boolean;
   notes: boolean;
@@ -42,6 +66,12 @@ export type LookupState = {
   message?: string;
   reports?: ParentReport[];
   show?: ParentShow;
+};
+
+const GRADE_LABEL: Record<number, string> = {
+  3: "ممتاز",
+  2: "جيد جدًا",
+  1: "جيد",
 };
 
 // يُبقي آخر 9 أرقام فقط (يتجاهل 966 أو الصفر الأول والمسافات)
@@ -64,7 +94,6 @@ export async function lookupParent(
     return { ok: false, message: "أدخل رقم جوال صحيح (مثال: 05XXXXXXXX)." };
   }
 
-  // كل الطلاب مع أسماء الفصول (العدد صغير، فالمطابقة في الذاكرة آمنة)
   const all = await db
     .select({
       id: students.id,
@@ -72,6 +101,11 @@ export async function lookupParent(
       phone: students.phone,
       classId: students.classId,
       className: classRooms.name,
+      oral1: students.oral1,
+      oral2: students.oral2,
+      written1: students.written1,
+      written2: students.written2,
+      recitation: students.recitation,
     })
     .from(students)
     .leftJoin(classRooms, eq(students.classId, classRooms.id));
@@ -89,7 +123,6 @@ export async function lookupParent(
   const homeworkCount = Number(s.homework_count ?? 18);
   const show = parentView(s);
 
-  // نحسب درجات الفصل مرة واحدة لكل فصل
   const gradeCache = new Map<
     number,
     Awaited<ReturnType<typeof computeClassGrades>>
@@ -104,15 +137,53 @@ export async function lookupParent(
     }
     const g = cg.rows.find((r) => r.id === m.id);
 
-    const marks = await db
+    // الواجبات (التقاويم)
+    const hwMarks = await db
       .select({ num: homeworkMarks.num })
       .from(homeworkMarks)
       .where(eq(homeworkMarks.studentId, m.id));
-    const recorded = new Set(marks.map((x) => x.num));
-    const missing: number[] = [];
-    for (let i = 1; i <= homeworkCount; i++)
-      if (!recorded.has(i)) missing.push(i);
+    const recorded = new Set(hwMarks.map((x) => x.num));
+    const homeworkItems: HwItem[] = [];
+    if (show.homework) {
+      for (let i = 1; i <= homeworkCount; i++)
+        homeworkItems.push({
+          num: i,
+          done: recorded.has(i),
+          page: TAQWEEM_PAGES[i] ?? null,
+        });
+    }
 
+    // القرآن (السور)
+    let surahs: SurahItem[] = [];
+    if (show.quran) {
+      const qm = await db
+        .select({ surah: quranMarks.surah, points: quranMarks.points })
+        .from(quranMarks)
+        .where(eq(quranMarks.studentId, m.id));
+      const qmap = new Map(qm.map((x) => [x.surah, x.points]));
+      surahs = SURAHS.map((su) => {
+        const p = qmap.get(su.num);
+        return {
+          num: su.num,
+          name: su.name,
+          done: p != null,
+          grade: p != null ? GRADE_LABEL[p] ?? String(p) : null,
+        };
+      });
+    }
+
+    // الاختبارات (حسب ما هو مُفعّل)
+    const examDefs = [
+      { on: show.examW1, label: "اختبار الفترة الأولى", value: m.written1 },
+      { on: show.examW2, label: "اختبار الفترة الثانية", value: m.written2 },
+      { on: show.examO1, label: "الاختبار الشفهي الأول", value: m.oral1 },
+      { on: show.examO2, label: "الاختبار الشفهي الثاني", value: m.oral2 },
+    ];
+    const exams: ExamItem[] = examDefs
+      .filter((e) => e.on)
+      .map((e) => ({ label: e.label, value: e.value ?? null }));
+
+    // الملاحظات (اختياري)
     const notesRaw = show.notes
       ? await db
           .select({
@@ -131,13 +202,15 @@ export async function lookupParent(
       name: m.name,
       className: m.className ?? null,
       quran: g?.quran ?? null,
-      oralWritten: g?.oralWritten ?? null,
+      recitation: m.recitation ?? null,
+      surahs,
       homeworkScore: g?.homeworkScore ?? 0,
-      participationGrade: g?.participationGrade ?? 0,
-      total: g?.total ?? null,
       homeworkDone: g?.homeworkDone ?? 0,
       homeworkCount,
-      missing,
+      homeworkItems,
+      exams,
+      participationGrade: g?.participationGrade ?? 0,
+      total: g?.total ?? null,
       notes: notesRaw.map((n) => ({
         id: n.id,
         date: fmt(n.date),
