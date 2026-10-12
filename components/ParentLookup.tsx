@@ -76,6 +76,49 @@ function ReportCard({
         👇 اضغط على أي بند بالأسفل لعرض تفاصيله
       </div>
 
+      {/* ملخّص التقدّم */}
+      {(s.quran || s.homework) && (
+        <div className="space-y-3 rounded-lg bg-card/60 p-3">
+          {s.quran &&
+            (() => {
+              const done = r.surahs.filter((x) => x.done).length;
+              const total = r.surahs.length || 16;
+              const next = r.surahs.find((x) => !x.done);
+              return (
+                <div>
+                  <div className="flex items-center justify-between text-xs mb-1">
+                    <span className="font-bold">حفظ القرآن</span>
+                    <span className="text-muted">
+                      {done} / {total} سورة
+                    </span>
+                  </div>
+                  <Bar value={done} max={total} />
+                  {next ? (
+                    <div className="text-xs text-brand mt-1.5">
+                      📖 السورة القادمة للتسميع: <b>سورة {next.name}</b>
+                    </div>
+                  ) : (
+                    <div className="text-xs text-brand mt-1.5">
+                      🎉 أكمل حفظ جميع السور، ما شاء الله
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+          {s.homework && (
+            <div>
+              <div className="flex items-center justify-between text-xs mb-1">
+                <span className="font-bold">الواجبات</span>
+                <span className="text-muted">
+                  {r.homeworkDone} / {r.homeworkCount}
+                </span>
+              </div>
+              <Bar value={r.homeworkDone} max={r.homeworkCount} />
+            </div>
+          )}
+        </div>
+      )}
+
       {/* القرآن */}
       {s.quran && (
         <Section
@@ -209,6 +252,18 @@ function ReportCard({
           )}
         </Section>
       )}
+    </div>
+  );
+}
+
+function Bar({ value, max }: { value: number; max: number }) {
+  const pct = max > 0 ? Math.min(100, Math.round((value / max) * 100)) : 0;
+  return (
+    <div className="h-2.5 rounded-full bg-black/10 dark:bg-white/15 overflow-hidden">
+      <div
+        className="h-full bg-brand rounded-full transition-all"
+        style={{ width: `${pct}%` }}
+      />
     </div>
   );
 }

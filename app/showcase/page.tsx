@@ -1,15 +1,28 @@
 import ThemeToggle from "@/components/ThemeToggle";
 import ParentLookup from "@/components/ParentLookup";
+import { getSettings } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
 
 // صفحة عامة مخصّصة لتقارير الطلاب: ولي الأمر يدخل رقم جواله فيرى تقرير ابنه فقط.
-export default function Showcase() {
+export default async function Showcase() {
+  const s = await getSettings();
+  const line = [
+    s.teacher,
+    s.subject ? `مادة ${s.subject}` : "",
+    s.school,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
   return (
     <div className="min-h-screen">
-      <header className="card m-3 px-4 py-3 flex items-center justify-between">
-        <div className="font-bold text-brand text-lg">
-          متابعة الطلاب — تقارير الطلاب
+      <header className="card m-3 px-4 py-3 flex items-center justify-between gap-2">
+        <div>
+          <div className="font-bold text-brand text-lg">
+            متابعة الطلاب — تقارير الطلاب
+          </div>
+          {line && <div className="text-muted text-sm mt-0.5">{line}</div>}
         </div>
         <ThemeToggle />
       </header>
