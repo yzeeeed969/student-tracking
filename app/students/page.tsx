@@ -17,6 +17,7 @@ import StudentSearch from "@/components/StudentSearch";
 import SelectAllCheckbox from "@/components/SelectAllCheckbox";
 import StudentsBulk from "@/components/StudentsBulk";
 import WhatsappComposer from "@/components/WhatsappComposer";
+import ReadingTagger from "@/components/ReadingTagger";
 import SubTabs from "@/components/SubTabs";
 import { getSettings } from "@/lib/settings";
 import { orderByName } from "@/lib/order";
@@ -25,6 +26,7 @@ export const dynamic = "force-dynamic";
 
 const TABS = [
   { view: "list", label: "الطلاب" },
+  { view: "reading", label: "القراءة" },
   { view: "whatsapp", label: "واتساب" },
 ];
 
@@ -34,7 +36,12 @@ export default async function StudentsPage({
   searchParams: Promise<{ imported?: string; view?: string }>;
 }) {
   const { imported, view: viewParam } = await searchParams;
-  const view = viewParam === "whatsapp" ? "whatsapp" : "list";
+  const view =
+    viewParam === "whatsapp"
+      ? "whatsapp"
+      : viewParam === "reading"
+      ? "reading"
+      : "list";
 
   const classes = await db
     .select()
@@ -69,6 +76,15 @@ export default async function StudentsPage({
     }))
   );
 
+  const readingStudents = byClass.flatMap((b) =>
+    b.rows.map((r) => ({
+      id: r.id,
+      name: r.name,
+      classId: b.cls.id,
+      readingLevel: r.readingLevel,
+    }))
+  );
+
   return (
     <div className="min-h-screen">
       <main className="p-4 space-y-5">
@@ -92,6 +108,8 @@ export default async function StudentsPage({
             students={flatStudents}
             templates={templates}
           />
+        ) : view === "reading" ? (
+          <ReadingTagger classes={classes} students={readingStudents} />
         ) : (
           <>
             {imported && (

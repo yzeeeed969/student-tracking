@@ -86,6 +86,16 @@ export async function updateStudent(formData: FormData) {
   revalidatePath("/grades");
 }
 
+// حفظ فوري لحالة قراءة طالب واحد (نقرة واحدة): 0 غير محدد، 1 لا يقرأ، 3 يقرأ
+export async function setReading(studentId: number, level: number) {
+  if (!studentId) return;
+  await db
+    .update(students)
+    .set({ readingLevel: level })
+    .where(eq(students.id, studentId));
+  revalidatePath("/students");
+}
+
 // تعيين مستوى القراءة لمجموعة طلاب محدّدين
 export async function bulkSetReading(fd: FormData) {
   const ids = parseIds(fd);

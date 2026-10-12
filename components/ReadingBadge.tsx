@@ -1,14 +1,15 @@
+// حالتان فقط: يقرأ / لا يقرأ (مع «غير محدد»). القيم: 0 غير محدد، 1 لا يقرأ، 3 يقرأ
+// (القيمة 2 «متوسط» قديمة — تُعامَل كـ«يقرأ»)
 export const READING_LEVELS = [
   { v: 0, label: "غير محدد" },
+  { v: 3, label: "يقرأ" },
   { v: 1, label: "لا يقرأ" },
-  { v: 2, label: "متوسط" },
-  { v: 3, label: "يقرأ جيدًا" },
 ];
 
-const MAP: Record<number, { label: string; cls: string; dot: string }> = {
-  1: { label: "لا يقرأ", cls: "bg-red-500/15 text-red-600", dot: "🔴" },
-  2: { label: "متوسط", cls: "bg-amber-500/20 text-amber-600", dot: "🟡" },
-  3: { label: "يقرأ جيدًا", cls: "bg-green-500/15 text-green-600", dot: "🟢" },
+const MAP: Record<number, { label: string; dot: string }> = {
+  1: { label: "لا يقرأ", dot: "🔴" },
+  2: { label: "يقرأ", dot: "🟢" }, // قديمة (متوسط) → تُعرض كـ«يقرأ»
+  3: { label: "يقرأ", dot: "🟢" },
 };
 
 // شارة مستوى القراءة — مخفية افتراضيًا عبر الصنف reading-badge
@@ -18,7 +19,7 @@ export default function ReadingBadge({ level }: { level: number }) {
   return (
     <span
       className="reading-badge align-middle text-sm leading-none"
-      title={`مستوى القراءة: ${m.label}`}
+      title={`القراءة: ${m.label}`}
     >
       {m.dot}
     </span>
