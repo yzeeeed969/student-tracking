@@ -111,11 +111,13 @@ th {
 
 /* سهم البطاقات القابلة للطيّ في نافذة ولي الأمر */
 .chev {
-  display: inline-block;
   transition: transform 0.15s ease;
 }
 details[open] > summary .chev {
-  transform: rotate(90deg);
+  transform: rotate(180deg);
+}
+details[open] > summary .hint {
+  display: none;
 }
 summary::-webkit-details-marker {
   display: none;

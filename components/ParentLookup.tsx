@@ -72,6 +72,9 @@ function ReportCard({
         <div className="font-bold text-lg">{r.name}</div>
         <div className="text-muted text-sm">{r.className}</div>
       </div>
+      <div className="text-xs text-brand bg-brandsoft/60 rounded-md px-3 py-1.5 text-center">
+        👇 اضغط على أي بند بالأسفل لعرض تفاصيله
+      </div>
 
       {/* القرآن */}
       {s.quran && (
@@ -221,15 +224,22 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <details className="rounded-lg bg-card/40 overflow-hidden">
-      <summary className="flex items-center justify-between gap-2 cursor-pointer select-none px-3 py-2 font-bold hover:bg-brandsoft/60">
+    <details className="rounded-lg border border-brand/30 overflow-hidden">
+      <summary className="flex items-center justify-between gap-2 cursor-pointer select-none px-3 py-3 font-bold bg-brandsoft/60 hover:bg-brandsoft active:bg-brandsoft">
         <span className="flex items-center gap-2">
-          <span className="chev text-brand">▸</span>
-          {title}
+          <span className="chev inline-flex items-center justify-center w-6 h-6 rounded-full bg-brand text-white text-xs leading-none">
+            ▼
+          </span>
+          <span>{title}</span>
         </span>
-        {value && <span className="text-brand">{value}</span>}
+        <span className="flex items-center gap-3">
+          {value && <span className="text-brand">{value}</span>}
+          <span className="hint text-[11px] text-muted font-normal rounded-full border border-brand/40 px-2 py-0.5">
+            اضغط للتفاصيل
+          </span>
+        </span>
       </summary>
-      <div className="p-2 pt-0">{children}</div>
+      <div className="p-2 pt-0 bg-card/40">{children}</div>
     </details>
   );
 }
