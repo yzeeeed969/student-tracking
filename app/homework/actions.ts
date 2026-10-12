@@ -4,6 +4,33 @@ import { homeworkMarks } from "@/db/schema";
 import { and, eq, inArray, lte } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
+// حفظ فوري لخانة واجب واحدة (عند اختيار قيمة من القائمة المنسدلة)
+export async function setHomeworkCell(
+  studentId: number,
+  num: number,
+  value: string
+) {
+  if (!studentId || !num) return;
+  if (value === "" || value == null) {
+    await db
+      .delete(homeworkMarks)
+      .where(
+        and(eq(homeworkMarks.studentId, studentId), eq(homeworkMarks.num, num))
+      );
+  } else {
+    const score = Number(value);
+    await db
+      .insert(homeworkMarks)
+      .values({ studentId, num, score })
+      .onConflictDoUpdate({
+        target: [homeworkMarks.studentId, homeworkMarks.num],
+        set: { score },
+      });
+  }
+  revalidatePath("/record");
+  revalidatePath("/reports");
+}
+
 // تطبيق درجة واجب واحد على مجموعة طلاب محدّدين
 export async function bulkSetHomework(fd: FormData) {
   const ids = String(fd.get("ids") || "")

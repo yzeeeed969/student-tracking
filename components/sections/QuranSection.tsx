@@ -3,8 +3,9 @@ import { db } from "@/db";
 import { students, quranMarks } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { SURAHS, LEVELS } from "@/lib/surahs";
-import { saveQuran, bulkSetSurah } from "@/app/quran/actions";
+import { saveQuran, bulkSetSurah, setQuranCell } from "@/app/quran/actions";
 import RowSaveButton from "@/components/RowSaveButton";
+import AutoSelect from "@/components/AutoSelect";
 import StudentSearch from "@/components/StudentSearch";
 import SelectAllCheckbox from "@/components/SelectAllCheckbox";
 import QuranBulk from "@/components/QuranBulk";
@@ -56,7 +57,7 @@ export default async function QuranSection({
 
       <form className="card p-3 space-y-3">
         <input type="hidden" name="ids" value={ids.join(",")} />
-        <div className="overflow-x-auto">
+        <div className="frozen-head">
           <table className="text-sm">
             <thead>
               <tr>
@@ -95,18 +96,19 @@ export default async function QuranSection({
                       const v = markMap.get(`${st.id}_${s.num}`);
                       return (
                         <td key={s.num} className="p-0">
-                          <select
+                          <AutoSelect
                             name={`q_${st.id}_${s.num}`}
-                            defaultValue={v ?? ""}
+                            defaultValue={v != null ? String(v) : ""}
+                            options={[
+                              { v: "", l: "—" },
+                              ...LEVELS.map((l) => ({
+                                v: String(l.points),
+                                l: l.label,
+                              })),
+                            ]}
+                            action={setQuranCell.bind(null, st.id, s.num)}
                             className="w-20 text-center border-0 rounded-none bg-transparent text-xs"
-                          >
-                            <option value="">—</option>
-                            {LEVELS.map((l) => (
-                              <option key={l.points} value={l.points}>
-                                {l.label}
-                              </option>
-                            ))}
-                          </select>
+                          />
                         </td>
                       );
                     })}

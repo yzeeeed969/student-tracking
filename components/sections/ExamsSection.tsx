@@ -37,7 +37,7 @@ export default async function ExamsSection({
 
       <form className="card p-3 space-y-3">
         <input type="hidden" name="ids" value={ids.join(",")} />
-        <div className="overflow-x-auto">
+        <div className="frozen-head">
           <table className="text-sm">
             <thead>
               <tr>

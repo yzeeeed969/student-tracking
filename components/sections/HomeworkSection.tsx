@@ -7,8 +7,10 @@ import {
   saveHomework,
   saveOneHomework,
   bulkSetHomework,
+  setHomeworkCell,
 } from "@/app/homework/actions";
 import RowSaveButton from "@/components/RowSaveButton";
+import AutoSelect from "@/components/AutoSelect";
 import StudentSearch from "@/components/StudentSearch";
 import SelectAllCheckbox from "@/components/SelectAllCheckbox";
 import HomeworkBulk from "@/components/HomeworkBulk";
@@ -71,7 +73,7 @@ export default async function HomeworkSection({
       <form className="card p-3 space-y-3">
         <input type="hidden" name="count" value={count} />
         <input type="hidden" name="ids" value={ids.join(",")} />
-        <div className="overflow-x-auto">
+        <div className="frozen-head">
           <table className="text-sm">
             <thead>
               <tr>
@@ -126,15 +128,17 @@ export default async function HomeworkSection({
                       const v = markMap.get(`${st.id}_${n}`);
                       return (
                         <td key={n} className="p-0">
-                          <select
+                          <AutoSelect
                             name={`hw_${st.id}_${n}`}
-                            defaultValue={v ?? ""}
+                            defaultValue={v != null ? String(v) : ""}
+                            options={[
+                              { v: "", l: "—" },
+                              { v: "1", l: "1" },
+                              { v: "0.5", l: "0.5" },
+                            ]}
+                            action={setHomeworkCell.bind(null, st.id, n)}
                             className="w-14 text-center border-0 rounded-none bg-transparent"
-                          >
-                            <option value="">—</option>
-                            <option value="1">1</option>
-                            <option value="0.5">0.5</option>
-                          </select>
+                          />
                         </td>
                       );
                     })}

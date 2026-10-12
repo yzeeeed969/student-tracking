@@ -109,7 +109,8 @@ export default async function ParticipationSection({
 
       <ParticipationBulk date={dateStr} bulkParticipation={bulkParticipation} />
 
-      <div className="card p-3 overflow-x-auto">
+      <div className="card p-2">
+       <div className="frozen-head">
         <table>
           <thead>
             <tr>
@@ -203,6 +204,7 @@ export default async function ParticipationSection({
             })}
           </tbody>
         </table>
+       </div>
       </div>
     </div>
   );

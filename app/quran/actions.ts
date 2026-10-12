@@ -5,6 +5,33 @@ import { and, eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { SURAHS } from "@/lib/surahs";
 
+// حفظ فوري لخانة سورة واحدة (عند اختيار مستوى من القائمة المنسدلة)
+export async function setQuranCell(
+  studentId: number,
+  surah: number,
+  value: string
+) {
+  if (!studentId || !surah) return;
+  if (value === "" || value == null) {
+    await db
+      .delete(quranMarks)
+      .where(
+        and(eq(quranMarks.studentId, studentId), eq(quranMarks.surah, surah))
+      );
+  } else {
+    const points = Number(value);
+    await db
+      .insert(quranMarks)
+      .values({ studentId, surah, points })
+      .onConflictDoUpdate({
+        target: [quranMarks.studentId, quranMarks.surah],
+        set: { points },
+      });
+  }
+  revalidatePath("/record");
+  revalidatePath("/reports");
+}
+
 // تطبيق مستوى سورة واحدة على مجموعة طلاب محدّدين
 export async function bulkSetSurah(fd: FormData) {
   const ids = String(fd.get("ids") || "")

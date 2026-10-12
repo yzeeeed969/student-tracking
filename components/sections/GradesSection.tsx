@@ -25,7 +25,8 @@ export default async function GradesSection({
         <StudentSearch />
       </div>
 
-      <div className="card p-4 overflow-x-auto">
+      <div className="card p-2">
+       <div className="frozen-head">
         <table>
           <thead>
             <tr>
@@ -58,6 +59,7 @@ export default async function GradesSection({
             ))}
           </tbody>
         </table>
+       </div>
       </div>
     </div>
   );
