@@ -28,6 +28,11 @@ export default async function SettingsPage() {
               <Field name="teacher" label="اسم المعلم" value={s.teacher} />
               <Field name="subject" label="المادة" value={s.subject} />
               <Field name="school" label="المدرسة" value={s.school} />
+              <Field
+                name="teacher_whatsapp"
+                label="جوال المعلم (واتساب) — لزر التواصل في صفحة العرض"
+                value={s.teacher_whatsapp}
+              />
             </div>
           </div>
 

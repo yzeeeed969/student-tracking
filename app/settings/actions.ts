@@ -17,6 +17,7 @@ export async function saveSettings(formData: FormData) {
     "teacher",
     "subject",
     "school",
+    "teacher_whatsapp",
     "w_quran",
     "w_oral_written",
     "w_homework",

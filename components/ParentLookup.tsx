@@ -5,7 +5,7 @@ import { lookupParent, type LookupState, type ParentReport } from "@/app/showcas
 
 const initial: LookupState = { ok: false };
 
-export default function ParentLookup() {
+export default function ParentLookup({ teacherWa }: { teacherWa?: string }) {
   const [state, formAction, pending] = useActionState(lookupParent, initial);
 
   return (
@@ -41,6 +41,25 @@ export default function ParentLookup() {
           {state.reports.map((r, i) => (
             <ReportCard key={i} r={r} show={state.show} />
           ))}
+        </div>
+      )}
+
+      {/* التواصل مع المعلم عبر واتساب فقط */}
+      {teacherWa && (
+        <div className="border-t border-[var(--border)] pt-4 text-center space-y-2">
+          <a
+            href={`https://wa.me/${teacherWa}?text=${encodeURIComponent(
+              "السلام عليكم ورحمة الله، لدي استفسار بخصوص ابني."
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-green-600 text-white font-bold px-5 py-2.5 hover:opacity-90"
+          >
+            💬 تواصل مع المعلم عبر واتساب
+          </a>
+          <p className="text-xs text-muted">
+            التواصل عبر واتساب فقط — يُرجى عدم الاتصال هاتفيًا.
+          </p>
         </div>
       )}
     </div>

@@ -6,6 +6,7 @@ import { Pool } from "pg";
 const DEFAULT_SETTINGS: Record<string, string> = {
   teacher: "",
   subject: "الدراسات الإسلامية",
+  teacher_whatsapp: "0559695793",
   school: "",
   w_quran: "20",
   w_oral_written: "40",

@@ -15,6 +15,16 @@ export default async function Showcase() {
     .filter(Boolean)
     .join(" · ");
 
+  // تحويل رقم المعلم إلى صيغة واتساب الدولية (966...)
+  const waDigits = (s.teacher_whatsapp || "").replace(/\D/g, "");
+  const teacherWa = waDigits
+    ? waDigits.startsWith("966")
+      ? waDigits
+      : waDigits.startsWith("0")
+      ? "966" + waDigits.slice(1)
+      : "966" + waDigits
+    : "";
+
   return (
     <div className="min-h-screen">
       <header className="card m-3 px-4 py-3 flex items-center justify-between gap-2">
@@ -27,7 +37,7 @@ export default async function Showcase() {
         <ThemeToggle />
       </header>
       <main className="p-4 max-w-2xl mx-auto">
-        <ParentLookup />
+        <ParentLookup teacherWa={teacherWa} />
         <p className="text-center text-muted text-xs mt-6">
           صفحة خاصة بأولياء الأمور — تُعرض بيانات الطالب عند إدخال رقم الجوال
           المسجّل لدى المعلم.
