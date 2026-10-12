@@ -39,6 +39,12 @@ export async function saveSettings(formData: FormData) {
     .filter(Boolean);
   await setKey("behavior_types", JSON.stringify(behavior));
 
+  const positive = String(formData.get("positive_types") || "")
+    .split("\n")
+    .map((x) => x.trim())
+    .filter(Boolean);
+  await setKey("positive_types", JSON.stringify(positive));
+
   // مفاتيح الظهور في نافذة ولي الأمر (مربّع اختيار: يرسل "1" عند التفعيل، ولا شيء عند الإلغاء)
   for (const k of PARENT_VIEW_KEYS) {
     await setKey(k, formData.get(k) ? "1" : "0");

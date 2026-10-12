@@ -16,6 +16,7 @@ import StudentRow from "@/components/StudentRow";
 import StudentSearch from "@/components/StudentSearch";
 import SelectAllCheckbox from "@/components/SelectAllCheckbox";
 import StudentsBulk from "@/components/StudentsBulk";
+import BulkWhatsapp from "@/components/BulkWhatsapp";
 import { getSettings } from "@/lib/settings";
 import { orderByName } from "@/lib/order";
 
@@ -115,6 +116,7 @@ export default async function StudentsPage({
           bulkDelete={bulkDeleteStudents}
           bulkSetReading={bulkSetReading}
         />
+        <BulkWhatsapp templates={templates} />
 
         {/* جداول الفصول */}
         {byClass.map(({ cls, rows }) => (

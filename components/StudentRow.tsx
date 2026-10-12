@@ -92,7 +92,13 @@ export default function StudentRow({
   return (
     <tr data-name={s.name}>
       <td>
-        <input type="checkbox" className="rowchk" value={s.id} />
+        <input
+          type="checkbox"
+          className="rowchk"
+          value={s.id}
+          data-name={s.name}
+          data-phone={s.phone}
+        />
       </td>
       <td>{s.code}</td>
       <td>

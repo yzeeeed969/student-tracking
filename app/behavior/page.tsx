@@ -4,7 +4,7 @@ import { db } from "@/db";
 import { students, behaviorNotes, contactLogs } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
 import { getSettings } from "@/lib/settings";
-import { addNote, deleteNote } from "./actions";
+import { addNote, addPraise, deleteNote } from "./actions";
 import StudentSearch from "@/components/StudentSearch";
 import { orderByName } from "@/lib/order";
 
@@ -24,6 +24,7 @@ export default async function BehaviorPage({
   const activeId = Number(sp.class) || classes[0]?.id;
   const s = await getSettings();
   const types: string[] = JSON.parse(s.behavior_types || "[]");
+  const positive: string[] = JSON.parse(s.positive_types || "[]");
 
   const classStudents = await db
     .select({ id: students.id, name: students.name })
@@ -36,6 +37,7 @@ export default async function BehaviorPage({
       id: behaviorNotes.id,
       date: behaviorNotes.date,
       type: behaviorNotes.type,
+      category: behaviorNotes.category,
       description: behaviorNotes.description,
       studentId: behaviorNotes.studentId,
       studentName: students.name,
@@ -106,6 +108,40 @@ export default async function BehaviorPage({
           <button className="btn">تسجيل</button>
         </form>
 
+        {/* تسجيل تعزيز / تكريم */}
+        <form
+          action={addPraise}
+          className="card p-4 space-y-3 border-2 border-green-600/50"
+        >
+          <h2 className="font-bold text-green-700 dark:text-green-400">
+            تسجيل تعزيز / تكريم ✨
+          </h2>
+          <input type="hidden" name="_back" value={back} />
+          <div className="grid md:grid-cols-4 gap-2">
+            <select name="studentId" required>
+              <option value="">اختر الطالب…</option>
+              {classStudents.map((st) => (
+                <option key={st.id} value={st.id}>
+                  {st.name}
+                </option>
+              ))}
+            </select>
+            <select name="type" required>
+              <option value="">نوع التعزيز…</option>
+              {positive.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+            <input type="date" name="date" defaultValue={dateStr} />
+            <input name="description" placeholder="وصف (اختياري)" />
+          </div>
+          <button className="btn bg-green-600 hover:bg-green-700">
+            تسجيل التعزيز
+          </button>
+        </form>
+
         {/* سجل الملاحظات */}
         <div className="card p-4 space-y-3">
           <h2 className="font-bold">سجل الملاحظات (آخر 50)</h2>
@@ -126,19 +162,38 @@ export default async function BehaviorPage({
                   <tr key={n.id} data-name={n.studentName || ""}>
                     <td className="whitespace-nowrap">{fmt(n.date)}</td>
                     <td>{n.studentName}</td>
-                    <td>{n.type}</td>
+                    <td>
+                      <span
+                        className={
+                          n.category === "تعزيز"
+                            ? "text-green-600 dark:text-green-400 font-medium"
+                            : ""
+                        }
+                      >
+                        {n.category === "تعزيز" ? "✨ " : ""}
+                        {n.type}
+                      </span>
+                    </td>
                     <td className="text-muted">{n.description}</td>
                     <td className="text-center">
                       <a
                         className="btn-ghost btn text-xs px-2 py-1"
                         target="_blank"
-                        href={`/api/whatsapp?studentId=${
-                          n.studentId
-                        }&kind=${encodeURIComponent(
-                          "مخالفة"
-                        )}&violation=${encodeURIComponent(
-                          "* " + n.type + (n.description ? " - " + n.description : "")
-                        )}`}
+                        href={
+                          n.category === "تعزيز"
+                            ? `/api/whatsapp?studentId=${
+                                n.studentId
+                              }&kind=${encodeURIComponent("تعزيز")}`
+                            : `/api/whatsapp?studentId=${
+                                n.studentId
+                              }&kind=${encodeURIComponent(
+                                "مخالفة"
+                              )}&violation=${encodeURIComponent(
+                                "* " +
+                                  n.type +
+                                  (n.description ? " - " + n.description : "")
+                              )}`
+                        }
                       >
                         ✉ إرسال
                       </a>

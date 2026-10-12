@@ -8,6 +8,7 @@ export default async function SettingsPage() {
   const s = await getSettings();
   const w = weights(s);
   const types: string[] = JSON.parse(s.behavior_types || "[]");
+  const positiveTypes: string[] = JSON.parse(s.positive_types || "[]");
   const pv = parentView(s);
   let customTemplates: { label: string; body: string }[] = [];
   try {
@@ -132,6 +133,16 @@ export default async function SettingsPage() {
               rows={types.length + 2}
               className="w-full"
               defaultValue={types.join("\n")}
+            />
+          </div>
+
+          <div className="card p-4 space-y-3">
+            <h2 className="font-bold">قائمة التعزيز والتكريم (سطر لكل نوع)</h2>
+            <textarea
+              name="positive_types"
+              rows={positiveTypes.length + 2}
+              className="w-full"
+              defaultValue={positiveTypes.join("\n")}
             />
           </div>
 

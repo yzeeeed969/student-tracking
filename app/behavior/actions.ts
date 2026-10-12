@@ -22,6 +22,24 @@ export async function addNote(formData: FormData) {
   backOk(formData, "/behavior", "تم تسجيل الملاحظة");
 }
 
+// تسجيل تعزيز/تكريم (ملاحظة إيجابية)
+export async function addPraise(formData: FormData) {
+  const studentId = Number(formData.get("studentId"));
+  const type = String(formData.get("type") || "").trim();
+  const description = String(formData.get("description") || "").trim();
+  const dateStr = String(formData.get("date") || "");
+  if (!studentId || !type) return;
+  await db.insert(behaviorNotes).values({
+    studentId,
+    type,
+    category: "تعزيز",
+    description,
+    date: dateStr ? new Date(dateStr + "T08:00:00") : new Date(),
+  });
+  revalidatePath("/behavior");
+  backOk(formData, "/behavior", "تم تسجيل التعزيز");
+}
+
 export async function deleteNote(formData: FormData) {
   const id = Number(formData.get("id"));
   if (!id) return;
