@@ -13,6 +13,7 @@ export async function GET(req: Request) {
   const lesson = url.searchParams.get("lesson") || "";
   const violation = url.searchParams.get("violation") || "";
   const tplIdx = url.searchParams.get("tpl"); // قالب مخصّص بالفهرس
+  const custom = url.searchParams.get("custom"); // نص رسالة حرّ (إرسال جماعي)
   if (!studentId)
     return new NextResponse(null, { status: 303, headers: { Location: "/behavior" } });
 
@@ -70,7 +71,10 @@ export async function GET(req: Request) {
   };
 
   let tpl = s.tpl_taazeez || "";
-  if (tplIdx !== null) {
+  if (custom) {
+    tpl = custom;
+    kind = "رسالة جماعية";
+  } else if (tplIdx !== null) {
     // قالب مخصّص من الإعدادات
     try {
       const list = JSON.parse(s.custom_templates || "[]");
