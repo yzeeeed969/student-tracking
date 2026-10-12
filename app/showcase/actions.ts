@@ -8,7 +8,7 @@ import {
   behaviorNotes,
   quranMarks,
 } from "@/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import { computeClassGrades } from "@/lib/grades";
 import { getSettings, parentView } from "@/lib/settings";
 import { SURAHS } from "@/lib/surahs";
@@ -43,6 +43,8 @@ export type ParentReport = {
   homeworkCount: number;
   homeworkItems: HwItem[];
   exams: ExamItem[];
+  currentHw: number; // آخر واجب رُصد في الفصل (0 = لم تبدأ)
+  currentSurahIdx: number; // أبعد سورة سُمّعت في الفصل (ترتيب داخل SURAHS، -1 = لا شيء)
   participationGrade: number;
   total: number | null;
   notes: ParentNote[];
@@ -127,6 +129,11 @@ export async function lookupParent(
     number,
     Awaited<ReturnType<typeof computeClassGrades>>
   >();
+  // تقدّم الفصل: آخر واجب رُصد، وأبعد سورة سُمّعت (لكل فصل مرة واحدة)
+  const progressCache = new Map<
+    number,
+    { currentHw: number; currentSurahIdx: number }
+  >();
 
   const reports: ParentReport[] = [];
   for (const m of matches) {
@@ -136,6 +143,29 @@ export async function lookupParent(
       gradeCache.set(m.classId, cg);
     }
     const g = cg.rows.find((r) => r.id === m.id);
+
+    let prog = progressCache.get(m.classId);
+    if (!prog) {
+      const hwMaxRows = await db
+        .select({ m: sql<number>`coalesce(max(${homeworkMarks.num}),0)` })
+        .from(homeworkMarks)
+        .innerJoin(students, eq(homeworkMarks.studentId, students.id))
+        .where(eq(students.classId, m.classId));
+      const currentHw = Number(hwMaxRows[0]?.m ?? 0);
+
+      const surahRows = await db
+        .selectDistinct({ surah: quranMarks.surah })
+        .from(quranMarks)
+        .innerJoin(students, eq(quranMarks.studentId, students.id))
+        .where(eq(students.classId, m.classId));
+      const idxs = surahRows
+        .map((r) => SURAHS.findIndex((s) => s.num === r.surah))
+        .filter((i) => i >= 0);
+      const currentSurahIdx = idxs.length ? Math.max(...idxs) : -1;
+
+      prog = { currentHw, currentSurahIdx };
+      progressCache.set(m.classId, prog);
+    }
 
     // الواجبات (التقاويم)
     const hwMarks = await db
@@ -209,6 +239,8 @@ export async function lookupParent(
       homeworkCount,
       homeworkItems,
       exams,
+      currentHw: prog.currentHw,
+      currentSurahIdx: prog.currentSurahIdx,
       participationGrade: g?.participationGrade ?? 0,
       total: g?.total ?? null,
       notes: notesRaw.map((n) => ({

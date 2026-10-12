@@ -85,12 +85,41 @@ function ReportCard({
     notes: false,
   };
 
+  const reachedIdx = r.currentSurahIdx; // -1 إن لم يبدأ
+  const reachedCount = reachedIdx + 1; // عدد السور التي وصل إليها الفصل
+  const quranDone = r.surahs.filter((x) => x.done).length;
+  const nextIdx = r.surahs.findIndex((x, idx) => idx <= reachedIdx && !x.done);
+  const nextSurah = nextIdx >= 0 ? r.surahs[nextIdx] : null;
+  const curHw = r.currentHw;
+  const reachedSurahName =
+    s.quran && reachedIdx >= 0 && r.surahs[reachedIdx]
+      ? r.surahs[reachedIdx].name
+      : null;
+
   return (
     <div className="rounded-xl bg-brandsoft/40 p-4 space-y-3">
       <div className="flex items-center justify-between flex-wrap gap-2 border-b border-[var(--border)] pb-2">
         <div className="font-bold text-lg">{r.name}</div>
         <div className="text-muted text-sm">{r.className}</div>
       </div>
+
+      {/* إلى أين وصل الفصل */}
+      {(s.homework || s.quran) && (
+        <div className="rounded-lg bg-brand text-white px-3 py-2 text-center">
+          <div className="text-sm">
+            📍 وصل الفصل حتى:{" "}
+            {s.homework && (
+              <b>{curHw > 0 ? `الواجب ${curHw}` : "لم تبدأ الواجبات"}</b>
+            )}
+            {s.homework && reachedSurahName && " · "}
+            {reachedSurahName && <b>سورة {reachedSurahName}</b>}
+          </div>
+          <div className="text-[11px] opacity-90 mt-0.5">
+            لا حاجة لحلّ أو تسميع ما بعد ذلك — فالفصل لم يصل إليه بعد.
+          </div>
+        </div>
+      )}
+
       <div className="text-xs text-brand bg-brandsoft/60 rounded-md px-3 py-1.5 text-center">
         👇 اضغط على أي بند بالأسفل لعرض تفاصيله
       </div>
@@ -98,41 +127,51 @@ function ReportCard({
       {/* ملخّص التقدّم */}
       {(s.quran || s.homework) && (
         <div className="space-y-3 rounded-lg bg-card/60 p-3">
-          {s.quran &&
-            (() => {
-              const done = r.surahs.filter((x) => x.done).length;
-              const total = r.surahs.length || 16;
-              const next = r.surahs.find((x) => !x.done);
-              return (
-                <div>
+          {s.quran && (
+            <div>
+              {reachedCount > 0 ? (
+                <>
                   <div className="flex items-center justify-between text-xs mb-1">
                     <span className="font-bold">حفظ القرآن</span>
                     <span className="text-muted">
-                      {done} / {total} سورة
+                      {quranDone} / {reachedCount} سورة (ممّا وصل إليه الفصل)
                     </span>
                   </div>
-                  <Bar value={done} max={total} />
-                  {next ? (
+                  <Bar value={quranDone} max={reachedCount} />
+                  {nextSurah ? (
                     <div className="text-xs text-brand mt-1.5">
-                      📖 السورة القادمة للتسميع: <b>سورة {next.name}</b>
+                      📖 السورة القادمة للتسميع: <b>سورة {nextSurah.name}</b>
                     </div>
                   ) : (
                     <div className="text-xs text-brand mt-1.5">
-                      🎉 أكمل حفظ جميع السور، ما شاء الله
+                      👍 أكمل كل ما وصل إليه الفصل، أحسنت
                     </div>
                   )}
+                </>
+              ) : (
+                <div className="text-xs text-muted">
+                  لم يبدأ الفصل تسميع السور بعد.
                 </div>
-              );
-            })()}
+              )}
+            </div>
+          )}
           {s.homework && (
             <div>
-              <div className="flex items-center justify-between text-xs mb-1">
-                <span className="font-bold">الواجبات</span>
-                <span className="text-muted">
-                  {r.homeworkDone} / {r.homeworkCount}
-                </span>
-              </div>
-              <Bar value={r.homeworkDone} max={r.homeworkCount} />
+              {curHw > 0 ? (
+                <>
+                  <div className="flex items-center justify-between text-xs mb-1">
+                    <span className="font-bold">الواجبات</span>
+                    <span className="text-muted">
+                      {r.homeworkDone} / {curHw} (ممّا وصل إليه الفصل)
+                    </span>
+                  </div>
+                  <Bar value={r.homeworkDone} max={curHw} />
+                </>
+              ) : (
+                <div className="text-xs text-muted">
+                  لم تبدأ واجبات الفصل بعد.
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -145,20 +184,20 @@ function ReportCard({
           value={r.quran != null ? `${r.quran} / 20` : "—"}
         >
           <div className="space-y-1">
-            {r.surahs.map((su) => (
+            {r.surahs.map((su, idx) => (
               <div
                 key={su.num}
-                className="flex items-center justify-between gap-2 text-sm rounded-md bg-card/60 px-3 py-1.5"
+                className={`flex items-center justify-between gap-2 text-sm rounded-md px-3 py-1.5 ${
+                  idx > reachedIdx ? "bg-card/30 opacity-70" : "bg-card/60"
+                }`}
               >
                 <span className="font-medium">سورة {su.name}</span>
-                {su.done ? (
-                  <span className="rounded-full bg-brand text-white text-xs px-2 py-0.5">
-                    {su.grade}
-                  </span>
+                {idx > reachedIdx ? (
+                  <Badge kind="locked">🔒 لم نصل إليها بعد</Badge>
+                ) : su.done ? (
+                  <Badge kind="done">{su.grade}</Badge>
                 ) : (
-                  <span className="rounded-full bg-black/10 dark:bg-white/10 text-muted text-xs px-2 py-0.5">
-                    ⏳ بالانتظار
-                  </span>
+                  <Badge kind="pending">⏳ لم يُسمّع بعد</Badge>
                 )}
               </div>
             ))}
@@ -209,20 +248,20 @@ function ReportCard({
             {r.homeworkItems.map((h) => (
               <div
                 key={h.num}
-                className="flex items-center justify-between gap-2 text-sm rounded-md bg-card/60 px-3 py-1.5"
+                className={`flex items-center justify-between gap-2 text-sm rounded-md px-3 py-1.5 ${
+                  h.num > curHw ? "bg-card/30 opacity-70" : "bg-card/60"
+                }`}
               >
                 <span className="font-medium">الواجب {h.num}</span>
                 <span className="text-muted text-xs">
                   {h.page != null ? `التقويم ص ${h.page}` : "التقويم —"}
                 </span>
-                {h.done ? (
-                  <span className="rounded-full bg-brand text-white text-xs px-2 py-0.5">
-                    ✓ تم الحل
-                  </span>
+                {h.num > curHw ? (
+                  <Badge kind="locked">🔒 لم نصل إليه بعد</Badge>
+                ) : h.done ? (
+                  <Badge kind="done">✓ تم الحل</Badge>
                 ) : (
-                  <span className="rounded-full bg-black/10 dark:bg-white/10 text-muted text-xs px-2 py-0.5">
-                    ⏳ لم يُرصد
-                  </span>
+                  <Badge kind="pending">⏳ لم يُرصد</Badge>
                 )}
               </div>
             ))}
@@ -272,6 +311,28 @@ function ReportCard({
         </Section>
       )}
     </div>
+  );
+}
+
+function Badge({
+  kind,
+  children,
+}: {
+  kind: "done" | "pending" | "locked";
+  children: React.ReactNode;
+}) {
+  const cls =
+    kind === "done"
+      ? "bg-brand text-white"
+      : kind === "pending"
+      ? "bg-amber-500/20 text-amber-700 dark:text-amber-300"
+      : "bg-black/10 dark:bg-white/10 text-muted";
+  return (
+    <span
+      className={`rounded-full text-xs px-2 py-0.5 whitespace-nowrap ${cls}`}
+    >
+      {children}
+    </span>
   );
 }
 
