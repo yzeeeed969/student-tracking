@@ -105,15 +105,20 @@ function ReportCard({
 
       {/* إلى أين وصل الفصل */}
       {(s.homework || s.quran) && (
-        <div className="rounded-lg bg-brand text-white px-3 py-2 text-center">
-          <div className="text-sm">
-            📍 وصل الفصل حتى:{" "}
-            {s.homework && (
-              <b>{curHw > 0 ? `الواجب ${curHw}` : "لم تبدأ الواجبات"}</b>
-            )}
-            {s.homework && reachedSurahName && " · "}
-            {reachedSurahName && <b>سورة {reachedSurahName}</b>}
-          </div>
+        <div className="rounded-lg bg-brand text-white px-3 py-2 text-center space-y-0.5">
+          <div className="text-sm font-bold">📍 وصل الفصل حتى:</div>
+          {s.homework && (
+            <div className="text-sm">
+              الواجبات:{" "}
+              <b>{curHw > 0 ? `الواجب ${curHw}` : "لم تبدأ بعد"}</b>
+            </div>
+          )}
+          {s.quran && (
+            <div className="text-sm">
+              القرآن:{" "}
+              <b>{reachedSurahName ? `سورة ${reachedSurahName}` : "لم يبدأ بعد"}</b>
+            </div>
+          )}
           <div className="text-[11px] opacity-90 mt-0.5">
             لا حاجة لحلّ أو تسميع ما بعد ذلك — فالفصل لم يصل إليه بعد.
           </div>
@@ -184,23 +189,33 @@ function ReportCard({
           value={r.quran != null ? `${r.quran} / 20` : "—"}
         >
           <div className="space-y-1">
-            {r.surahs.map((su, idx) => (
-              <div
-                key={su.num}
-                className={`flex items-center justify-between gap-2 text-sm rounded-md px-3 py-1.5 ${
-                  idx > reachedIdx ? "bg-card/30 opacity-70" : "bg-card/60"
-                }`}
-              >
-                <span className="font-medium">سورة {su.name}</span>
-                {idx > reachedIdx ? (
-                  <Badge kind="locked">🔒 لم نصل إليها بعد</Badge>
-                ) : su.done ? (
-                  <Badge kind="done">{su.grade}</Badge>
-                ) : (
-                  <Badge kind="pending">⏳ لم يُسمّع بعد</Badge>
-                )}
-              </div>
-            ))}
+            {r.surahs.map((su, idx) => {
+              const isNext = idx === reachedIdx + 1;
+              const isLocked = idx > reachedIdx + 1;
+              return (
+                <div
+                  key={su.num}
+                  className={`flex items-center justify-between gap-2 text-sm rounded-md px-3 py-1.5 ${
+                    isLocked
+                      ? "bg-card/30 opacity-70"
+                      : isNext && !su.done
+                      ? "bg-brand/10 ring-1 ring-brand/40"
+                      : "bg-card/60"
+                  }`}
+                >
+                  <span className="font-medium">سورة {su.name}</span>
+                  {isLocked ? (
+                    <Badge kind="locked">🔒 لم نصل إليها بعد</Badge>
+                  ) : su.done ? (
+                    <Badge kind="done">{su.grade}</Badge>
+                  ) : isNext ? (
+                    <Badge kind="next">⭐ المطلوبة القادمة</Badge>
+                  ) : (
+                    <Badge kind="pending">⏳ لم يُسمّع بعد</Badge>
+                  )}
+                </div>
+              );
+            })}
             {r.recitation != null && (
               <div className="flex items-center justify-between gap-2 text-sm rounded-md bg-card/60 px-3 py-1.5">
                 <span className="font-medium">تلاوة سورة المدثر</span>
@@ -245,26 +260,36 @@ function ReportCard({
           value={`${r.homeworkDone} / ${r.homeworkCount}`}
         >
           <div className="space-y-1">
-            {r.homeworkItems.map((h) => (
-              <div
-                key={h.num}
-                className={`flex items-center justify-between gap-2 text-sm rounded-md px-3 py-1.5 ${
-                  h.num > curHw ? "bg-card/30 opacity-70" : "bg-card/60"
-                }`}
-              >
-                <span className="font-medium">الواجب {h.num}</span>
-                <span className="text-muted text-xs">
-                  {h.page != null ? `التقويم ص ${h.page}` : "التقويم —"}
-                </span>
-                {h.num > curHw ? (
-                  <Badge kind="locked">🔒 لم نصل إليه بعد</Badge>
-                ) : h.done ? (
-                  <Badge kind="done">✓ تم الحل</Badge>
-                ) : (
-                  <Badge kind="pending">⏳ لم يُرصد</Badge>
-                )}
-              </div>
-            ))}
+            {r.homeworkItems.map((h) => {
+              const isNext = h.num === curHw + 1;
+              const isLocked = h.num > curHw + 1;
+              return (
+                <div
+                  key={h.num}
+                  className={`flex items-center justify-between gap-2 text-sm rounded-md px-3 py-1.5 ${
+                    isLocked
+                      ? "bg-card/30 opacity-70"
+                      : isNext && !h.done
+                      ? "bg-brand/10 ring-1 ring-brand/40"
+                      : "bg-card/60"
+                  }`}
+                >
+                  <span className="font-medium">الواجب {h.num}</span>
+                  <span className="text-muted text-xs">
+                    {h.page != null ? `التقويم ص ${h.page}` : "التقويم —"}
+                  </span>
+                  {isLocked ? (
+                    <Badge kind="locked">🔒 لم نصل إليه بعد</Badge>
+                  ) : h.done ? (
+                    <Badge kind="done">✓ تم الحل</Badge>
+                  ) : isNext ? (
+                    <Badge kind="next">⭐ المطلوب القادم</Badge>
+                  ) : (
+                    <Badge kind="pending">⏳ لم يُرصد</Badge>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </Section>
       )}
@@ -318,12 +343,14 @@ function Badge({
   kind,
   children,
 }: {
-  kind: "done" | "pending" | "locked";
+  kind: "done" | "pending" | "locked" | "next";
   children: React.ReactNode;
 }) {
   const cls =
     kind === "done"
       ? "bg-brand text-white"
+      : kind === "next"
+      ? "bg-brand/15 text-brand ring-1 ring-brand/50 font-bold"
       : kind === "pending"
       ? "bg-amber-500/20 text-amber-700 dark:text-amber-300"
       : "bg-black/10 dark:bg-white/10 text-muted";
