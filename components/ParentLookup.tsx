@@ -209,7 +209,7 @@ function ReportCard({
                   ) : su.done ? (
                     <Badge kind="done">{su.grade}</Badge>
                   ) : isNext ? (
-                    <Badge kind="next">⭐ المطلوبة القادمة</Badge>
+                    <Badge kind="next">🎯 استعدّوا لها</Badge>
                   ) : (
                     <Badge kind="pending">⏳ لم يُسمّع بعد</Badge>
                   )}
