@@ -44,8 +44,8 @@ export default async function QuranSection({
     <div className="space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="text-muted text-sm">
-          كل سورة من 1: ممتاز=1، جيد جدًا=⅔، جيد=⅓. + تلاوة المدثر من 4. المجموع
-          /20 تلقائيًا.
+          كل سورة من 1: ممتاز=1، جيد جدًا=⅔، جيد=⅓. المجموع /20 تلقائيًا (20
+          سورة).
         </div>
       </div>
       <div className="flex items-center justify-between flex-wrap gap-2">
@@ -69,8 +69,6 @@ export default async function QuranSection({
                     {s.name}
                   </th>
                 ))}
-                <th>تلاوة المدثر (4)</th>
-                <th>الحفظ (16)</th>
                 <th>القرآن (20)</th>
               </tr>
             </thead>
@@ -79,9 +77,7 @@ export default async function QuranSection({
                 let hifzPts = 0;
                 for (const s of SURAHS)
                   hifzPts += markMap.get(`${st.id}_${s.num}`) ?? 0;
-                const hifz = Math.round((hifzPts / 3) * 100) / 100;
-                const rec = st.recitation ?? 0;
-                const totalQ = Math.round((hifz + rec) * 100) / 100;
+                const totalQ = Math.round((hifzPts / 3) * 100) / 100;
                 return (
                   <tr key={st.id} data-name={st.name}>
                     <td className="sticky right-0 bg-card whitespace-nowrap">
@@ -112,18 +108,6 @@ export default async function QuranSection({
                         </td>
                       );
                     })}
-                    <td className="p-0">
-                      <input
-                        type="number"
-                        step="0.25"
-                        min="0"
-                        max="4"
-                        name={`rec_${st.id}`}
-                        defaultValue={st.recitation ?? ""}
-                        className="w-16 text-center border-0 rounded-none bg-transparent"
-                      />
-                    </td>
-                    <td className="text-center text-muted">{hifz}</td>
                     <td className="text-center font-bold text-brand">
                       {totalQ}
                     </td>

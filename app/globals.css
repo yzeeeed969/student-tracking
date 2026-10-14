@@ -10,6 +10,7 @@
   --border: #e4e7ec;
   --brand: #0f6e63;
   --brand-soft: #e3f1ee;
+  --zebra: #eef3f1; /* صفّ متناوب: فاتح أقل بياضًا */
 }
 
 .dark {
@@ -20,6 +21,7 @@
   --border: #2a332f;
   --brand: #2bb3a3;
   --brand-soft: #16251f;
+  --zebra: #1e2825; /* صفّ متناوب في الوضع الليلي */
 }
 
 @theme inline {
@@ -107,6 +109,13 @@ th {
 /* زاوية: العمود الثابت يمينًا (اسم الطالب) + العنوان معًا */
 .frozen-head thead th:first-child {
   z-index: 30;
+}
+/* تلوين الصفوف بالتناوب في جداول الرصد (أبيض / فاتح أقل) لتسهيل المتابعة */
+.frozen-head tbody tr:nth-child(odd) td {
+  background-color: var(--card);
+}
+.frozen-head tbody tr:nth-child(even) td {
+  background-color: var(--zebra);
 }
 
 /* سهم البطاقات القابلة للطيّ في نافذة ولي الأمر */

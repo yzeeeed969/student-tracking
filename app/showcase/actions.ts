@@ -36,7 +36,6 @@ export type ParentReport = {
   name: string;
   className: string | null;
   quran: number | null;
-  recitation: number | null;
   surahs: SurahItem[];
   homeworkScore: number;
   homeworkDone: number;
@@ -107,7 +106,6 @@ export async function lookupParent(
       oral2: students.oral2,
       written1: students.written1,
       written2: students.written2,
-      recitation: students.recitation,
     })
     .from(students)
     .leftJoin(classRooms, eq(students.classId, classRooms.id));
@@ -232,7 +230,6 @@ export async function lookupParent(
       name: m.name,
       className: m.className ?? null,
       quran: g?.quran ?? null,
-      recitation: m.recitation ?? null,
       surahs,
       homeworkScore: g?.homeworkScore ?? 0,
       homeworkDone: g?.homeworkDone ?? 0,

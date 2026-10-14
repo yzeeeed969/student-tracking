@@ -1,6 +1,6 @@
 "use server";
 import { db } from "@/db";
-import { quranMarks, students } from "@/db/schema";
+import { quranMarks } from "@/db/schema";
 import { and, eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { SURAHS } from "@/lib/surahs";
@@ -75,15 +75,6 @@ export async function saveQuran(formData: FormData) {
   }
 
   await db.transaction(async (tx) => {
-    // تلاوة المدثر 0..4 لكل طالب
-    for (const id of ids) {
-      const recRaw = formData.get(`rec_${id}`);
-      const rec =
-        recRaw === null || String(recRaw).trim() === ""
-          ? null
-          : Math.max(0, Math.min(4, Number(recRaw)));
-      await tx.update(students).set({ recitation: rec }).where(eq(students.id, id));
-    }
     // السور: احذف ثم أدرج المرصود دفعة واحدة (ذرّي)
     await tx
       .delete(quranMarks)

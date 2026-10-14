@@ -16,9 +16,8 @@ export type StudentGrade = {
   name: string;
   phone: string;
   guardianName: string;
-  quran: number | null; // محسوبة: حفظ + تلاوة المدثر
+  quran: number | null; // محسوبة: حفظ 20 سورة /20
   quranHifz: number; // مجموع حفظ السور
-  recitation: number | null; // تلاوة المدثر 0..4
   oralWritten: number | null;
   homeworkScore: number; // مجموع الواجبات المرصودة
   homeworkDone: number; // عدد الواجبات المرصودة
@@ -105,15 +104,11 @@ export async function computeClassGrades(
         ? Math.round((participationRaw / maxPart) * w.participation * 100) / 100
         : 0;
 
-    // القرآن = حفظ (مجموع points/3) + تلاوة المدثر
+    // القرآن = حفظ 20 سورة (مجموع points/3) — المجموع من 20
     const q = qrMap.get(st.id);
     const quranHifz = Math.round((Number(q?.hifz ?? 0) / 3) * 100) / 100;
     const quranCnt = Number(q?.cnt ?? 0);
-    const recitation = st.recitation ?? null;
-    const quranComputed =
-      quranCnt > 0 || recitation != null
-        ? Math.round((quranHifz + (recitation ?? 0)) * 100) / 100
-        : null;
+    const quranComputed = quranCnt > 0 ? quranHifz : null;
 
     // الشفهي والتحريري = مجموع الاختبارات الأربعة (شفهي1+شفهي2+تحريري1+تحريري2)
     const owParts = [st.oral1, st.oral2, st.written1, st.written2];
@@ -143,7 +138,6 @@ export async function computeClassGrades(
       guardianName: st.guardianName,
       quran: quranComputed,
       quranHifz,
-      recitation,
       oralWritten: oralWrittenComputed,
       homeworkScore,
       homeworkDone,

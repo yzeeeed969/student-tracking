@@ -216,14 +216,6 @@ function ReportCard({
                 </div>
               );
             })}
-            {r.recitation != null && (
-              <div className="flex items-center justify-between gap-2 text-sm rounded-md bg-card/60 px-3 py-1.5">
-                <span className="font-medium">تلاوة سورة المدثر</span>
-                <span className="rounded-full bg-brand text-white text-xs px-2 py-0.5">
-                  {r.recitation} / 4
-                </span>
-              </div>
-            )}
           </div>
         </Section>
       )}
