@@ -10,6 +10,7 @@ const links = [
   { href: "/students", label: "الطلاب" },
   { href: "/record", label: "الرصد" },
   { href: "/behavior", label: "السلوك والملاحظات" },
+  { href: "/worksheets", label: "أوراق العمل" },
   { href: "/library", label: "المكتبة" },
   { href: "/reports", label: "التقارير" },
   { href: "/settings", label: "الإعدادات" },

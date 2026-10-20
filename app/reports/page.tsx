@@ -103,6 +103,7 @@ export default async function ReportsPage({
                     value={card.g.oralWritten ?? "—"}
                   />
                   <Stat label="الواجبات" value={card.g.homeworkScore} />
+                  <Stat label="أوراق العمل" value={card.g.worksheetsGrade} />
                   <Stat label="المشاركة" value={card.g.participationGrade} />
                 </div>
                 <div className="mt-3 p-3 rounded-lg bg-brandsoft text-center">

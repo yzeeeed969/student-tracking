@@ -7,8 +7,10 @@ import {
   homeworkMarks,
   behaviorNotes,
   quranMarks,
+  worksheets,
+  worksheetMarks,
 } from "@/db/schema";
-import { eq, desc, sql } from "drizzle-orm";
+import { eq, desc, asc, sql } from "drizzle-orm";
 import { computeClassGrades } from "@/lib/grades";
 import { getSettings, parentView } from "@/lib/settings";
 import { SURAHS } from "@/lib/surahs";
@@ -32,6 +34,13 @@ export type ExamItem = { label: string; value: number | null };
 
 export type HwItem = { num: number; done: boolean; page: number | null };
 
+export type WorksheetItem = {
+  num: number;
+  title: string;
+  links: { label: string; url: string }[];
+  score: number | null; // درجة الطالب من 20 (null = لم تُرصد)
+};
+
 export type ParentReport = {
   name: string;
   className: string | null;
@@ -42,6 +51,9 @@ export type ParentReport = {
   homeworkCount: number;
   homeworkItems: HwItem[];
   exams: ExamItem[];
+  worksheetsGrade: number; // درجة أوراق العمل (من وزنها، 9)
+  worksheetsWeight: number; // وزن أوراق العمل (9)
+  worksheetItems: WorksheetItem[]; // الأوراق المنشورة + درجة الابن
   currentHw: number; // آخر واجب رُصد في الفصل (0 = لم تبدأ)
   currentSurahIdx: number; // أبعد سورة سُمّعت في الفصل (ترتيب داخل SURAHS، -1 = لا شيء)
   participationGrade: number;
@@ -58,6 +70,7 @@ export type ParentShow = {
   examO1: boolean;
   examO2: boolean;
   participation: boolean;
+  worksheets: boolean;
   total: boolean;
   notes: boolean;
 };
@@ -121,7 +134,24 @@ export async function lookupParent(
 
   const s = await getSettings();
   const homeworkCount = Number(s.homework_count ?? 18);
+  const worksheetsWeight = Number(s.w_worksheets ?? 9);
   const show = parentView(s);
+
+  // أوراق العمل المنشورة (عامة لكل الفصول)
+  const pubSheets = show.worksheets
+    ? await db
+        .select()
+        .from(worksheets)
+        .where(eq(worksheets.published, true))
+        .orderBy(asc(worksheets.order), asc(worksheets.num))
+    : [];
+  function parseLinks(raw: string): { label: string; url: string }[] {
+    try {
+      return JSON.parse(raw || "[]");
+    } catch {
+      return [];
+    }
+  }
 
   const gradeCache = new Map<
     number,
@@ -211,6 +241,25 @@ export async function lookupParent(
       .filter((e) => e.on)
       .map((e) => ({ label: e.label, value: e.value ?? null }));
 
+    // أوراق العمل: درجة الابن لكل ورقة منشورة
+    let worksheetItems: WorksheetItem[] = [];
+    if (show.worksheets && pubSheets.length) {
+      const wm = await db
+        .select({
+          worksheetId: worksheetMarks.worksheetId,
+          score: worksheetMarks.score,
+        })
+        .from(worksheetMarks)
+        .where(eq(worksheetMarks.studentId, m.id));
+      const wmap = new Map(wm.map((x) => [x.worksheetId, x.score]));
+      worksheetItems = pubSheets.map((ws) => ({
+        num: ws.num,
+        title: ws.title || `الدرس ${ws.num}`,
+        links: parseLinks(ws.links),
+        score: wmap.get(ws.id) ?? null,
+      }));
+    }
+
     // الملاحظات (اختياري)
     const notesRaw = show.notes
       ? await db
@@ -236,6 +285,9 @@ export async function lookupParent(
       homeworkCount,
       homeworkItems,
       exams,
+      worksheetsGrade: g?.worksheetsGrade ?? 0,
+      worksheetsWeight,
+      worksheetItems,
       currentHw: prog.currentHw,
       currentSurahIdx: prog.currentSurahIdx,
       participationGrade: g?.participationGrade ?? 0,

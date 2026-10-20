@@ -4,6 +4,7 @@ import {
   homeworkMarks,
   participation,
   quranMarks,
+  worksheetMarks,
   classRooms,
 } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
@@ -23,6 +24,9 @@ export type StudentGrade = {
   homeworkDone: number; // عدد الواجبات المرصودة
   participationRaw: number; // مجموع نقاط المشاركة
   participationGrade: number; // المشاركة بعد الموازنة /وزنها
+  worksheetAvg: number | null; // متوسط درجات أوراق العمل (من 20)
+  worksheetDone: number; // عدد أوراق العمل المرصودة
+  worksheetsGrade: number; // أوراق العمل بعد الموازنة (/وزنها، من 9)
   total: number | null;
 };
 
@@ -94,6 +98,23 @@ export async function computeClassGrades(
     .groupBy(quranMarks.studentId);
   const qrMap = new Map(qr.map((r) => [r.studentId, r]));
 
+  // أوراق العمل: متوسط درجات الطالب (كل ورقة من 20)
+  const ws = await db
+    .select({
+      studentId: worksheetMarks.studentId,
+      total: sql<number>`coalesce(sum(${worksheetMarks.score}),0)`,
+      cnt: sql<number>`count(${worksheetMarks.score})::int`,
+    })
+    .from(worksheetMarks)
+    .where(
+      sql`${worksheetMarks.studentId} in (${sql.join(
+        ids.map((i) => sql`${i}`),
+        sql`, `
+      )})`
+    )
+    .groupBy(worksheetMarks.studentId);
+  const wsMap = new Map(ws.map((r) => [r.studentId, r]));
+
   const rows: StudentGrade[] = studentRows.map((st) => {
     const h = hwMap.get(st.id);
     const homeworkScore = Number(h?.total ?? 0);
@@ -117,17 +138,31 @@ export async function computeClassGrades(
       ? Math.round(owParts.reduce<number>((a, v) => a + (v ?? 0), 0) * 100) / 100
       : null;
 
+    // أوراق العمل: متوسط درجاته (من 20) ← موازنة مطلقة إلى وزنها (9)
+    const wsRow = wsMap.get(st.id);
+    const worksheetDone = Number(wsRow?.cnt ?? 0);
+    const worksheetAvg =
+      worksheetDone > 0
+        ? Math.round((Number(wsRow?.total ?? 0) / worksheetDone) * 100) / 100
+        : null;
+    const worksheetsGrade =
+      worksheetAvg != null
+        ? Math.round((worksheetAvg / 20) * w.worksheets * 100) / 100
+        : 0;
+
     const hasAny =
       quranComputed != null ||
       oralWrittenComputed != null ||
       homeworkDone > 0 ||
-      participationRaw > 0;
+      participationRaw > 0 ||
+      worksheetDone > 0;
 
     const total = hasAny
       ? (quranComputed ?? 0) +
         (oralWrittenComputed ?? 0) +
         homeworkScore +
-        participationGrade
+        participationGrade +
+        worksheetsGrade
       : null;
 
     return {
@@ -143,6 +178,9 @@ export async function computeClassGrades(
       homeworkDone,
       participationRaw,
       participationGrade,
+      worksheetAvg,
+      worksheetDone,
+      worksheetsGrade,
       total: total == null ? null : Math.round(total * 100) / 100,
     };
   });

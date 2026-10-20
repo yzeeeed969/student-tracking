@@ -11,7 +11,8 @@ const DEFAULT_SETTINGS: Record<string, string> = {
   w_quran: "20",
   w_oral_written: "40",
   w_homework: "18",
-  w_participation: "22",
+  w_participation: "13",
+  w_worksheets: "9",
   homework_count: "18",
   behavior_types: JSON.stringify([
     "نسي القلم",
@@ -62,6 +63,21 @@ async function main() {
       `INSERT INTO settings (key, value) VALUES ($1, $2)
        ON CONFLICT (key) DO NOTHING`,
       [key, value]
+    );
+  }
+
+  // نقل 9 درجات من المشاركة إلى أوراق العمل (مرة واحدة، فقط إن كانت المشاركة لا تزال 22)
+  await pool.query(
+    `UPDATE settings SET value='13' WHERE key='w_participation' AND value='22'`
+  );
+
+  // بذرة 18 ورقة عمل (درس لكل ورقة) إن لم تكن موجودة
+  for (let n = 1; n <= 18; n++) {
+    await pool.query(
+      `INSERT INTO worksheets (num, title, links, published, "order")
+       VALUES ($1, $2, '[]', false, $1)
+       ON CONFLICT (num) DO NOTHING`,
+      [n, `الدرس ${n}`]
     );
   }
 

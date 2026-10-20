@@ -16,7 +16,8 @@ export default async function SettingsPage() {
   } catch {
     customTemplates = [];
   }
-  const sum = w.quran + w.oralWritten + w.homework + w.participation;
+  const sum =
+    w.quran + w.oralWritten + w.homework + w.worksheets + w.participation;
 
   return (
     <div className="min-h-screen">
@@ -46,7 +47,7 @@ export default async function SettingsPage() {
                 (المجموع = {sum})
               </span>
             </h2>
-            <div className="grid md:grid-cols-4 gap-2">
+            <div className="grid md:grid-cols-3 gap-2">
               <Field name="w_quran" label="القرآن" value={String(w.quran)} type="number" />
               <Field
                 name="w_oral_written"
@@ -58,6 +59,12 @@ export default async function SettingsPage() {
                 name="w_homework"
                 label="الواجبات"
                 value={String(w.homework)}
+                type="number"
+              />
+              <Field
+                name="w_worksheets"
+                label="أوراق العمل"
+                value={String(w.worksheets)}
                 type="number"
               />
               <Field
@@ -112,6 +119,11 @@ export default async function SettingsPage() {
                 name="parent_show_participation"
                 label="المشاركة"
                 checked={pv.participation}
+              />
+              <Check
+                name="parent_show_worksheets"
+                label="أوراق العمل (درجة الابن)"
+                checked={pv.worksheets}
               />
               <Check
                 name="parent_show_total"

@@ -13,7 +13,8 @@ export function weights(s: Record<string, string>) {
     quran: Number(s.w_quran ?? 20),
     oralWritten: Number(s.w_oral_written ?? 40),
     homework: Number(s.w_homework ?? 18),
-    participation: Number(s.w_participation ?? 22),
+    participation: Number(s.w_participation ?? 13),
+    worksheets: Number(s.w_worksheets ?? 9),
   };
 }
 
@@ -33,6 +34,7 @@ export function parentView(s: Record<string, string>) {
     examO1: on("parent_show_exam_o1", false), // الشفهي الأول
     examO2: on("parent_show_exam_o2", false), // الشفهي الثاني
     participation: on("parent_show_participation", false),
+    worksheets: on("parent_show_worksheets", true),
     total: on("parent_show_total", false),
     notes: on("parent_show_notes", false),
   };
@@ -47,6 +49,7 @@ export const PARENT_VIEW_KEYS = [
   "parent_show_exam_o1",
   "parent_show_exam_o2",
   "parent_show_participation",
+  "parent_show_worksheets",
   "parent_show_total",
   "parent_show_notes",
 ] as const;

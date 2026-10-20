@@ -5,6 +5,7 @@ import ExamsSection from "@/components/sections/ExamsSection";
 import HomeworkSection from "@/components/sections/HomeworkSection";
 import QuranSection from "@/components/sections/QuranSection";
 import ParticipationSection from "@/components/sections/ParticipationSection";
+import WorksheetsSection from "@/components/sections/WorksheetsSection";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,7 @@ const TABS = [
   { view: "exams", label: "الاختبارات" },
   { view: "homework", label: "الواجبات" },
   { view: "quran", label: "القرآن" },
+  { view: "worksheets", label: "أوراق العمل" },
   { view: "participation", label: "المشاركة" },
 ];
 
@@ -43,6 +45,9 @@ export default async function RecordPage({
         )}
         {view === "quran" && (
           <QuranSection classes={classes} activeId={activeId} />
+        )}
+        {view === "worksheets" && (
+          <WorksheetsSection classes={classes} activeId={activeId} />
         )}
         {view === "participation" && (
           <ParticipationSection

@@ -22,6 +22,7 @@ export async function saveSettings(formData: FormData) {
     "w_oral_written",
     "w_homework",
     "w_participation",
+    "w_worksheets",
     "homework_count",
     "tpl_taazeez",
     "tpl_homework",

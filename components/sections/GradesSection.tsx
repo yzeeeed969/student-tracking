@@ -16,8 +16,8 @@ export default async function GradesSection({
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="text-muted text-sm">
           القرآن {w.quran} + الشفهي والتحريري {w.oralWritten} + الواجبات{" "}
-          {w.homework} + المشاركة {w.participation} = 100. تُحسب كل درجة تلقائيًا من
-          تبويبها (الاختبارات، الواجبات، القرآن، المشاركة).
+          {w.homework} + أوراق العمل {w.worksheets} + المشاركة {w.participation} =
+          100. تُحسب كل درجة تلقائيًا من تبويبها.
         </div>
       </div>
       <div className="flex items-center justify-between flex-wrap gap-2">
@@ -35,6 +35,7 @@ export default async function GradesSection({
               <th>القرآن ({w.quran})</th>
               <th>الشفهي والتحريري ({w.oralWritten})</th>
               <th>الواجبات ({w.homework})</th>
+              <th>أوراق العمل ({w.worksheets})</th>
               <th>المشاركة ({w.participation})</th>
               <th>المجموع (100)</th>
             </tr>
@@ -49,6 +50,7 @@ export default async function GradesSection({
                   {r.oralWritten ?? "—"}
                 </td>
                 <td className="text-center text-muted">{r.homeworkScore}</td>
+                <td className="text-center text-muted">{r.worksheetsGrade}</td>
                 <td className="text-center text-muted">
                   {r.participationGrade}
                 </td>

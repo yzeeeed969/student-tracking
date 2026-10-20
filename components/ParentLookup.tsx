@@ -81,6 +81,7 @@ function ReportCard({
     examO1: false,
     examO2: false,
     participation: false,
+    worksheets: true,
     total: false,
     notes: false,
   };
@@ -239,6 +240,43 @@ function ReportCard({
                     لم يُرصد بعد
                   </span>
                 )}
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {/* أوراق العمل */}
+      {s.worksheets && r.worksheetItems.length > 0 && (
+        <Section
+          title="أوراق العمل"
+          value={`${r.worksheetsGrade} / ${r.worksheetsWeight}`}
+        >
+          <div className="space-y-1">
+            {r.worksheetItems.map((ws) => (
+              <div
+                key={ws.num}
+                className="flex items-center justify-between gap-2 text-sm rounded-md bg-card/60 px-3 py-1.5 flex-wrap"
+              >
+                <span className="font-medium flex-1 min-w-32">{ws.title}</span>
+                <div className="flex items-center gap-2">
+                  {ws.links.map((l, i) => (
+                    <a
+                      key={i}
+                      href={l.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs rounded-md bg-brand/10 text-brand px-2 py-0.5 hover:bg-brand/20"
+                    >
+                      📄 {l.label}
+                    </a>
+                  ))}
+                  {ws.score != null ? (
+                    <Badge kind="done">{ws.score} / 20</Badge>
+                  ) : (
+                    <Badge kind="pending">لم تُرصد</Badge>
+                  )}
+                </div>
               </div>
             ))}
           </div>
