@@ -20,6 +20,34 @@ function fields(fd: FormData, id: number) {
   };
 }
 
+// حفظ فوري لخانة اختبار واحدة (o1/o2/w1/w2) — للنافذة المنبثقة
+const EXAM_FIELD: Record<string, "oral1" | "oral2" | "written1" | "written2"> = {
+  o1: "oral1",
+  o2: "oral2",
+  w1: "written1",
+  w2: "written2",
+};
+export async function setExamCell(
+  studentId: number,
+  field: string,
+  value: string
+) {
+  const col = EXAM_FIELD[field];
+  if (!studentId || !col) return;
+  let v: number | null = null;
+  if (value !== "" && value != null) {
+    const n = Number(value);
+    if (Number.isFinite(n)) v = Math.max(0, Math.min(10, n));
+  }
+  await db
+    .update(students)
+    .set({ [col]: v })
+    .where(eq(students.id, studentId));
+  revalidatePath("/record");
+  revalidatePath("/reports");
+  revalidatePath("/showcase");
+}
+
 // حفظ اختبارات طالب واحد (زر الحفظ بجانب الاسم)
 export async function saveOneExam(studentId: number, fd: FormData) {
   if (!studentId) return;

@@ -9,7 +9,7 @@ import AutoSelect from "@/components/AutoSelect";
 import StudentSearch from "@/components/StudentSearch";
 import SelectAllCheckbox from "@/components/SelectAllCheckbox";
 import QuranBulk from "@/components/QuranBulk";
-import ReadingBadge from "@/components/ReadingBadge";
+import StudentName from "@/components/StudentName";
 import { orderByName } from "@/lib/order";
 
 export default async function QuranSection({
@@ -86,7 +86,11 @@ export default async function QuranSection({
                         className="rowchk ml-1"
                         value={st.id}
                       />
-                      {st.name} <ReadingBadge level={st.readingLevel} />
+                      <StudentName
+                        id={st.id}
+                        name={st.name}
+                        readingLevel={st.readingLevel}
+                      />
                     </td>
                     {SURAHS.map((s) => {
                       const v = markMap.get(`${st.id}_${s.num}`);

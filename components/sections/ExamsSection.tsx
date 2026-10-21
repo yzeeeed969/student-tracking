@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 import { saveExams, saveOneExam } from "@/app/exams/actions";
 import RowSaveButton from "@/components/RowSaveButton";
 import StudentSearch from "@/components/StudentSearch";
-import ReadingBadge from "@/components/ReadingBadge";
+import StudentName from "@/components/StudentName";
 import { orderByName } from "@/lib/order";
 
 export default async function ExamsSection({
@@ -62,7 +62,11 @@ export default async function ExamsSection({
                   <tr key={st.id} data-name={st.name}>
                     <td className="sticky right-0 bg-card whitespace-nowrap">
                       <div>
-                        {st.name} <ReadingBadge level={st.readingLevel} />
+                        <StudentName
+                          id={st.id}
+                          name={st.name}
+                          readingLevel={st.readingLevel}
+                        />
                       </div>
                       <div className="mt-1">
                         <RowSaveButton

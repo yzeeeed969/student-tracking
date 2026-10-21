@@ -14,7 +14,7 @@ import AutoSelect from "@/components/AutoSelect";
 import StudentSearch from "@/components/StudentSearch";
 import SelectAllCheckbox from "@/components/SelectAllCheckbox";
 import HomeworkBulk from "@/components/HomeworkBulk";
-import ReadingBadge from "@/components/ReadingBadge";
+import StudentName from "@/components/StudentName";
 import { orderByName } from "@/lib/order";
 
 export default async function HomeworkSection({
@@ -99,7 +99,11 @@ export default async function HomeworkSection({
                           className="rowchk ml-1"
                           value={st.id}
                         />
-                        {st.name} <ReadingBadge level={st.readingLevel} />
+                        <StudentName
+                          id={st.id}
+                          name={st.name}
+                          readingLevel={st.readingLevel}
+                        />
                       </div>
                       <div className="flex items-center gap-2 mt-1">
                         <RowSaveButton

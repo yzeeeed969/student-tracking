@@ -2,7 +2,8 @@
 import { useState } from "react";
 import ToastForm from "./ToastForm";
 import RowSaveButton from "./RowSaveButton";
-import ReadingBadge, { READING_LEVELS } from "./ReadingBadge";
+import { READING_LEVELS } from "./ReadingBadge";
+import StudentName from "./StudentName";
 
 type S = {
   id: number;
@@ -102,7 +103,7 @@ export default function StudentRow({
       </td>
       <td>{s.code}</td>
       <td>
-        {s.name} <ReadingBadge level={s.readingLevel} />
+        <StudentName id={s.id} name={s.name} readingLevel={s.readingLevel} />
       </td>
       <td>{s.guardianName}</td>
       <td dir="ltr" className="text-right">

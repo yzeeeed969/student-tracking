@@ -13,7 +13,7 @@ import ToastForm from "@/components/ToastForm";
 import StudentSearch from "@/components/StudentSearch";
 import SelectAllCheckbox from "@/components/SelectAllCheckbox";
 import ParticipationBulk from "@/components/ParticipationBulk";
-import ReadingBadge from "@/components/ReadingBadge";
+import StudentName from "@/components/StudentName";
 import { orderByName } from "@/lib/order";
 
 export default async function ParticipationSection({
@@ -139,7 +139,11 @@ export default async function ParticipationSection({
                   </td>
                   <td>{st.code}</td>
                   <td>
-                    {st.name} <ReadingBadge level={st.readingLevel} />
+                    <StudentName
+                      id={st.id}
+                      name={st.name}
+                      readingLevel={st.readingLevel}
+                    />
                   </td>
                   <td className="text-center font-bold">
                     {todayMap.get(st.id) ?? 0}

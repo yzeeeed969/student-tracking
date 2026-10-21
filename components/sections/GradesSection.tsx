@@ -1,6 +1,7 @@
 import ClassTabs from "@/components/ClassTabs";
 import { computeClassGrades } from "@/lib/grades";
 import StudentSearch from "@/components/StudentSearch";
+import StudentName from "@/components/StudentName";
 
 export default async function GradesSection({
   classes,
@@ -44,7 +45,9 @@ export default async function GradesSection({
             {rows.map((r) => (
               <tr key={r.id} data-name={r.name}>
                 <td>{r.code}</td>
-                <td>{r.name}</td>
+                <td>
+                  <StudentName id={r.id} name={r.name} />
+                </td>
                 <td className="text-center text-muted">{r.quran ?? "—"}</td>
                 <td className="text-center text-muted">
                   {r.oralWritten ?? "—"}

@@ -5,7 +5,7 @@ import { eq, sql, asc } from "drizzle-orm";
 import { setWorksheetCell } from "@/app/worksheets/actions";
 import AutoNumber from "@/components/AutoNumber";
 import StudentSearch from "@/components/StudentSearch";
-import ReadingBadge from "@/components/ReadingBadge";
+import StudentName from "@/components/StudentName";
 import Link from "next/link";
 import { getSettings, weights } from "@/lib/settings";
 import { orderByName } from "@/lib/order";
@@ -104,7 +104,11 @@ export default async function WorksheetsSection({
                   return (
                     <tr key={st.id} data-name={st.name}>
                       <td className="sticky right-0 bg-card whitespace-nowrap">
-                        {st.name} <ReadingBadge level={st.readingLevel} />
+                        <StudentName
+                          id={st.id}
+                          name={st.name}
+                          readingLevel={st.readingLevel}
+                        />
                       </td>
                       {sheets.map((s) => {
                         const v = markMap.get(`${st.id}_${s.id}`);
