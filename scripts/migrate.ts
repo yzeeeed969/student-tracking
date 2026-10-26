@@ -71,14 +71,19 @@ async function main() {
     `UPDATE settings SET value='13' WHERE key='w_participation' AND value='22'`
   );
 
-  // بذرة 18 ورقة عمل (درس لكل ورقة) إن لم تكن موجودة
-  for (let n = 1; n <= 18; n++) {
-    await pool.query(
-      `INSERT INTO worksheets (num, title, links, published, "order")
-       VALUES ($1, $2, '[]', false, $1)
-       ON CONFLICT (num) DO NOTHING`,
-      [n, `الدرس ${n}`]
-    );
+  // بذرة 18 ورقة عمل (درس لكل ورقة) لكل فصل إن لم تكن موجودة
+  const classRows = (
+    await pool.query(`SELECT id FROM class_rooms ORDER BY "order", id`)
+  ).rows as { id: number }[];
+  for (const c of classRows) {
+    for (let n = 1; n <= 18; n++) {
+      await pool.query(
+        `INSERT INTO worksheets (class_id, num, title, links, published, "order")
+         VALUES ($1, $2, $3, '[]', false, $2)
+         ON CONFLICT (class_id, num) DO NOTHING`,
+        [c.id, n, `الدرس ${n}`]
+      );
+    }
   }
 
   console.log("✓ تم تهيئة قاعدة البيانات (الجداول والإعدادات جاهزة)");

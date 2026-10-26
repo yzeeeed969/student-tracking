@@ -2,7 +2,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import ParentLookup from "@/components/ParentLookup";
 import { getSettings } from "@/lib/settings";
 import { db } from "@/db";
-import { worksheets } from "@/db/schema";
+import { worksheets, classRooms } from "@/db/schema";
 import { eq, asc } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
@@ -37,7 +37,11 @@ export default async function Showcase() {
       : "966" + waDigits
     : "";
 
-  const pubSheets = (
+  const classes = await db
+    .select()
+    .from(classRooms)
+    .orderBy(asc(classRooms.order), asc(classRooms.id));
+  const allPub = (
     await db
       .select()
       .from(worksheets)
@@ -46,6 +50,9 @@ export default async function Showcase() {
   )
     .map((ws) => ({ ...ws, parsed: parseLinks(ws.links) }))
     .filter((ws) => ws.parsed.length > 0);
+  const pubByClass = classes
+    .map((c) => ({ cls: c, sheets: allPub.filter((w) => w.classId === c.id) }))
+    .filter((g) => g.sheets.length > 0);
 
   return (
     <div className="min-h-screen">
@@ -61,37 +68,44 @@ export default async function Showcase() {
       <main className="p-4 max-w-2xl mx-auto space-y-5">
         <ParentLookup teacherWa={teacherWa} />
 
-        {pubSheets.length > 0 && (
-          <div className="card p-5 space-y-3">
-            <h2 className="font-bold text-lg text-brand">أوراق العمل</h2>
-            <p className="text-muted text-sm">
-              روابط أوراق عمل الدروس — متاحة للجميع.
-            </p>
-            <div className="space-y-1.5">
-              {pubSheets.map((ws) => (
-                <div
-                  key={ws.id}
-                  className="flex items-center justify-between gap-2 text-sm rounded-md bg-brandsoft/40 px-3 py-2 flex-wrap"
-                >
-                  <span className="font-medium flex-1 min-w-32">
-                    {ws.title || `الدرس ${ws.num}`}
-                  </span>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {ws.parsed.map((l, i) => (
-                      <a
-                        key={i}
-                        href={l.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs rounded-md bg-brand text-white px-3 py-1 hover:opacity-90"
-                      >
-                        📄 {l.label}
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              ))}
+        {pubByClass.length > 0 && (
+          <div className="card p-5 space-y-4">
+            <div>
+              <h2 className="font-bold text-lg text-brand">أوراق العمل</h2>
+              <p className="text-muted text-sm">
+                روابط أوراق عمل الدروس — اختر أوراق فصل ابنك.
+              </p>
             </div>
+            {pubByClass.map(({ cls, sheets }) => (
+              <div key={cls.id} className="space-y-1.5">
+                <div className="font-bold text-sm border-b border-[var(--border)] pb-1">
+                  {cls.name}
+                </div>
+                {sheets.map((ws) => (
+                  <div
+                    key={ws.id}
+                    className="flex items-center justify-between gap-2 text-sm rounded-md bg-brandsoft/40 px-3 py-2 flex-wrap"
+                  >
+                    <span className="font-medium flex-1 min-w-32">
+                      {ws.title || `الدرس ${ws.num}`}
+                    </span>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {ws.parsed.map((l, i) => (
+                        <a
+                          key={i}
+                          href={l.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs rounded-md bg-brand text-white px-3 py-1 hover:opacity-90"
+                        >
+                          📄 {l.label}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
           </div>
         )}
 

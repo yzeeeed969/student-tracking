@@ -73,14 +73,15 @@ export async function saveWorksheet(formData: FormData) {
 
 export async function addWorksheet(formData: FormData) {
   const num = Number(formData.get("num"));
+  const classId = Number(formData.get("classId"));
   const title = String(formData.get("title") || "").trim() || `الدرس ${num}`;
-  if (!num) return;
+  if (!num || !classId) return;
   const existing = await db
     .select({ id: worksheets.id })
     .from(worksheets)
-    .where(eq(worksheets.num, num));
+    .where(and(eq(worksheets.classId, classId), eq(worksheets.num, num)));
   if (existing.length) return;
-  await db.insert(worksheets).values({ num, title, order: num });
+  await db.insert(worksheets).values({ classId, num, title, order: num });
   revalidatePath("/worksheets");
 }
 

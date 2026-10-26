@@ -43,6 +43,13 @@
       "when": 1792522558026,
       "tag": "0005_worksheets",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792991784509,
+      "tag": "0006_worksheets_per_class",
+      "breakpoints": true
     }
   ]
 }

@@ -241,9 +241,10 @@ export async function lookupParent(
       .filter((e) => e.on)
       .map((e) => ({ label: e.label, value: e.value ?? null }));
 
-    // أوراق العمل: درجة الابن لكل ورقة منشورة
+    // أوراق العمل: درجة الابن لكل ورقة منشورة في فصله
     let worksheetItems: WorksheetItem[] = [];
-    if (show.worksheets && pubSheets.length) {
+    const myClassSheets = pubSheets.filter((ws) => ws.classId === m.classId);
+    if (show.worksheets && myClassSheets.length) {
       const wm = await db
         .select({
           worksheetId: worksheetMarks.worksheetId,
@@ -252,7 +253,7 @@ export async function lookupParent(
         .from(worksheetMarks)
         .where(eq(worksheetMarks.studentId, m.id));
       const wmap = new Map(wm.map((x) => [x.worksheetId, x.score]));
-      worksheetItems = pubSheets.map((ws) => ({
+      worksheetItems = myClassSheets.map((ws) => ({
         num: ws.num,
         title: ws.title || `الدرس ${ws.num}`,
         links: parseLinks(ws.links),

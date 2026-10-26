@@ -57,6 +57,7 @@ export async function getStudentFull(id: number): Promise<StudentFull | null> {
   const sheets = await db
     .select()
     .from(worksheets)
+    .where(eq(worksheets.classId, st.classId))
     .orderBy(asc(worksheets.order), asc(worksheets.num));
   const wm = await db
     .select({ worksheetId: worksheetMarks.worksheetId, score: worksheetMarks.score })
