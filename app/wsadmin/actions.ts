@@ -5,7 +5,10 @@ import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 // ——— أداة مؤقتة: رصد درجات أوراق العمل دفعة واحدة (لا تمسح أي درجة موجودة) ———
+const WSADMIN_KEY = "tmp_9f3kQ27xZ_wsadmin";
+
 export async function applyWsMarks(formData: FormData) {
+  if (String(formData.get("k") || "") !== WSADMIN_KEY) return;
   const raw = String(formData.get("payload") || "").trim();
   if (!raw) return;
   let arr: { s: number; w: number; v: number }[];

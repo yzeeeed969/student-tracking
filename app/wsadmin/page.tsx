@@ -47,6 +47,7 @@ export default async function WsAdmin() {
       </pre>
       <h2>ROSTER_JSON_END</h2>
       <form action={applyWsMarks} style={{ marginTop: 20 }}>
+        <input type="hidden" name="k" value="tmp_9f3kQ27xZ_wsadmin" />
         <textarea
           name="payload"
           id="payload"
