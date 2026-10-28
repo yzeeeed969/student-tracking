@@ -71,19 +71,34 @@ async function main() {
     `UPDATE settings SET value='13' WHERE key='w_participation' AND value='22'`
   );
 
-  // بذرة 18 ورقة عمل (درس لكل ورقة) لكل فصل إن لم تكن موجودة
-  const classRows = (
-    await pool.query(`SELECT id FROM class_rooms ORDER BY "order", id`)
-  ).rows as { id: number }[];
-  for (const c of classRows) {
-    for (let n = 1; n <= 18; n++) {
-      await pool.query(
-        `INSERT INTO worksheets (class_id, num, title, links, published, "order")
-         VALUES ($1, $2, $3, '[]', false, $2)
-         ON CONFLICT (class_id, num) DO NOTHING`,
-        [c.id, n, `الدرس ${n}`]
-      );
-    }
+  // بذرة 18 درسًا لأوراق العمل (مشتركة للفصلين) بعناوينها وصفحاتها من فهرس الكتاب
+  const LESSONS: [number, string, number][] = [
+    [1, "مراتب الدين", 14],
+    [2, "أركان الإسلام", 18],
+    [3, "شهادة أن لا إله إلا الله", 23],
+    [4, "شهادة أن محمدًا رسول الله", 26],
+    [5, "إقام الصلاة", 29],
+    [6, "إيتاء الزكاة", 32],
+    [7, "صوم رمضان", 35],
+    [8, "حج بيت الله الحرام", 37],
+    [9, "آداب قضاء الحاجة (1)", 42],
+    [10, "آداب قضاء الحاجة (2)", 45],
+    [11, "إزالة النجاسة عن البدن", 48],
+    [12, "إزالة النجاسة عن الملابس ومكان الصلاة", 52],
+    [13, "التيمم", 56],
+    [14, "مكانة الصلاة", 60],
+    [15, "شروط الصلاة (1)", 63],
+    [16, "شروط الصلاة (2)", 66],
+    [17, "آداب دخول المسجد والخروج منه", 72],
+    [18, "صلاة الجماعة", 78],
+  ];
+  for (const [num, title, page] of LESSONS) {
+    await pool.query(
+      `INSERT INTO worksheets (num, title, page, published, "order")
+       VALUES ($1, $2, $3, false, $1)
+       ON CONFLICT (num) DO NOTHING`,
+      [num, title, page]
+    );
   }
 
   console.log("✓ تم تهيئة قاعدة البيانات (الجداول والإعدادات جاهزة)");

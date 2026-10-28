@@ -37,59 +37,23 @@ export async function setWorksheetCell(
   revalidatePath("/showcase");
 }
 
-// ——— إدارة أوراق العمل (العنوان/الروابط/النشر) ———
-type Link = { label: string; url: string };
-
-function parseLinks(raw: string): Link[] {
-  return String(raw || "")
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => {
-      const sep = line.includes("|") ? "|" : line.includes("،") ? "،" : "";
-      if (sep) {
-        const [label, ...rest] = line.split(sep);
-        const url = rest.join(sep).trim();
-        return { label: label.trim() || "فتح الورقة", url };
-      }
-      return { label: "فتح الورقة", url: line };
-    })
-    .filter((l) => /^https?:\/\//i.test(l.url));
+function clean(u: string): string {
+  const t = String(u || "").trim();
+  if (!t) return "";
+  return /^https?:\/\//i.test(t) ? t : "";
 }
 
+// ——— حفظ رابطَي الدرس (ثالث أول/ثاني) وحالة النشر ———
 export async function saveWorksheet(formData: FormData) {
   const id = Number(formData.get("id"));
   if (!id) return;
-  const title = String(formData.get("title") || "").trim();
-  const links = JSON.stringify(parseLinks(String(formData.get("links") || "")));
+  const urlC1 = clean(String(formData.get("urlC1") || ""));
+  const urlC2 = clean(String(formData.get("urlC2") || ""));
   const published = formData.get("published") ? true : false;
   await db
     .update(worksheets)
-    .set({ title, links, published })
+    .set({ urlC1, urlC2, published })
     .where(eq(worksheets.id, id));
   revalidatePath("/worksheets");
-  revalidatePath("/showcase");
-}
-
-export async function addWorksheet(formData: FormData) {
-  const num = Number(formData.get("num"));
-  const classId = Number(formData.get("classId"));
-  const title = String(formData.get("title") || "").trim() || `الدرس ${num}`;
-  if (!num || !classId) return;
-  const existing = await db
-    .select({ id: worksheets.id })
-    .from(worksheets)
-    .where(and(eq(worksheets.classId, classId), eq(worksheets.num, num)));
-  if (existing.length) return;
-  await db.insert(worksheets).values({ classId, num, title, order: num });
-  revalidatePath("/worksheets");
-}
-
-export async function deleteWorksheet(formData: FormData) {
-  const id = Number(formData.get("id"));
-  if (!id) return;
-  await db.delete(worksheets).where(eq(worksheets.id, id));
-  revalidatePath("/worksheets");
-  revalidatePath("/record");
   revalidatePath("/showcase");
 }

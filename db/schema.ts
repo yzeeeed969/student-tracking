@@ -119,24 +119,17 @@ export const settings = pgTable("settings", {
   value: text("value").notNull(),
 });
 
-// أوراق العمل: ورقة لكل درس، خاصة بفصل معيّن، لها عنوان وروابط (JSON) وحالة نشر
-export const worksheets = pgTable(
-  "worksheets",
-  {
-    id: serial("id").primaryKey(),
-    classId: integer("class_id")
-      .notNull()
-      .references(() => classRooms.id, { onDelete: "cascade" }),
-    num: integer("num").notNull(), // رقم الدرس 1..18
-    title: text("title").notNull().default(""),
-    links: text("links").notNull().default("[]"), // JSON: [{label,url}]
-    published: boolean("published").notNull().default(false),
-    order: integer("order").notNull().default(0),
-  },
-  (t) => ({
-    uq: uniqueIndex("ws_class_num").on(t.classId, t.num),
-  })
-);
+// أوراق العمل: ورقة لكل درس (مشتركة)، باسم الدرس وصفحته، ورابطان (ثالث أول/ثاني) وحالة نشر
+export const worksheets = pgTable("worksheets", {
+  id: serial("id").primaryKey(),
+  num: integer("num").notNull().unique(), // رقم الدرس 1..18
+  title: text("title").notNull().default(""), // اسم الدرس
+  page: integer("page").notNull().default(0), // صفحة الدرس في الكتاب
+  urlC1: text("url_c1").notNull().default(""), // رابط ثالث أول
+  urlC2: text("url_c2").notNull().default(""), // رابط ثالث ثاني
+  published: boolean("published").notNull().default(false),
+  order: integer("order").notNull().default(0),
+});
 
 // درجة كل طالب في كل ورقة عمل (من 20)
 export const worksheetMarks = pgTable(

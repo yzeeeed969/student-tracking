@@ -22,7 +22,6 @@ export default async function WorksheetsSection({
   const sheets = await db
     .select()
     .from(worksheets)
-    .where(eq(worksheets.classId, activeId))
     .orderBy(asc(worksheets.order), asc(worksheets.num));
 
   const rows = await db

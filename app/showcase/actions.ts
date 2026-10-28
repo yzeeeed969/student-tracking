@@ -37,7 +37,7 @@ export type HwItem = { num: number; done: boolean; page: number | null };
 export type WorksheetItem = {
   num: number;
   title: string;
-  links: { label: string; url: string }[];
+  url: string | null; // رابط ورقة العمل لفصل الطالب (null = لا رابط)
   score: number | null; // درجة الطالب من 20 (null = لم تُرصد)
 };
 
@@ -137,7 +137,7 @@ export async function lookupParent(
   const worksheetsWeight = Number(s.w_worksheets ?? 9);
   const show = parentView(s);
 
-  // أوراق العمل المنشورة (عامة لكل الفصول)
+  // أوراق العمل المنشورة (مشتركة؛ لكل درس رابطان: ثالث أول/ثاني)
   const pubSheets = show.worksheets
     ? await db
         .select()
@@ -145,13 +145,12 @@ export async function lookupParent(
         .where(eq(worksheets.published, true))
         .orderBy(asc(worksheets.order), asc(worksheets.num))
     : [];
-  function parseLinks(raw: string): { label: string; url: string }[] {
-    try {
-      return JSON.parse(raw || "[]");
-    } catch {
-      return [];
-    }
-  }
+  // تحديد الفصل الأول (ثالث أول) لاختيار الرابط المناسب
+  const classesOrdered = await db
+    .select({ id: classRooms.id })
+    .from(classRooms)
+    .orderBy(asc(classRooms.order), asc(classRooms.id));
+  const firstClassId = classesOrdered[0]?.id ?? -1;
 
   const gradeCache = new Map<
     number,
@@ -241,10 +240,9 @@ export async function lookupParent(
       .filter((e) => e.on)
       .map((e) => ({ label: e.label, value: e.value ?? null }));
 
-    // أوراق العمل: درجة الابن لكل ورقة منشورة في فصله
+    // أوراق العمل: درجة الابن لكل درس منشور + رابط فصله
     let worksheetItems: WorksheetItem[] = [];
-    const myClassSheets = pubSheets.filter((ws) => ws.classId === m.classId);
-    if (show.worksheets && myClassSheets.length) {
+    if (show.worksheets && pubSheets.length) {
       const wm = await db
         .select({
           worksheetId: worksheetMarks.worksheetId,
@@ -253,10 +251,11 @@ export async function lookupParent(
         .from(worksheetMarks)
         .where(eq(worksheetMarks.studentId, m.id));
       const wmap = new Map(wm.map((x) => [x.worksheetId, x.score]));
-      worksheetItems = myClassSheets.map((ws) => ({
+      const isFirst = m.classId === firstClassId;
+      worksheetItems = pubSheets.map((ws) => ({
         num: ws.num,
         title: ws.title || `الدرس ${ws.num}`,
-        links: parseLinks(ws.links),
+        url: (isFirst ? ws.urlC1 : ws.urlC2) || null,
         score: wmap.get(ws.id) ?? null,
       }));
     }

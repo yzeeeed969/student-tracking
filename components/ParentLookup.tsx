@@ -258,19 +258,20 @@ function ReportCard({
                 key={ws.num}
                 className="flex items-center justify-between gap-2 text-sm rounded-md bg-card/60 px-3 py-1.5 flex-wrap"
               >
-                <span className="font-medium flex-1 min-w-32">{ws.title}</span>
+                <span className="font-medium flex-1 min-w-32">
+                  ورقة عمل درس {ws.title}
+                </span>
                 <div className="flex items-center gap-2">
-                  {ws.links.map((l, i) => (
+                  {ws.url && (
                     <a
-                      key={i}
-                      href={l.url}
+                      href={ws.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-xs rounded-md bg-brand/10 text-brand px-2 py-0.5 hover:bg-brand/20"
                     >
-                      📄 {l.label}
+                      📄 فتح الورقة
                     </a>
-                  ))}
+                  )}
                   {ws.score != null ? (
                     <Badge kind="done">{ws.score} / 20</Badge>
                   ) : (
