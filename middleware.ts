@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verifyToken } from "./lib/token";
 
-const PUBLIC = ["/login", "/showcase", "/wsadmin"];
+const PUBLIC = ["/login", "/showcase", "/wsadmin", "/api/wsapply"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
