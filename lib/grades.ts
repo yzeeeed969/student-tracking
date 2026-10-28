@@ -24,7 +24,7 @@ export type StudentGrade = {
   homeworkDone: number; // عدد الواجبات المرصودة
   participationRaw: number; // مجموع نقاط المشاركة
   participationGrade: number; // المشاركة بعد الموازنة /وزنها
-  worksheetAvg: number | null; // متوسط درجات أوراق العمل (من 20)
+  worksheetAvg: number | null; // متوسط درجات أوراق العمل (كل ورقة من 10)
   worksheetDone: number; // عدد أوراق العمل المرصودة
   worksheetsGrade: number; // أوراق العمل بعد الموازنة (/وزنها، من 9)
   total: number | null;
@@ -98,7 +98,7 @@ export async function computeClassGrades(
     .groupBy(quranMarks.studentId);
   const qrMap = new Map(qr.map((r) => [r.studentId, r]));
 
-  // أوراق العمل: متوسط درجات الطالب (كل ورقة من 20)
+  // أوراق العمل: متوسط درجات الطالب (كل ورقة من 10)
   const ws = await db
     .select({
       studentId: worksheetMarks.studentId,
@@ -138,7 +138,7 @@ export async function computeClassGrades(
       ? Math.round(owParts.reduce<number>((a, v) => a + (v ?? 0), 0) * 100) / 100
       : null;
 
-    // أوراق العمل: متوسط درجاته (من 20) ← موازنة مطلقة إلى وزنها (9)
+    // أوراق العمل: متوسط درجاته (كل ورقة من 10) ← موازنة مطلقة إلى وزنها (9)
     const wsRow = wsMap.get(st.id);
     const worksheetDone = Number(wsRow?.cnt ?? 0);
     const worksheetAvg =
@@ -147,7 +147,7 @@ export async function computeClassGrades(
         : null;
     const worksheetsGrade =
       worksheetAvg != null
-        ? Math.round((worksheetAvg / 20) * w.worksheets * 100) / 100
+        ? Math.round((worksheetAvg / 10) * w.worksheets * 100) / 100
         : 0;
 
     const hasAny =

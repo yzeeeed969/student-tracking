@@ -135,14 +135,14 @@ export default function StudentGradeModal() {
 
             {/* أوراق العمل */}
             {data.worksheets.length > 0 && (
-              <Group title="أوراق العمل (كل ورقة /20)">
+              <Group title="أوراق العمل (كل ورقة /10)">
                 <div className="grid grid-cols-2 gap-2">
                   {data.worksheets.map((ws) => (
                     <label key={ws.id} className="text-sm space-y-1">
                       <span className="text-muted">{ws.title}</span>
                       <NumberCell
                         defaultValue={ws.score}
-                        max={20}
+                        max={10}
                         step={1}
                         onSave={(v) =>
                           save(() => setWorksheetCell(data.id, ws.id, v))

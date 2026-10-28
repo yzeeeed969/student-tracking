@@ -38,7 +38,7 @@ export type WorksheetItem = {
   num: number;
   title: string;
   url: string | null; // رابط ورقة العمل لفصل الطالب (null = لا رابط)
-  score: number | null; // درجة الطالب من 20 (null = لم تُرصد)
+  score: number | null; // درجة الطالب من 10 (null = لم تُرصد)
 };
 
 export type ParentReport = {

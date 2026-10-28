@@ -273,7 +273,7 @@ function ReportCard({
                     </a>
                   )}
                   {ws.score != null ? (
-                    <Badge kind="done">{ws.score} / 20</Badge>
+                    <Badge kind="done">{ws.score} / 10</Badge>
                   ) : (
                     <Badge kind="pending">لم تُرصد</Badge>
                   )}

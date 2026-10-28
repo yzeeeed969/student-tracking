@@ -4,7 +4,7 @@ import { worksheetMarks, worksheets } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-// ——— رصد درجة ورقة عمل واحدة لطالب (من 20) — حفظ فوري ———
+// ——— رصد درجة ورقة عمل واحدة لطالب (من 10) — حفظ فوري ———
 export async function setWorksheetCell(
   studentId: number,
   worksheetId: number,
@@ -23,7 +23,7 @@ export async function setWorksheetCell(
   } else {
     let score = Number(value);
     if (Number.isNaN(score)) return;
-    score = Math.max(0, Math.min(20, score));
+    score = Math.max(0, Math.min(10, score));
     await db
       .insert(worksheetMarks)
       .values({ studentId, worksheetId, score })

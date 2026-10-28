@@ -50,8 +50,8 @@ export default async function WorksheetsSection({
     <div className="space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="text-muted text-sm">
-          ارصد كل ورقة عمل من ٢٠ — يُحفظ تلقائيًا عند الخروج من الخانة. العمود
-          الأخير «الدرجة /{w.worksheets}» = (متوسط درجاته ÷ ٢٠) × {w.worksheets}.
+          ارصد كل ورقة عمل من ١٠ — يُحفظ تلقائيًا عند الخروج من الخانة. العمود
+          الأخير «الدرجة /{w.worksheets}» = (متوسط درجاته ÷ ١٠) × {w.worksheets}.
         </div>
       </div>
       <div className="flex items-center justify-between flex-wrap gap-2">
@@ -99,7 +99,7 @@ export default async function WorksheetsSection({
                   }
                   const grade =
                     cnt > 0
-                      ? Math.round((sum / cnt / 20) * w.worksheets * 100) / 100
+                      ? Math.round((sum / cnt / 10) * w.worksheets * 100) / 100
                       : 0;
                   return (
                     <tr key={st.id} data-name={st.name}>

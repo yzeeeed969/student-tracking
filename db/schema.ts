@@ -131,7 +131,7 @@ export const worksheets = pgTable("worksheets", {
   order: integer("order").notNull().default(0),
 });
 
-// درجة كل طالب في كل ورقة عمل (من 20)
+// درجة كل طالب في كل ورقة عمل (من 10)
 export const worksheetMarks = pgTable(
   "worksheet_marks",
   {
