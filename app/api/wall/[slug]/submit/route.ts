@@ -136,18 +136,23 @@ export async function POST(
   if (taken)
     return NextResponse.json({ error: "cell taken" }, { status: 409 });
 
+  let newId: number | undefined;
   try {
-    await db.insert(wallPosts).values({
-      wallId: wall.id,
-      name,
-      text,
-      image: imageBuf,
-      mime,
-      approved: !wall.moderated,
-      device,
-      ip,
-      cell,
-    });
+    const [row] = await db
+      .insert(wallPosts)
+      .values({
+        wallId: wall.id,
+        name,
+        text,
+        image: imageBuf,
+        mime,
+        approved: !wall.moderated,
+        device,
+        ip,
+        cell,
+      })
+      .returning({ id: wallPosts.id });
+    newId = row?.id;
   } catch (e: unknown) {
     // تعارض عند حجز نفس المربّع في نفس اللحظة من طالبين (unique violation)
     const code = (e as { code?: string })?.code;
@@ -156,5 +161,5 @@ export async function POST(
     throw e;
   }
 
-  return NextResponse.json({ ok: true, pending: wall.moderated });
+  return NextResponse.json({ ok: true, pending: wall.moderated, id: newId });
 }

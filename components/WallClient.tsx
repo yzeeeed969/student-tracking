@@ -109,7 +109,31 @@ export default function WallClient({
     null
   );
   const [cooldown, setCooldown] = useState(0);
+  const [mineIds, setMineIds] = useState<Set<number>>(new Set());
+  const [deleting, setDeleting] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // حفظ/تحديث قائمة مشاركات هذا الجهاز (ليظهر زر «حذف مشاركتي»)
+  function addMine(id: number) {
+    setMineIds((prev) => {
+      const next = new Set(prev);
+      next.add(id);
+      try {
+        localStorage.setItem("wall_mine_" + slug, JSON.stringify([...next]));
+      } catch {}
+      return next;
+    });
+  }
+  function removeMine(id: number) {
+    setMineIds((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      try {
+        localStorage.setItem("wall_mine_" + slug, JSON.stringify([...next]));
+      } catch {}
+      return next;
+    });
+  }
 
   // استعادة اسم الطالب + حالة التهدئة
   useEffect(() => {
@@ -119,6 +143,9 @@ export default function WallClient({
       const until = Number(localStorage.getItem("wall_cool_" + slug) || 0);
       const left = Math.ceil((until - Date.now()) / 1000);
       if (left > 0) setCooldown(left);
+      const mine = JSON.parse(localStorage.getItem("wall_mine_" + slug) || "[]");
+      if (Array.isArray(mine))
+        setMineIds(new Set(mine.filter((x) => typeof x === "number")));
     } catch {}
   }, [slug]);
 
@@ -307,6 +334,8 @@ export default function WallClient({
         }),
       });
       if (r.ok) {
+        const data = await r.json().catch(() => ({}));
+        if (data && typeof data.id === "number") addMine(data.id);
         const until = Date.now() + COOLDOWN * 1000;
         try {
           localStorage.setItem("wall_cool_" + slug, String(until));
@@ -343,6 +372,36 @@ export default function WallClient({
       setMsg({ kind: "err", text: "تعذّر الاتصال، تحقّق من الإنترنت." });
     } finally {
       setBusy(false);
+    }
+  }
+
+  // حذف الطالب لمشاركته هو (من نفس جهازه)
+  async function deleteMine(post: Post) {
+    if (!window.confirm("هل تريد حذف مشاركتك؟ لا يمكن التراجع.")) return;
+    setDeleting(true);
+    try {
+      const r = await fetch(`/api/wall/${slug}/delete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ postId: post.id, device: deviceToken() }),
+      });
+      if (r.ok) {
+        removeMine(post.id);
+        setViewer(null);
+        setMsg({ kind: "ok", text: "حُذفت مشاركتك ✓" });
+        loadFeed();
+      } else if (r.status === 403) {
+        setMsg({
+          kind: "err",
+          text: "لا يمكنك حذف هذه المشاركة (ليست من هذا الجهاز).",
+        });
+      } else {
+        setMsg({ kind: "err", text: "تعذّر حذف المشاركة، حاول مرة أخرى." });
+      }
+    } catch {
+      setMsg({ kind: "err", text: "تعذّر الاتصال، تحقّق من الإنترنت." });
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -613,7 +672,19 @@ export default function WallClient({
                 className="rounded-lg max-h-[70vh] w-auto mx-auto"
               />
             )}
-            <div className="text-xs text-muted">{fmt(viewer.createdAt)}</div>
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <span className="text-xs text-muted">{fmt(viewer.createdAt)}</span>
+              {mineIds.has(viewer.id) && (
+                <button
+                  type="button"
+                  onClick={() => deleteMine(viewer)}
+                  disabled={deleting}
+                  className="btn-ghost btn text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50"
+                >
+                  {deleting ? "جارٍ الحذف…" : "🗑 حذف مشاركتي"}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}
