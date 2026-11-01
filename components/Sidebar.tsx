@@ -11,7 +11,6 @@ const links = [
   { href: "/record", label: "الرصد" },
   { href: "/behavior", label: "السلوك والملاحظات" },
   { href: "/worksheets", label: "أوراق العمل" },
-  { href: "/walls", label: "حوائط المشاركة" },
   { href: "/library", label: "المكتبة" },
   { href: "/reports", label: "التقارير" },
   { href: "/settings", label: "الإعدادات" },
