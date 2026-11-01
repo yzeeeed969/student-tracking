@@ -24,6 +24,7 @@ export default async function WallsPage() {
       goal: walls.goal,
       moderated: walls.moderated,
       open: walls.open,
+      cells: walls.cells,
       createdAt: walls.createdAt,
       posts: sql<number>`(select count(*) from ${wallPosts} where ${wallPosts.wallId} = ${walls.id})`,
       pending: sql<number>`(select count(*) from ${wallPosts} where ${wallPosts.wallId} = ${walls.id} and ${wallPosts.approved} = false)`,
@@ -78,6 +79,22 @@ export default async function WallsPage() {
               />
             </label>
           </div>
+          <label className="block space-y-1 max-w-xs">
+            <span className="text-sm text-muted">
+              عدد الأماكن (المربّعات) على اللوحة
+            </span>
+            <input
+              type="number"
+              name="cells"
+              defaultValue={30}
+              min={6}
+              max={100}
+              className="w-full text-sm"
+            />
+            <span className="text-xs text-muted">
+              كل طالب يأخذ مربّعًا واحدًا. يمكنك تغييره لاحقًا بإنشاء حائط آخر.
+            </span>
+          </label>
           <label className="flex items-center gap-2 text-sm cursor-pointer">
             <input type="checkbox" name="moderated" value="1" className="w-5 h-5" />
             المراجعة قبل النشر (لا تظهر مشاركة الطالب حتى توافق عليها)
@@ -119,7 +136,7 @@ export default async function WallsPage() {
                       </span>
                     )}
                     <span className="text-xs text-muted">
-                      {Number(w.posts)} مشاركة
+                      {Number(w.posts)} من {w.cells} مكان
                       {Number(w.pending) > 0
                         ? ` · ${Number(w.pending)} بانتظار الموافقة`
                         : ""}

@@ -33,6 +33,7 @@ export default async function WallModerationPage({
       text: wallPosts.text,
       mime: wallPosts.mime,
       approved: wallPosts.approved,
+      cell: wallPosts.cell,
       createdAt: wallPosts.createdAt,
       hasImage: sql<boolean>`${wallPosts.image} is not null`,
     })
@@ -49,7 +50,15 @@ export default async function WallModerationPage({
     return (
       <div key={p.id} className="card p-4 space-y-2">
         <div className="flex items-center justify-between gap-2 flex-wrap">
-          <span className="font-bold">{p.name || "بدون اسم"}</span>
+          <span className="font-bold">
+            {p.name || "بدون اسم"}
+            {p.cell != null && (
+              <span className="text-muted font-normal text-xs">
+                {" "}
+                · المربّع {p.cell + 1}
+              </span>
+            )}
+          </span>
           <span className="text-xs text-muted">{fmt(p.createdAt)}</span>
         </div>
         {p.text && (

@@ -23,7 +23,12 @@ export async function POST(
 ) {
   const { slug } = await params;
   const [wall] = await db
-    .select({ id: walls.id, open: walls.open, moderated: walls.moderated })
+    .select({
+      id: walls.id,
+      open: walls.open,
+      moderated: walls.moderated,
+      cells: walls.cells,
+    })
     .from(walls)
     .where(eq(walls.slug, slug));
   if (!wall) return NextResponse.json({ error: "not found" }, { status: 404 });
@@ -35,6 +40,7 @@ export async function POST(
     text?: string;
     device?: string;
     image?: string | null;
+    cell?: number;
   };
   try {
     body = await req.json();
@@ -46,6 +52,11 @@ export async function POST(
   const text = String(body.text || "").trim().slice(0, TEXT_MAX);
   const device = String(body.device || "").slice(0, 100);
   const ip = clientIp(req);
+
+  // رقم المربّع المختار — لا بدّ أن يكون ضمن عدد أماكن اللوحة
+  const cell = Math.round(Number(body.cell));
+  if (!Number.isInteger(cell) || cell < 0 || cell >= wall.cells)
+    return NextResponse.json({ error: "bad cell" }, { status: 400 });
 
   if (!name) return NextResponse.json({ error: "no name" }, { status: 400 });
 
@@ -116,16 +127,34 @@ export async function POST(
       );
   }
 
-  await db.insert(wallPosts).values({
-    wallId: wall.id,
-    name,
-    text,
-    image: imageBuf,
-    mime,
-    approved: !wall.moderated,
-    device,
-    ip,
-  });
+  // منع حجز مربّع محجوز مسبقًا (تحقّق مبكر لرسالة ألطف)
+  const [taken] = await db
+    .select({ id: wallPosts.id })
+    .from(wallPosts)
+    .where(and(eq(wallPosts.wallId, wall.id), eq(wallPosts.cell, cell)))
+    .limit(1);
+  if (taken)
+    return NextResponse.json({ error: "cell taken" }, { status: 409 });
+
+  try {
+    await db.insert(wallPosts).values({
+      wallId: wall.id,
+      name,
+      text,
+      image: imageBuf,
+      mime,
+      approved: !wall.moderated,
+      device,
+      ip,
+      cell,
+    });
+  } catch (e: unknown) {
+    // تعارض عند حجز نفس المربّع في نفس اللحظة من طالبين (unique violation)
+    const code = (e as { code?: string })?.code;
+    if (code === "23505")
+      return NextResponse.json({ error: "cell taken" }, { status: 409 });
+    throw e;
+  }
 
   return NextResponse.json({ ok: true, pending: wall.moderated });
 }

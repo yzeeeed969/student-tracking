@@ -64,6 +64,13 @@
       "when": 1793608750406,
       "tag": "0008_walls",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793620750406,
+      "tag": "0009_wall_grid",
+      "breakpoints": true
     }
   ]
 }

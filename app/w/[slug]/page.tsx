@@ -35,6 +35,7 @@ export default async function PublicWallPage({
         goal={wall.goal}
         open={wall.open}
         moderated={wall.moderated}
+        cells={wall.cells}
       />
     </div>
   );

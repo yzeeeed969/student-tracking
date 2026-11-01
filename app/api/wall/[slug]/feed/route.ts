@@ -12,7 +12,7 @@ export async function GET(
 ) {
   const { slug } = await params;
   const [wall] = await db
-    .select({ id: walls.id, open: walls.open })
+    .select({ id: walls.id, open: walls.open, cells: walls.cells })
     .from(walls)
     .where(eq(walls.slug, slug));
   if (!wall) return NextResponse.json({ error: "not found" }, { status: 404 });
@@ -22,6 +22,7 @@ export async function GET(
       id: wallPosts.id,
       name: wallPosts.name,
       text: wallPosts.text,
+      cell: wallPosts.cell,
       hasImage: sql<boolean>`${wallPosts.image} is not null`,
       createdAt: wallPosts.createdAt,
     })
@@ -34,9 +35,10 @@ export async function GET(
     id: r.id,
     name: r.name,
     text: r.text,
+    cell: r.cell,
     hasImage: !!r.hasImage,
     createdAt: r.createdAt,
   }));
 
-  return NextResponse.json({ open: wall.open, posts });
+  return NextResponse.json({ open: wall.open, cells: wall.cells, posts });
 }

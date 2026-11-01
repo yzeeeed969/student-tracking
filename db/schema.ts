@@ -10,6 +10,7 @@ import {
   index,
   customType,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 const bytea = customType<{ data: Buffer; notNull: true; default: false }>({
   dataType() {
@@ -195,6 +196,7 @@ export const walls = pgTable("walls", {
   goal: text("goal").notNull().default(""), // وصف/هدف الحائط (يظهر للطلاب)
   moderated: boolean("moderated").notNull().default(false), // true = تحتاج المشاركات موافقة المعلم قبل الظهور
   open: boolean("open").notNull().default(true), // true = يستقبل مشاركات جديدة
+  cells: integer("cells").notNull().default(30), // عدد المربّعات (الأماكن) على اللوحة
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
@@ -213,7 +215,14 @@ export const wallPosts = pgTable(
     approved: boolean("approved").notNull().default(true), // false = بانتظار موافقة المعلم
     device: text("device").notNull().default(""), // رمز الجهاز (للحدّ من التكرار السريع)
     ip: text("ip").notNull().default(""), // عنوان الشبكة (حماية إضافية)
+    cell: integer("cell"), // رقم المربّع الذي اختاره الطالب على اللوحة (قد يكون فارغًا)
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
-  (t) => ({ idx: index("wallpost_wall").on(t.wallId) })
+  (t) => ({
+    idx: index("wallpost_wall").on(t.wallId),
+    // لا يملك مربّعٌ واحد إلا مشاركةً واحدة داخل الحائط
+    cellUq: uniqueIndex("wallpost_cell_uq")
+      .on(t.wallId, t.cell)
+      .where(sql`${t.cell} is not null`),
+  })
 );

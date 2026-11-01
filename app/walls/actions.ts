@@ -19,6 +19,10 @@ export async function createWall(formData: FormData) {
   if (!title) return;
   const goal = String(formData.get("goal") || "").trim().slice(0, 300);
   const moderated = formData.get("moderated") ? true : false;
+  // عدد المربّعات (الأماكن) — بين 6 و100، الافتراضي 30
+  let cells = Number(formData.get("cells"));
+  if (!Number.isFinite(cells)) cells = 30;
+  cells = Math.max(6, Math.min(100, Math.round(cells)));
 
   // ضمان تفرّد المعرّف
   let slug = makeSlug();
@@ -31,7 +35,7 @@ export async function createWall(formData: FormData) {
     slug = makeSlug();
   }
 
-  await db.insert(walls).values({ title, goal, moderated, slug, open: true });
+  await db.insert(walls).values({ title, goal, moderated, slug, cells, open: true });
   revalidatePath("/walls");
 }
 
