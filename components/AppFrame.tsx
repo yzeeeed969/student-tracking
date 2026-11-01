@@ -4,7 +4,7 @@ import Sidebar from "./Sidebar";
 import StudentGradeModal from "./StudentGradeModal";
 
 // الصفحات العامة بلا قائمة جانبية
-const BARE = ["/login", "/showcase"];
+const BARE = ["/login", "/showcase", "/w"];
 
 export default function AppFrame({ children }: { children: React.ReactNode }) {
   const p = usePathname() || "/";

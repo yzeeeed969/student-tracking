@@ -17,6 +17,13 @@ const bytea = customType<{ data: Buffer; notNull: true; default: false }>({
   },
 });
 
+// نسخة bytea تقبل القيمة الفارغة (null) — للصور الاختيارية في حائط المشاركات
+const byteaNullable = customType<{ data: Buffer; notNull: false }>({
+  dataType() {
+    return "bytea";
+  },
+});
+
 export const classRooms = pgTable("class_rooms", {
   id: serial("id").primaryKey(),
   name: text("name").notNull().unique(),
@@ -179,3 +186,34 @@ export const books = pgTable("books", {
   data: bytea("data").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+// حوائط المشاركة (مثل بادلت): لكل حائط رابط عام قصير (slug)
+export const walls = pgTable("walls", {
+  id: serial("id").primaryKey(),
+  slug: text("slug").notNull().unique(), // المعرّف في الرابط العام /w/<slug>
+  title: text("title").notNull(),
+  goal: text("goal").notNull().default(""), // وصف/هدف الحائط (يظهر للطلاب)
+  moderated: boolean("moderated").notNull().default(false), // true = تحتاج المشاركات موافقة المعلم قبل الظهور
+  open: boolean("open").notNull().default(true), // true = يستقبل مشاركات جديدة
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// مشاركات الطلاب داخل الحائط
+export const wallPosts = pgTable(
+  "wall_posts",
+  {
+    id: serial("id").primaryKey(),
+    wallId: integer("wall_id")
+      .notNull()
+      .references(() => walls.id, { onDelete: "cascade" }),
+    name: text("name").notNull().default(""), // اسم الطالب
+    text: text("text").notNull().default(""), // نص المشاركة (حد أقصى 500 حرف)
+    image: byteaNullable("image"), // صورة اختيارية (مضغوطة) — قد تكون فارغة
+    mime: text("mime").notNull().default(""), // نوع الصورة إن وُجدت
+    approved: boolean("approved").notNull().default(true), // false = بانتظار موافقة المعلم
+    device: text("device").notNull().default(""), // رمز الجهاز (للحدّ من التكرار السريع)
+    ip: text("ip").notNull().default(""), // عنوان الشبكة (حماية إضافية)
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => ({ idx: index("wallpost_wall").on(t.wallId) })
+);
