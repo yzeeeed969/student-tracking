@@ -122,20 +122,38 @@ export default function WallClient({
     return () => clearInterval(t);
   }, [cooldown]);
 
-  // جلب المشاركات (أول مرة + كل 5 ثوانٍ)
+  // جلب المشاركات — مع حمايات تمنع إرهاق الخادم:
+  // 1) لا تُرسل طلبًا جديدًا إذا لم يكتمل السابق (منع التراكم)
+  // 2) أوقف التحديث عندما تكون الصفحة غير ظاهرة
+  const inFlight = useRef(false);
   const loadFeed = useCallback(async () => {
+    if (inFlight.current) return;
+    if (typeof document !== "undefined" && document.hidden) return;
+    inFlight.current = true;
     try {
       const r = await fetch(`/api/wall/${slug}/feed`, { cache: "no-store" });
       if (!r.ok) return;
       const data = await r.json();
       setPosts(data.posts || []);
-    } catch {}
+    } catch {
+    } finally {
+      inFlight.current = false;
+    }
   }, [slug]);
 
   useEffect(() => {
     loadFeed();
-    const t = setInterval(loadFeed, 5000);
-    return () => clearInterval(t);
+    // تحديث كل 15 ثانية (مناسب لعدد الطلاب، وخفيف على الخادم)
+    const t = setInterval(loadFeed, 15000);
+    // حدّث فورًا عند عودة الطالب إلى الصفحة
+    const onVis = () => {
+      if (!document.hidden) loadFeed();
+    };
+    document.addEventListener("visibilitychange", onVis);
+    return () => {
+      clearInterval(t);
+      document.removeEventListener("visibilitychange", onVis);
+    };
   }, [loadFeed]);
 
   async function onPickFile(e: React.ChangeEvent<HTMLInputElement>) {

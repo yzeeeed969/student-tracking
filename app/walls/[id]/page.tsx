@@ -90,7 +90,7 @@ export default async function WallModerationPage({
 
   return (
     <div className="min-h-screen">
-      <AutoRefresh seconds={7} />
+      <AutoRefresh seconds={15} />
       <main className="p-4 space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
