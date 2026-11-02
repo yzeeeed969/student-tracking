@@ -188,6 +188,28 @@ export const books = pgTable("books", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// تسليمات الواجبات (صور): يرفعها ولي الأمر/الطالب من الصفحة العامة
+// صورة واحدة محفوظة لكل (طالب + رقم واجب) — الرفع الجديد يستبدل القديم
+export const homeworkSubmissions = pgTable(
+  "homework_submissions",
+  {
+    id: serial("id").primaryKey(),
+    studentId: integer("student_id")
+      .notNull()
+      .references(() => students.id, { onDelete: "cascade" }),
+    num: integer("num").notNull(), // رقم الواجب (التقويم) 1..18
+    image: bytea("image").notNull(), // صورة الواجب (مضغوطة)
+    mime: text("mime").notNull().default("image/jpeg"),
+    device: text("device").notNull().default(""), // رمز الجهاز (للحدّ من التكرار السريع)
+    ip: text("ip").notNull().default(""), // عنوان الشبكة (حماية إضافية)
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    uq: uniqueIndex("hwsub_student_num").on(t.studentId, t.num),
+    idx: index("hwsub_created").on(t.createdAt),
+  })
+);
+
 // حوائط المشاركة (مثل بادلت): لكل حائط رابط عام قصير (slug)
 export const walls = pgTable("walls", {
   id: serial("id").primaryKey(),

@@ -42,6 +42,8 @@ export type WorksheetItem = {
 };
 
 export type ParentReport = {
+  studentId: number;
+  phone: string;
   name: string;
   className: string | null;
   quran: number | null;
@@ -276,6 +278,8 @@ export async function lookupParent(
       : [];
 
     reports.push({
+      studentId: m.id,
+      phone: m.phone || "",
       name: m.name,
       className: m.className ?? null,
       quran: g?.quran ?? null,

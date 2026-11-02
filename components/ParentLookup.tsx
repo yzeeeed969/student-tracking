@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { lookupParent, type LookupState, type ParentReport } from "@/app/showcase/actions";
+import HomeworkUpload from "@/components/HomeworkUpload";
 
 const initial: LookupState = { ok: false };
 
@@ -294,10 +295,11 @@ function ReportCard({
             {r.homeworkItems.map((h) => {
               const isNext = h.num === curHw + 1;
               const isLocked = h.num > curHw + 1;
+              const canUpload = !isLocked && !h.done; // الواجبات المتاحة غير المرصودة
               return (
                 <div
                   key={h.num}
-                  className={`flex items-center justify-between gap-2 text-sm rounded-md px-3 py-1.5 ${
+                  className={`flex items-center justify-between gap-2 text-sm rounded-md px-3 py-1.5 flex-wrap ${
                     isLocked
                       ? "bg-card/30 opacity-70"
                       : isNext && !h.done
@@ -309,15 +311,25 @@ function ReportCard({
                   <span className="text-muted text-xs">
                     {h.page != null ? `التقويم ص ${h.page}` : "التقويم —"}
                   </span>
-                  {isLocked ? (
-                    <Badge kind="locked">🔒 لم نصل إليه بعد</Badge>
-                  ) : h.done ? (
-                    <Badge kind="done">✓ تم الحل</Badge>
-                  ) : isNext ? (
-                    <Badge kind="next">⭐ المطلوب القادم</Badge>
-                  ) : (
-                    <Badge kind="pending">⏳ لم يُرصد</Badge>
-                  )}
+                  <span className="flex items-center gap-2">
+                    {isLocked ? (
+                      <Badge kind="locked">🔒 لم نصل إليه بعد</Badge>
+                    ) : h.done ? (
+                      <Badge kind="done">✓ تم الحل</Badge>
+                    ) : isNext ? (
+                      <Badge kind="next">⭐ المطلوب القادم</Badge>
+                    ) : (
+                      <Badge kind="pending">⏳ لم يُرصد</Badge>
+                    )}
+                    {canUpload && (
+                      <HomeworkUpload
+                        studentId={r.studentId}
+                        phone={r.phone}
+                        num={h.num}
+                        alreadyDone={false}
+                      />
+                    )}
+                  </span>
                 </div>
               );
             })}

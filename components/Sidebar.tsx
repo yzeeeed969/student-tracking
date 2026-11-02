@@ -11,6 +11,7 @@ const links = [
   { href: "/record", label: "الرصد" },
   { href: "/behavior", label: "السلوك والملاحظات" },
   { href: "/worksheets", label: "أوراق العمل" },
+  { href: "/homework-submissions", label: "واجبات الطلاب المرفوعة" },
   { href: "/walls", label: "حوائط المشاركة" },
   { href: "/library", label: "المكتبة" },
   { href: "/reports", label: "التقارير" },
