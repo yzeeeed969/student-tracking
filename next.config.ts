@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   experimental: {
+    agentUpgrade: "security",
     serverActions: {
       allowedOrigins: ["*.up.railway.app", "*.railway.app"],
     },
