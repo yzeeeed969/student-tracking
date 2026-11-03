@@ -13,6 +13,7 @@ const links = [
   { href: "/worksheets", label: "أوراق العمل" },
   { href: "/homework-submissions", label: "واجبات الطلاب المرفوعة" },
   { href: "/walls", label: "حوائط المشاركة" },
+  { href: "/cards", label: "البطاقات التفاعلية" },
   { href: "/library", label: "المكتبة" },
   { href: "/reports", label: "التقارير" },
   { href: "/settings", label: "الإعدادات" },

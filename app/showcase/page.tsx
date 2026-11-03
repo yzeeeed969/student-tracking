@@ -39,6 +39,16 @@ export default async function Showcase() {
         <ThemeToggle />
       </header>
       <main className="p-4 max-w-2xl mx-auto space-y-5">
+        <a
+          href="/cards"
+          className="block text-center rounded-xl bg-brand text-white font-bold px-5 py-4 shadow hover:opacity-90"
+        >
+          🃏 بطاقات التوحيد التفاعلية — للطلاب
+          <span className="block text-xs font-normal opacity-90 mt-1">
+            اختبر معلوماتك باللمس بطريقة ممتعة (الدروس ١–٨)
+          </span>
+        </a>
+
         <ParentLookup teacherWa={teacherWa} />
 
         <p className="text-center text-muted text-xs mt-6">

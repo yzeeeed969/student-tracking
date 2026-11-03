@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>بطاقات التوحيد التفاعلية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#0b1f2a; --bg2:#102b38;
+    --ink:#f3f7f6; --muted:#9fb6bf;
+    --gold:#f6b93b;
+    --shadow: 0 24px 60px rgba(0,0,0,.45);
+    color-scheme: dark;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    margin:0; background:
+      radial-gradient(1200px 700px at 50% -10%, #15384a 0%, var(--bg2) 45%, var(--bg1) 100%);
+    color:var(--ink); font-family:'Tajawal',sans-serif;
+    min-height:100dvh; overflow-x:hidden;
+    display:flex; flex-direction:column;
+    user-select:none; -webkit-user-select:none;
+  }
+  header{ text-align:center; padding:18px 16px 4px; }
+  header h1{
+    font-family:'Baloo Bhaijaan 2',sans-serif; font-weight:800;
+    margin:0; font-size:clamp(22px,6vw,34px); color:#fff;
+    letter-spacing:.5px;
+  }
+  header .sub{ color:var(--muted); font-size:clamp(13px,3.4vw,16px); margin-top:4px; }
+
+  .counter{
+    margin:8px auto 0; font-family:'Baloo Bhaijaan 2',sans-serif;
+    font-weight:700; color:var(--gold); font-size:clamp(16px,4.5vw,20px);
+    background:rgba(246,185,59,.12); border:1px solid rgba(246,185,59,.4);
+    padding:4px 16px; border-radius:999px; width:max-content;
+  }
+
+  .stage{
+    flex:1; position:relative; perspective:1300px;
+    display:flex; align-items:center; justify-content:center;
+    touch-action:pan-y; overflow:hidden; min-height:0;
+  }
+  .deck{ position:absolute; inset:0; transform-style:preserve-3d; }
+
+  .card{
+    position:absolute; top:50%; right:50%;
+    width:min(74vw,330px); height:min(58dvh,470px);
+    transform-style:preserve-3d;
+    transition:transform .5s cubic-bezier(.22,.61,.36,1), opacity .4s;
+    will-change:transform;
+    cursor:pointer;
+  }
+  .inner{
+    position:absolute; inset:0; transform-style:preserve-3d;
+    transition:transform .6s cubic-bezier(.4,.2,.2,1);
+  }
+  .inner.flipped{ transform:rotateY(180deg); }
+  .face{
+    position:absolute; inset:0; backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;
+    border-radius:26px; box-shadow:var(--shadow);
+    display:flex; flex-direction:column; overflow:hidden;
+    border:1px solid rgba(255,255,255,.14);
+  }
+  .front{ background:var(--c,#2d7d74); }
+  .back{ transform:rotateY(180deg); background:#132c3a; }
+
+  .tag{
+    font-family:'Baloo Bhaijaan 2',sans-serif; font-weight:700;
+    font-size:clamp(13px,3.6vw,16px);
+    padding:12px 18px; color:#fff; background:rgba(0,0,0,.18);
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+  }
+  .tag .num{
+    background:#fff; color:#17323f; width:30px; height:30px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; font-weight:800;
+    font-size:15px;
+  }
+  .body{
+    flex:1; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; text-align:center; padding:18px 22px; gap:14px;
+  }
+  .q{
+    font-family:'Baloo Bhaijaan 2',sans-serif; font-weight:700; color:#fff;
+    font-size:clamp(20px,5.6vw,27px); line-height:1.5;
+  }
+  .fliphint{
+    color:rgba(255,255,255,.9); font-size:clamp(12px,3.2vw,14px);
+    background:rgba(255,255,255,.16); padding:7px 14px; border-radius:999px;
+    display:inline-flex; gap:7px; align-items:center;
+  }
+  .back .alabel{
+    font-family:'Baloo Bhaijaan 2',sans-serif; color:var(--gold);
+    font-weight:700; font-size:clamp(15px,4vw,18px);
+  }
+  .back .a{
+    color:#eef6f5; font-size:clamp(17px,4.6vw,22px); line-height:1.7;
+    font-weight:500;
+  }
+  .card:not(.is-center){ filter:brightness(.72) saturate(.85); }
+
+  .hand{ width:18px; height:18px; display:inline-block; }
+
+  .nav{
+    display:flex; align-items:center; justify-content:center; gap:22px;
+    padding:10px 16px calc(14px + env(safe-area-inset-bottom));
+  }
+  .nav button{
+    width:58px; height:58px; border-radius:50%; border:none;
+    background:#fff; color:#123; font-size:26px; font-weight:800;
+    box-shadow:0 8px 20px rgba(0,0,0,.35); cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:transform .15s;
+  }
+  .nav button:active{ transform:scale(.9); }
+  .nav button:disabled{ opacity:.35; cursor:default; }
+  .hint{ text-align:center; color:var(--muted); font-size:clamp(12px,3.2vw,14px); padding:0 16px 6px; }
+
+  .toast{
+    position:fixed; left:50%; top:16px; transform:translateX(-50%) translateY(-120%);
+    background:var(--gold); color:#2a1c05; font-family:'Baloo Bhaijaan 2',sans-serif;
+    font-weight:800; padding:10px 22px; border-radius:999px; font-size:18px;
+    box-shadow:var(--shadow); transition:transform .4s; z-index:50;
+  }
+  .toast.show{ transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+  <header>
+    <h1>بطاقات التوحيد</h1>
+    <div class="sub">الدروس الثمانية الأولى — المس البطاقة لترى الإجابة</div>
+    <div class="counter" id="counter">١ / ١٥</div>
+  </header>
+
+  <div class="stage" id="stage">
+    <div class="deck" id="deck"></div>
+  </div>
+
+  <div class="nav">
+    <button id="prev" aria-label="السابق">›</button>
+    <button id="flipBtn" aria-label="اقلب البطاقة" style="width:72px;height:72px;font-size:22px;font-family:'Baloo Bhaijaan 2';background:var(--gold);color:#2a1c05;">اقلب</button>
+    <button id="next" aria-label="التالي">‹</button>
+  </div>
+  <div class="hint">اسحب يمينًا أو يسارًا لتغيير البطاقة · المس البطاقة أو زر «اقلب» لرؤية الإجابة</div>
+
+  <div class="toast" id="toast">🎉 أحسنت! أنهيت كل البطاقات</div>
+
+<script>
+const DATA = [
+  {t:"مراتب الدين", q:"كم مرتبة لدين الإسلام؟", a:"ثلاث مراتب: الإسلام، والإيمان، والإحسان."},
+  {t:"أركان الإسلام", q:"كم عدد أركان الإسلام؟", a:"خمسة أركان."},
+  {t:"الشهادتان", q:"ما الركن الأول من أركان الإسلام؟", a:"الشهادتان: شهادة أن لا إله إلا الله وأن محمدًا رسول الله."},
+  {t:"التوحيد", q:"ما معنى (لا إله إلا الله)؟", a:"لا معبودَ يستحق العبادة إلا الله."},
+  {t:"الصلاة", q:"ما الركن الثاني من أركان الإسلام؟", a:"إقامُ الصلاة."},
+  {t:"الصلاة", q:"ما معنى إقام الصلاة؟", a:"أداء الصلوات الخمس المفروضة في أوقاتها بالصفة التي بيّنها النبي ﷺ."},
+  {t:"الزكاة", q:"ما الركن الثالث من أركان الإسلام؟", a:"إيتاءُ الزكاة."},
+  {t:"الزكاة", q:"لِمن تُدفع الزكاة؟", a:"لمستحقيها كالفقراء والمساكين."},
+  {t:"الصوم", q:"ما الركن الرابع من أركان الإسلام؟", a:"صومُ رمضان."},
+  {t:"الصوم", q:"ما معنى الصوم؟", a:"ترك الطعام والشراب وغيرهما من المفطرات من طلوع الفجر إلى غروب الشمس تقرّبًا إلى الله."},
+  {t:"الحج", q:"ما الركن الخامس من أركان الإسلام؟", a:"حجُّ بيت الله الحرام."},
+  {t:"الحج", q:"كم مرة يجب الحج في العمر؟", a:"مرة واحدة، لمن استطاع إليه سبيلًا."},
+  {t:"الرسول ﷺ", q:"ما معنى شهادة أن محمدًا رسول الله؟", a:"الإقرار بأن محمدًا ﷺ عبد الله ورسوله، يجب تصديقه وطاعته."},
+  {t:"الحج", q:"ما جزاء الحج المبرور؟", a:"دخول الجنة."},
+  {t:"الإحسان", q:"ما الإحسان؟", a:"أن نعبد الله كأننا نراه، فإن لم نكن نراه فإنه يرانا."},
+];
+const COLORS=["#2d7d74","#3b5bdb","#e8590c","#c2255c","#2f9e44","#7048e8","#1098ad","#d9480f"];
+const AR="٠١٢٣٤٥٦٧٨٩";
+const toAr=n=>String(n).replace(/\d/g,d=>AR[d]);
+
+const deck=document.getElementById('deck');
+const counter=document.getElementById('counter');
+const toast=document.getElementById('toast');
+let cur=0, flipped=false;
+const seen=new Set();
+
+const cards=DATA.map((d,i)=>{
+  const el=document.createElement('div');
+  el.className='card';
+  const c=COLORS[i%COLORS.length];
+  el.innerHTML=`
+    <div class="inner">
+      <div class="face front" style="--c:${c}">
+        <div class="tag"><span>${d.t}</span><span class="num">${toAr(i+1)}</span></div>
+        <div class="body">
+          <div class="q">${d.q}</div>
+          <span class="fliphint">
+            <svg class="hand" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 11V5.5a1.5 1.5 0 0 1 3 0V11m0-1.5a1.5 1.5 0 0 1 3 0V11m0-1a1.5 1.5 0 0 1 3 0v4.5c0 3-2 5.5-5.5 5.5-2.2 0-3.6-.9-4.8-2.5L6 17.5c-.6-.9-.3-1.9.6-2.3.7-.3 1.5-.1 2 .5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            المس لرؤية الإجابة
+          </span>
+        </div>
+      </div>
+      <div class="face back">
+        <div class="tag" style="background:rgba(246,185,59,.18)"><span>${d.t}</span><span class="num">${toAr(i+1)}</span></div>
+        <div class="body">
+          <div class="alabel">الإجابة</div>
+          <div class="a">${d.a}</div>
+        </div>
+      </div>
+    </div>`;
+  el.addEventListener('click',()=>{
+    if(i===cur){ toggleFlip(); } else { cur=i; flipped=false; layout(); }
+  });
+  deck.appendChild(el);
+  return el;
+});
+
+function toggleFlip(){
+  flipped=!flipped;
+  layout();
+  if(flipped){
+    seen.add(cur);
+    if(seen.size===DATA.length){ showToast(); }
+  }
+}
+function go(dir){ // dir -1 prev, +1 next
+  const n=cur+dir;
+  if(n<0||n>=DATA.length) return;
+  cur=n; flipped=false; layout();
+}
+function layout(){
+  cards.forEach((el,i)=>{
+    const off=i-cur, ao=Math.abs(off);
+    const inner=el.querySelector('.inner');
+    if(ao>2){
+      el.style.opacity=0; el.style.pointerEvents='none'; el.style.zIndex=0;
+      el.style.transform=`translate(50%,-50%) translateX(${off*40}%) scale(.6)`;
+      inner.classList.remove('flipped');
+      return;
+    }
+    el.style.opacity=1; el.style.pointerEvents='auto';
+    const tx=off*54, rot=off*-30, tz=-ao*150, sc=1-ao*0.13;
+    el.style.transform=`translate(50%,-50%) translateX(${tx}%) translateZ(${tz}px) rotateY(${rot}deg) scale(${sc})`;
+    el.style.zIndex=100-ao;
+    el.classList.toggle('is-center',off===0);
+    inner.classList.toggle('flipped', off===0 && flipped);
+  });
+  counter.textContent=`${toAr(cur+1)} / ${toAr(DATA.length)}`;
+  document.getElementById('prev').disabled=(cur===0);
+  document.getElementById('next').disabled=(cur===DATA.length-1);
+}
+let tShow;
+function showToast(){ toast.classList.add('show'); clearTimeout(tShow); tShow=setTimeout(()=>toast.classList.remove('show'),2600); }
+
+document.getElementById('prev').addEventListener('click',()=>go(-1));
+document.getElementById('next').addEventListener('click',()=>go(1));
+document.getElementById('flipBtn').addEventListener('click',toggleFlip);
+
+// swipe
+const stage=document.getElementById('stage');
+let sx=0, sy=0, dragging=false;
+stage.addEventListener('pointerdown',e=>{sx=e.clientX; sy=e.clientY; dragging=true;});
+stage.addEventListener('pointerup',e=>{
+  if(!dragging) return; dragging=false;
+  const dx=e.clientX-sx, dy=e.clientY-sy;
+  if(Math.abs(dx)>45 && Math.abs(dx)>Math.abs(dy)){
+    if(dx<0) go(1); else go(-1);   // اسحب لليسار = التالي
+  }
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft') go(1);
+  else if(e.key==='ArrowRight') go(-1);
+  else if(e.key===' '||e.key==='Enter'){ e.preventDefault(); toggleFlip(); }
+});
+
+layout();
+</script>
+</body>
+</html>
