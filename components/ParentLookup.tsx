@@ -247,40 +247,39 @@ function ReportCard({
         </Section>
       )}
 
-      {/* أوراق العمل */}
-      {s.worksheets && r.worksheetItems.length > 0 && (
-        <Section
-          title="أوراق العمل"
-          value={`${r.worksheetsGrade} / ${r.worksheetsWeight}`}
-        >
+      {/* أوراق العمل المطلوبة — تظهر فقط الأوراق التي لم يُجب عنها الطالب بعد */}
+      {s.worksheets && r.worksheetItems.some((ws) => ws.score == null) && (
+        <Section title="أوراق العمل المطلوبة">
           <div className="space-y-1">
-            {r.worksheetItems.map((ws) => (
-              <div
-                key={ws.num}
-                className="flex items-center justify-between gap-2 text-sm rounded-md bg-card/60 px-3 py-1.5 flex-wrap"
-              >
-                <span className="font-medium flex-1 min-w-32">
-                  ورقة عمل درس {ws.title}
-                </span>
-                <div className="flex items-center gap-2">
-                  {ws.url && (
-                    <a
-                      href={ws.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs rounded-md bg-brand/10 text-brand px-2 py-0.5 hover:bg-brand/20"
-                    >
-                      📄 فتح الورقة
-                    </a>
-                  )}
-                  {ws.score != null ? (
-                    <Badge kind="done">{ws.score} / 10</Badge>
-                  ) : (
-                    <Badge kind="pending">لم تُرصد</Badge>
-                  )}
+            <div className="text-xs text-muted px-1 pb-1">
+              هذه أوراق العمل التي لم يحلّها ابنك بعد — اضغط «حلّ الورقة».
+            </div>
+            {r.worksheetItems
+              .filter((ws) => ws.score == null)
+              .map((ws) => (
+                <div
+                  key={ws.num}
+                  className="flex items-center justify-between gap-2 text-sm rounded-md bg-card/60 px-3 py-1.5 flex-wrap"
+                >
+                  <span className="font-medium flex-1 min-w-32">
+                    ورقة عمل درس {ws.title}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    {ws.url ? (
+                      <a
+                        href={ws.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs rounded-md bg-brand text-white px-3 py-1 hover:opacity-90"
+                      >
+                        📄 حلّ الورقة
+                      </a>
+                    ) : (
+                      <Badge kind="pending">لا يوجد رابط</Badge>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         </Section>
       )}
