@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import {
   createWall,
+  updateWall,
   deleteWall,
   toggleOpen,
   toggleModerated,
@@ -12,6 +13,7 @@ import {
 import ToastForm from "@/components/ToastForm";
 import CopyLink from "@/components/CopyLink";
 import ConfirmForm from "@/components/ConfirmForm";
+import WallEdit from "@/components/WallEdit";
 
 export const dynamic = "force-dynamic";
 
@@ -163,6 +165,13 @@ export default async function WallsPage() {
                     إدارة المشاركات
                     {Number(w.pending) > 0 ? ` (${Number(w.pending)})` : ""}
                   </Link>
+                  <WallEdit
+                    id={w.id}
+                    title={w.title}
+                    goal={w.goal}
+                    cells={w.cells}
+                    action={updateWall}
+                  />
                   <form action={toggleOpen}>
                     <input type="hidden" name="id" value={w.id} />
                     <button className="btn-ghost btn text-sm">

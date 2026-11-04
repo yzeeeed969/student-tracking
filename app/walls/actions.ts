@@ -1,8 +1,9 @@
 "use server";
 import { db } from "@/db";
 import { walls, wallPosts } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 // توليد معرّف قصير عشوائي للرابط العام (أحرف وأرقام بسيطة)
 function makeSlug(): string {
@@ -36,6 +37,45 @@ export async function createWall(formData: FormData) {
   }
 
   await db.insert(walls).values({ title, goal, moderated, slug, cells, open: true });
+  revalidatePath("/walls");
+}
+
+// تعديل حائط قائم: العنوان والوصف وعدد المربّعات فقط (لا يمسّ المشاركات إطلاقًا)
+export async function updateWall(formData: FormData) {
+  const id = Number(formData.get("id"));
+  if (!id) return;
+  const title = String(formData.get("title") || "").trim();
+  const goal = String(formData.get("goal") || "").trim().slice(0, 300);
+  // عدد المربّعات — بين 6 و100
+  let cells = Number(formData.get("cells"));
+  if (!Number.isFinite(cells)) cells = 30;
+  cells = Math.max(6, Math.min(100, Math.round(cells)));
+
+  // العنوان مطلوب
+  if (!title) {
+    redirect("/walls?err=" + encodeURIComponent("عنوان الحائط مطلوب"));
+  }
+
+  // قيد مهم: لا يجوز تنقيص عدد المربّعات دون (أعلى رقم مربّع مستخدَم + 1)،
+  // لأن أرقام المربّعات تبدأ من 0 (المربّع رقم N يحتاج عددًا لا يقل عن N+1).
+  const [row] = await db
+    .select({ maxCell: sql<number | null>`max(${wallPosts.cell})` })
+    .from(wallPosts)
+    .where(eq(wallPosts.wallId, id));
+  const maxCell = row?.maxCell;
+  if (maxCell != null) {
+    const minAllowed = Number(maxCell) + 1;
+    if (cells < minAllowed) {
+      redirect(
+        "/walls?err=" +
+          encodeURIComponent(
+            `لا يمكن جعل عدد المربّعات أقل من ${minAllowed} لوجود مشاركات في مربّعات أعلى؛ احذف تلك المشاركات أولًا`
+          )
+      );
+    }
+  }
+
+  await db.update(walls).set({ title, goal, cells }).where(eq(walls.id, id));
   revalidatePath("/walls");
 }
 
