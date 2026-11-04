@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { db } from "@/db";
 import { worksheets } from "@/db/schema";
 import { asc } from "drizzle-orm";
@@ -47,16 +48,24 @@ export default async function WorksheetsPage() {
                     (ص {s.page})
                   </span>
                 </div>
-                <label className="flex items-center gap-2 text-sm cursor-pointer">
-                  <input
-                    type="checkbox"
-                    name="published"
-                    value="1"
-                    defaultChecked={s.published}
-                    className="w-5 h-5"
-                  />
-                  منشورة لأولياء الأمور
-                </label>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <Link
+                    href={`/worksheets/${s.num}`}
+                    className="text-xs bg-brand/10 text-brand rounded px-2 py-1 hover:bg-brand/20"
+                  >
+                    ✏️ أسئلة تفاعلية
+                  </Link>
+                  <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="published"
+                      value="1"
+                      defaultChecked={s.published}
+                      className="w-5 h-5"
+                    />
+                    منشورة لأولياء الأمور
+                  </label>
+                </div>
               </div>
               <div className="grid md:grid-cols-2 gap-3">
                 <label className="block space-y-1">

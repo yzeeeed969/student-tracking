@@ -248,3 +248,44 @@ export const wallPosts = pgTable(
       .where(sql`${t.cell} is not null`),
   })
 );
+
+// أسئلة أوراق العمل التفاعلية — اختيار من متعدد، يحلّها الطالب داخل النظام
+export const worksheetQuestions = pgTable(
+  "worksheet_questions",
+  {
+    id: serial("id").primaryKey(),
+    worksheetId: integer("worksheet_id")
+      .notNull()
+      .references(() => worksheets.id, { onDelete: "cascade" }),
+    order: integer("order").notNull().default(0),
+    prompt: text("prompt").notNull().default(""), // نص السؤال
+    options: text("options").notNull().default("[]"), // خيارات الإجابة (JSON: مصفوفة نصوص)
+    correctIndex: integer("correct_index").notNull().default(0), // رقم الخيار الصحيح (يبدأ من 0)
+  },
+  (t) => ({
+    idx: index("wsq_worksheet").on(t.worksheetId),
+  })
+);
+
+// محاولات الطلاب على أوراق العمل التفاعلية (سجلّ + حدّ تكرار)
+export const worksheetAttempts = pgTable(
+  "worksheet_attempts",
+  {
+    id: serial("id").primaryKey(),
+    studentId: integer("student_id")
+      .notNull()
+      .references(() => students.id, { onDelete: "cascade" }),
+    worksheetId: integer("worksheet_id")
+      .notNull()
+      .references(() => worksheets.id, { onDelete: "cascade" }),
+    score: doublePrecision("score"), // الدرجة من 10
+    correct: integer("correct").notNull().default(0),
+    total: integer("total").notNull().default(0),
+    device: text("device").notNull().default(""),
+    ip: text("ip").notNull().default(""),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    idx: index("wsa_student_ws").on(t.studentId, t.worksheetId),
+  })
+);
