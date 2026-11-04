@@ -16,6 +16,7 @@ const links = [
   { href: "/cards", label: "البطاقات التفاعلية" },
   { href: "/library", label: "المكتبة" },
   { href: "/reports", label: "التقارير" },
+  { href: "/noor-grades", label: "درجات نور" },
   { href: "/settings", label: "الإعدادات" },
 ];
 
