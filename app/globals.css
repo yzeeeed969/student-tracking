@@ -176,3 +176,22 @@ html.show-reading .reading-badge {
   .has-sidebar main { margin-inline-start: var(--sbw); transition: margin .2s ease; }
   .sidebar-collapsed.has-sidebar main { margin-inline-start: 0; }
 }
+
+/* الطباعة: إخفاء القائمة والأزرار، وطباعة المحتوى فقط */
+@media print {
+  .app-sidebar,
+  .sidebar-reveal,
+  .no-print {
+    display: none !important;
+  }
+  .has-sidebar main {
+    margin-inline-start: 0 !important;
+  }
+  .card {
+    break-inside: avoid;
+    box-shadow: none !important;
+  }
+  .print-break {
+    break-before: page;
+  }
+}

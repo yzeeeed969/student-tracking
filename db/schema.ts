@@ -289,3 +289,19 @@ export const worksheetAttempts = pgTable(
     idx: index("wsa_student_ws").on(t.studentId, t.worksheetId),
   })
 );
+
+// الشواهد التعليمية: ملفات يرفعها المعلم لكل بند من بنود تقييم الأداء الوظيفي (1..11)
+export const evidenceFiles = pgTable(
+  "evidence_files",
+  {
+    id: serial("id").primaryKey(),
+    element: integer("element").notNull(), // رقم البند 1..11
+    title: text("title").notNull(), // اسم الشاهد
+    note: text("note").notNull().default(""), // وصف مختصر (اختياري)
+    mime: text("mime").notNull().default("application/octet-stream"),
+    size: integer("size").notNull().default(0),
+    data: bytea("data").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => ({ idx: index("evidence_element").on(t.element) })
+);
