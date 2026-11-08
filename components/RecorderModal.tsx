@@ -38,7 +38,6 @@ export default function RecorderModal({
     "idle" | "recording" | "preview" | "uploading"
   >("idle");
   const [level, setLevel] = useState(0);
-  const [peak, setPeak] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const [error, setError] = useState("");
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
@@ -51,8 +50,6 @@ export default function RecorderModal({
   const blobRef = useRef<Blob | null>(null);
   const startRef = useRef<number>(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const LOW = 0.045;
 
   function cleanupMeter() {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -82,7 +79,6 @@ export default function RecorderModal({
 
   async function start() {
     setError("");
-    setPeak(0);
     setElapsed(0);
     chunksRef.current = [];
     blobRef.current = null;
@@ -120,7 +116,6 @@ export default function RecorderModal({
         }
         const rms = Math.sqrt(sum / data.length);
         setLevel(rms);
-        setPeak((p) => Math.max(p, rms));
         rafRef.current = requestAnimationFrame(tick);
       };
       tick();
@@ -197,8 +192,6 @@ export default function RecorderModal({
   }
 
   const pct = Math.min(100, Math.round(level * 320));
-  const peakOk = peak >= LOW;
-  const nowLow = phase === "recording" && level < LOW;
 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-3">
@@ -210,26 +203,11 @@ export default function RecorderModal({
           </button>
         </div>
 
-        <div className="space-y-1">
-          <div className="h-5 rounded-full bg-muted/15 overflow-hidden">
-            <div
-              className={
-                "h-full transition-all duration-75 " +
-                (nowLow ? "bg-amber-400" : "bg-green-500")
-              }
-              style={{ width: `${pct}%` }}
-            />
-          </div>
-          {phase === "recording" && (
-            <div
-              className={
-                "text-sm text-center font-bold " +
-                (nowLow ? "text-amber-600" : "text-green-600")
-              }
-            >
-              {nowLow ? "ارفع صوتك قليلًا 🔊" : "صوتك واضح ✓"}
-            </div>
-          )}
+        <div className="h-5 rounded-full bg-muted/15 overflow-hidden">
+          <div
+            className="h-full bg-green-500 transition-all duration-75"
+            style={{ width: `${pct}%` }}
+          />
         </div>
 
         {phase === "recording" && (
@@ -262,11 +240,6 @@ export default function RecorderModal({
         )}
         {phase === "preview" && (
           <div className="space-y-2">
-            {!peakOk && (
-              <div className="text-amber-600 text-sm text-center">
-                كان صوتك منخفضًا. يُفضّل إعادة التسجيل بصوت أوضح.
-              </div>
-            )}
             <div className="flex gap-2">
               <button
                 onClick={start}
