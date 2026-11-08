@@ -457,30 +457,58 @@ function NotificationBell({
   notifications: ParentNotification[];
 }) {
   const [open, setOpen] = useState(false);
-  const [seen, setSeen] = useState(notifications.length);
+  const [ready, setReady] = useState(false);
+  const [seen, setSeen] = useState<string[]>([]);
+  const [shown, setShown] = useState<ParentNotification[]>([]);
 
-  useEffect(() => {
+  const storeKey = `ntf_seen_${studentId}`;
+
+  function save(keys: string[]) {
     try {
-      const v = Number(localStorage.getItem(`ntf_seen_${studentId}`) || "0");
-      setSeen(Number.isFinite(v) ? v : 0);
+      localStorage.setItem(storeKey, JSON.stringify(keys));
     } catch {
-      setSeen(0);
+      // تجاهل: بعض المتصفحات تمنع التخزين
     }
+  }
+
+  // أول مرة: اعتبر كل الماضي مقروءًا (لا يظهر إلا الجديد لاحقًا)
+  useEffect(() => {
+    let stored: string[] | null = null;
+    try {
+      const raw = localStorage.getItem(storeKey);
+      const parsed = raw ? JSON.parse(raw) : null;
+      if (Array.isArray(parsed)) stored = parsed.map(String);
+    } catch {
+      stored = null;
+    }
+    if (stored === null) {
+      // أول زيارة على هذا الجهاز: اكتم المتراكم السابق
+      const allKeys = notifications.map((n) => n.key);
+      setSeen(allKeys);
+      save(allKeys);
+    } else {
+      setSeen(stored);
+    }
+    setReady(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [studentId]);
 
-  const unread = Math.max(0, notifications.length - seen);
+  const seenSet = new Set(seen);
+  const unreadList = ready
+    ? notifications.filter((n) => !seenSet.has(n.key))
+    : [];
+  const unread = unreadList.length;
 
   function toggle() {
     const next = !open;
-    setOpen(next);
     if (next) {
-      setSeen(notifications.length);
-      try {
-        localStorage.setItem(`ntf_seen_${studentId}`, String(notifications.length));
-      } catch {
-        // تجاهل: بعض المتصفحات تمنع التخزين
-      }
+      // اعرض الجديد ثم علّمه مقروءًا ليختفي بعد ذلك
+      setShown(unreadList);
+      const merged = Array.from(new Set([...seen, ...unreadList.map((n) => n.key)]));
+      setSeen(merged);
+      save(merged);
     }
+    setOpen(next);
   }
 
   return (
@@ -507,7 +535,7 @@ function NotificationBell({
           />
           <div className="absolute left-0 mt-2 w-80 max-w-[85vw] max-h-96 overflow-auto rounded-xl bg-card border border-[var(--border)] shadow-xl z-50">
             <div className="sticky top-0 bg-brand text-white px-4 py-2 font-bold text-sm flex items-center justify-between">
-              <span>🔔 إشعارات ابنك</span>
+              <span>🔔 إشعارات جديدة</span>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
@@ -516,13 +544,13 @@ function NotificationBell({
                 ✕
               </button>
             </div>
-            {notifications.length === 0 ? (
+            {shown.length === 0 ? (
               <div className="p-5 text-center text-muted text-sm">
-                لا توجد إشعارات بعد. ستظهر هنا إنجازات ابنك أولًا بأول.
+                لا توجد إشعارات جديدة. ستظهر هنا إنجازات ابنك الجديدة أولًا بأول.
               </div>
             ) : (
               <ul className="divide-y divide-[var(--border)]">
-                {notifications.map((n, i) => (
+                {shown.map((n, i) => (
                   <li key={i} className="flex gap-2 px-3 py-2.5 items-start">
                     <span className="text-lg leading-none mt-0.5">{n.icon}</span>
                     <div className="flex-1">

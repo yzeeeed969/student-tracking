@@ -44,6 +44,7 @@ export type WorksheetItem = {
 
 // إشعار واحد لولي الأمر (مشتق من سجلّات الطالب)
 export type ParentNotification = {
+  key: string; // مُعرِّف ثابت للإشعار (لتتبّع المقروء) — لا يتكرر
   kind: string; // homework | worksheet | quran | participation | exam
   icon: string; // رمز تعبيري
   message: string; // نص الإشعار
@@ -290,14 +291,15 @@ export async function lookupParent(
     // ===== بناء إشعارات ولي الأمر (مشتقة من سجلّات الطالب) =====
     const notifications: ParentNotification[] = [];
 
-    // المشاركة والتفاعل (لها تاريخ)
+    // المشاركة والتفاعل (لها تاريخ) — المفتاح من رقم السجل الثابت
     const partRows = await db
-      .select({ date: participation.date, points: participation.points })
+      .select({ id: participation.id, date: participation.date, points: participation.points })
       .from(participation)
       .where(eq(participation.studentId, m.id))
       .orderBy(desc(participation.date));
     for (const p of partRows) {
       notifications.push({
+        key: `p:${p.id}`,
         kind: "participation",
         icon: "⭐",
         message: "أحسنت! حصلت على درجة مشاركة وتفاعل في الحصة.",
@@ -308,6 +310,7 @@ export async function lookupParent(
     // أوراق العمل المحلولة (الأحدث رقمًا أولًا)
     for (const ws of [...worksheetItems].filter((x) => x.score != null).sort((a, b) => b.num - a.num)) {
       notifications.push({
+        key: `ws:${ws.num}`,
         kind: "worksheet",
         icon: "📝",
         message: `أحسنت! تم حلّ ورقة عمل «${ws.title}»، ودرجتك ${ws.score}/10.`,
@@ -318,6 +321,7 @@ export async function lookupParent(
     // الواجبات المستلَمة (الأحدث رقمًا أولًا)
     for (const hw of [...homeworkItems].filter((x) => x.done).sort((a, b) => b.num - a.num)) {
       notifications.push({
+        key: `hw:${hw.num}`,
         kind: "homework",
         icon: "📘",
         message: `أحسنت! وصل واجبك (رقم ${hw.num}) وتم رصده.`,
@@ -328,6 +332,7 @@ export async function lookupParent(
     // القرآن (السور المسمَّعة، الأحدث ترتيبًا أولًا)
     for (const su of [...surahs].filter((x) => x.done).reverse()) {
       notifications.push({
+        key: `q:${su.num}`,
         kind: "quran",
         icon: "📖",
         message: `ما شاء الله! رُصدت تلاوتك لسورة «${su.name}»${su.grade ? ` (${su.grade})` : ""}.`,
@@ -338,6 +343,7 @@ export async function lookupParent(
     // الاختبارات المرصودة
     for (const ex of exams.filter((x) => x.value != null)) {
       notifications.push({
+        key: `ex:${ex.label}`,
         kind: "exam",
         icon: "📋",
         message: `تم رصد ${ex.label}: ${ex.value}.`,
