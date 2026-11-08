@@ -10,6 +10,7 @@ import {
   worksheets,
   worksheetMarks,
   participation,
+  recitations,
 } from "@/db/schema";
 import { eq, desc, asc, sql } from "drizzle-orm";
 import { computeClassGrades } from "@/lib/grades";
@@ -29,6 +30,7 @@ export type SurahItem = {
   name: string;
   done: boolean;
   grade: string | null; // ممتاز / جيد جدًا / جيد
+  recorded: boolean; // يوجد تسجيل تسميع بانتظار المعلم
 };
 
 export type ExamItem = { label: string; value: number | null };
@@ -231,6 +233,11 @@ export async function lookupParent(
         .from(quranMarks)
         .where(eq(quranMarks.studentId, m.id));
       const qmap = new Map(qm.map((x) => [x.surah, x.points]));
+      const recRows = await db
+        .select({ surah: recitations.surah })
+        .from(recitations)
+        .where(eq(recitations.studentId, m.id));
+      const recSet = new Set(recRows.map((x) => x.surah));
       surahs = SURAHS.map((su) => {
         const p = qmap.get(su.num);
         return {
@@ -238,6 +245,7 @@ export async function lookupParent(
           name: su.name,
           done: p != null,
           grade: p != null ? GRADE_LABEL[p] ?? String(p) : null,
+          recorded: recSet.has(su.num),
         };
       });
     }

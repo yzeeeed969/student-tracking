@@ -7,6 +7,7 @@ import {
   type ParentReport,
   type ParentNotification,
 } from "@/app/showcase/actions";
+import RecorderModal from "@/components/RecorderModal";
 import HomeworkUpload from "@/components/HomeworkUpload";
 
 const initial: LookupState = { ok: false };
@@ -91,6 +92,12 @@ function ReportCard({
     total: false,
     notes: false,
   };
+
+  const [openRecite, setOpenRecite] = useState<{
+    num: number;
+    name: string;
+  } | null>(null);
+  const [recitedLocal, setRecitedLocal] = useState<Record<number, boolean>>({});
 
   const reachedIdx = r.currentSurahIdx; // -1 إن لم يبدأ
   const reachedCount = reachedIdx + 1; // عدد السور التي وصل إليها الفصل
@@ -219,15 +226,41 @@ function ReportCard({
                     <Badge kind="locked">🔒 لم نصل إليها بعد</Badge>
                   ) : su.done ? (
                     <Badge kind="done">{su.grade}</Badge>
-                  ) : isNext ? (
-                    <Badge kind="next">🎯 استعدّوا لها</Badge>
                   ) : (
-                    <Badge kind="pending">⏳ لم يُسمّع بعد</Badge>
+                    <div className="flex items-center gap-2">
+                      {su.recorded || recitedLocal[su.num] ? (
+                        <Badge kind="pending">⏺ بانتظار المعلم</Badge>
+                      ) : isNext ? (
+                        <Badge kind="next">🎯 استعدّوا لها</Badge>
+                      ) : (
+                        <Badge kind="pending">⏳ لم يُسمّع بعد</Badge>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setOpenRecite({ num: su.num, name: su.name })
+                        }
+                        className="whitespace-nowrap rounded-lg bg-emerald-600 text-white text-xs px-2.5 py-1 hover:opacity-90"
+                      >
+                        🎙 {su.recorded || recitedLocal[su.num] ? "إعادة" : "تسجيل"}
+                      </button>
+                    </div>
                   )}
                 </div>
               );
             })}
           </div>
+          {openRecite && (
+            <RecorderModal
+              studentId={r.studentId}
+              surah={openRecite}
+              onClose={() => setOpenRecite(null)}
+              onDone={() => {
+                setRecitedLocal((m) => ({ ...m, [openRecite.num]: true }));
+                setOpenRecite(null);
+              }}
+            />
+          )}
         </Section>
       )}
 
