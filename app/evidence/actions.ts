@@ -28,3 +28,21 @@ export async function moveEvidence(formData: FormData) {
   await db.update(evidenceFiles).set({ element }).where(eq(evidenceFiles.id, id));
   revalidatePath("/evidence", "layout");
 }
+
+// نسخ شاهد إلى بند آخر (يبقى الأصل في مكانه)
+export async function copyEvidence(formData: FormData) {
+  const id = Number(formData.get("id"));
+  const element = Number(formData.get("element"));
+  if (!id || !(element >= 1 && element <= 11)) return;
+  const [f] = await db.select().from(evidenceFiles).where(eq(evidenceFiles.id, id));
+  if (!f || f.element === element) return;
+  await db.insert(evidenceFiles).values({
+    element,
+    title: f.title,
+    note: f.note,
+    mime: f.mime,
+    size: f.size,
+    data: f.data,
+  });
+  revalidatePath("/evidence", "layout");
+}

@@ -7,7 +7,7 @@ import { ELEMENTS, elementByNum, systemStats, autoEvidence } from "@/lib/evidenc
 import { buildPlans } from "@/lib/plans";
 import ConfirmForm from "@/components/ConfirmForm";
 import ToastForm from "@/components/ToastForm";
-import { deleteEvidence, renameEvidence, moveEvidence } from "../actions";
+import { deleteEvidence, renameEvidence, moveEvidence, copyEvidence } from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -182,12 +182,21 @@ export default async function EvidenceElementPage({
                         </ToastForm>
                         <ToastForm action={moveEvidence} toast="تم النقل" className="flex gap-1">
                           <input type="hidden" name="id" value={f.id} />
-                          <select name="element" defaultValue={n} className="text-xs flex-1">
+                          <select name="element" defaultValue={n} aria-label="نقل إلى بند" className="text-xs flex-1">
                             {ELEMENTS.map((e) => (
                               <option key={e.n} value={e.n}>{e.n} - {e.title}</option>
                             ))}
                           </select>
                           <button className="btn btn-ghost text-xs">نقل</button>
+                        </ToastForm>
+                        <ToastForm action={copyEvidence} toast="تم النسخ" className="flex gap-1">
+                          <input type="hidden" name="id" value={f.id} />
+                          <select name="element" defaultValue={n === 11 ? 1 : n + 1} aria-label="نسخ إلى بند" className="text-xs flex-1">
+                            {ELEMENTS.filter((e) => e.n !== n).map((e) => (
+                              <option key={e.n} value={e.n}>{e.n} - {e.title}</option>
+                            ))}
+                          </select>
+                          <button className="btn btn-ghost text-xs">نسخ</button>
                         </ToastForm>
                         <a href={`/api/evidence-file/${f.id}?dl=1`} className="text-xs text-brand hover:underline block">⬇ تنزيل</a>
                         <ConfirmForm action={deleteEvidence} confirm="حذف هذا الشاهد نهائيًا؟">
