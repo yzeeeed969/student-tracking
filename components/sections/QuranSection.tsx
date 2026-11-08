@@ -1,11 +1,12 @@
 import ClassTabs from "@/components/ClassTabs";
 import { db } from "@/db";
-import { students, quranMarks } from "@/db/schema";
-import { eq, sql } from "drizzle-orm";
+import { students, quranMarks, recitations } from "@/db/schema";
+import { eq, sql, inArray } from "drizzle-orm";
 import { SURAHS, LEVELS } from "@/lib/surahs";
 import { saveQuran, bulkSetSurah, setQuranCell } from "@/app/quran/actions";
 import RowSaveButton from "@/components/RowSaveButton";
 import AutoSelect from "@/components/AutoSelect";
+import RecitePlay from "@/components/RecitePlay";
 import StudentSearch from "@/components/StudentSearch";
 import SelectAllCheckbox from "@/components/SelectAllCheckbox";
 import QuranBulk from "@/components/QuranBulk";
@@ -39,6 +40,16 @@ export default async function QuranSection({
     : [];
   const markMap = new Map<string, number>();
   for (const m of marks) markMap.set(`${m.studentId}_${m.surah}`, m.points);
+
+  // التسجيلات الصوتية بانتظار الرصد
+  const recs = ids.length
+    ? await db
+        .select({ studentId: recitations.studentId, surah: recitations.surah })
+        .from(recitations)
+        .where(inArray(recitations.studentId, ids))
+    : [];
+  const recSet = new Set<string>();
+  for (const r of recs) recSet.add(`${r.studentId}_${r.surah}`);
 
   return (
     <div className="space-y-4">
@@ -94,8 +105,12 @@ export default async function QuranSection({
                     </td>
                     {SURAHS.map((s) => {
                       const v = markMap.get(`${st.id}_${s.num}`);
+                      const hasRec = recSet.has(`${st.id}_${s.num}`);
                       return (
                         <td key={s.num} className="p-0">
+                          {hasRec && (
+                            <RecitePlay studentId={st.id} surah={s.num} />
+                          )}
                           <AutoSelect
                             name={`q_${st.id}_${s.num}`}
                             defaultValue={v != null ? String(v) : ""}

@@ -305,3 +305,25 @@ export const evidenceFiles = pgTable(
   },
   (t) => ({ idx: index("evidence_element").on(t.element) })
 );
+
+// ===== تسميع القرآن =====
+// تسجيل تسميع واحد لطالب لسورة — يُحذف تلقائيًا بعد أن يرصد المعلم الدرجة
+// (يستخدم نوع bytea المعرّف أعلى الملف)
+export const recitations = pgTable(
+  "recitations",
+  {
+    id: serial("id").primaryKey(),
+    studentId: integer("student_id")
+      .notNull()
+      .references(() => students.id, { onDelete: "cascade" }),
+    surah: integer("surah").notNull(), // 99..114
+    audio: bytea("audio").notNull(), // الملف الصوتي
+    mime: text("mime").notNull().default("audio/webm"),
+    durationMs: integer("duration_ms").notNull().default(0),
+    bytes: integer("bytes").notNull().default(0),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    uq: uniqueIndex("recite_student_surah").on(t.studentId, t.surah),
+  })
+);

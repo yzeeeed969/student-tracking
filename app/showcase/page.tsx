@@ -40,6 +40,16 @@ export default async function Showcase() {
       </header>
       <main className="p-4 max-w-2xl mx-auto space-y-5">
         <a
+          href="/recite"
+          className="block text-center rounded-xl bg-emerald-600 text-white font-bold px-5 py-4 shadow hover:opacity-90"
+        >
+          📖 تسميع القرآن الكريم — للطلاب
+          <span className="block text-xs font-normal opacity-90 mt-1">
+            سجّل تسميعك بصوت واضح وأرسله للمعلم (الدخول برقم ولي الأمر)
+          </span>
+        </a>
+
+        <a
           href="/cards"
           className="block text-center rounded-xl bg-brand text-white font-bold px-5 py-4 shadow hover:opacity-90"
         >

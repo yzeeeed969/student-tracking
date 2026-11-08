@@ -8,9 +8,11 @@ const PUBLIC = [
   "/w",
   "/cards",
   "/solve",
+  "/recite",
   "/api/wall",
   "/api/hw-submit",
   "/api/ws-submit",
+  "/api/recite-submit",
 ];
 
 export async function middleware(req: NextRequest) {
