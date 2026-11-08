@@ -36,6 +36,7 @@ export async function setQuranCell(
   }
   revalidatePath("/record");
   revalidatePath("/reports");
+  revalidatePath("/recitations");
 }
 
 // تطبيق مستوى سورة واحدة على مجموعة طلاب محدّدين

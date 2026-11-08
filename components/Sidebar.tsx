@@ -9,6 +9,7 @@ const links = [
   { href: "/", label: "الرئيسية" },
   { href: "/students", label: "الطلاب" },
   { href: "/record", label: "الرصد" },
+  { href: "/recitations", label: "تسميعات الطلاب" },
   { href: "/behavior", label: "السلوك والملاحظات" },
   { href: "/worksheets", label: "أوراق العمل" },
   { href: "/homework-submissions", label: "واجبات الطلاب المرفوعة" },
@@ -23,6 +24,25 @@ const links = [
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const [reciteCount, setReciteCount] = useState(0);
+
+  useEffect(() => {
+    let alive = true;
+    const load = () => {
+      fetch("/api/recite-count")
+        .then((r) => r.json())
+        .then((d) => {
+          if (alive) setReciteCount(Number(d.count) || 0);
+        })
+        .catch(() => {});
+    };
+    load();
+    const t = setInterval(load, 60000);
+    return () => {
+      alive = false;
+      clearInterval(t);
+    };
+  }, []);
 
   useEffect(() => {
     const el = document.documentElement;
@@ -73,9 +93,14 @@ export default function Sidebar() {
               key={l.href}
               href={l.href}
               prefetch={false}
-              className="px-3 py-2 rounded-lg hover:bg-brandsoft text-sm"
+              className="px-3 py-2 rounded-lg hover:bg-brandsoft text-sm flex items-center justify-between gap-2"
             >
-              {l.label}
+              <span>{l.label}</span>
+              {l.href === "/recitations" && reciteCount > 0 && (
+                <span className="min-w-5 h-5 px-1.5 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center">
+                  {reciteCount}
+                </span>
+              )}
             </Link>
           ))}
         </nav>
