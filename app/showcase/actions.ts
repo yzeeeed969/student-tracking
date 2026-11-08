@@ -9,6 +9,7 @@ import {
   quranMarks,
   worksheets,
   worksheetMarks,
+  participation,
 } from "@/db/schema";
 import { eq, desc, asc, sql } from "drizzle-orm";
 import { computeClassGrades } from "@/lib/grades";
@@ -41,6 +42,14 @@ export type WorksheetItem = {
   score: number | null; // درجة الطالب من 10 (null = لم تُرصد)
 };
 
+// إشعار واحد لولي الأمر (مشتق من سجلّات الطالب)
+export type ParentNotification = {
+  kind: string; // homework | worksheet | quran | participation | exam
+  icon: string; // رمز تعبيري
+  message: string; // نص الإشعار
+  date: string | null; // تاريخ إن وُجد (المشاركة)
+};
+
 export type ParentReport = {
   studentId: number;
   phone: string;
@@ -61,6 +70,7 @@ export type ParentReport = {
   participationGrade: number;
   total: number | null;
   notes: ParentNote[];
+  notifications: ParentNotification[];
   w: { quran: number; oralWritten: number; homework: number; participation: number };
 };
 
@@ -277,6 +287,64 @@ export async function lookupParent(
           .limit(50)
       : [];
 
+    // ===== بناء إشعارات ولي الأمر (مشتقة من سجلّات الطالب) =====
+    const notifications: ParentNotification[] = [];
+
+    // المشاركة والتفاعل (لها تاريخ)
+    const partRows = await db
+      .select({ date: participation.date, points: participation.points })
+      .from(participation)
+      .where(eq(participation.studentId, m.id))
+      .orderBy(desc(participation.date));
+    for (const p of partRows) {
+      notifications.push({
+        kind: "participation",
+        icon: "⭐",
+        message: "أحسنت! حصلت على درجة مشاركة وتفاعل في الحصة.",
+        date: fmt(p.date),
+      });
+    }
+
+    // أوراق العمل المحلولة (الأحدث رقمًا أولًا)
+    for (const ws of [...worksheetItems].filter((x) => x.score != null).sort((a, b) => b.num - a.num)) {
+      notifications.push({
+        kind: "worksheet",
+        icon: "📝",
+        message: `أحسنت! تم حلّ ورقة عمل «${ws.title}»، ودرجتك ${ws.score}/10.`,
+        date: null,
+      });
+    }
+
+    // الواجبات المستلَمة (الأحدث رقمًا أولًا)
+    for (const hw of [...homeworkItems].filter((x) => x.done).sort((a, b) => b.num - a.num)) {
+      notifications.push({
+        kind: "homework",
+        icon: "📘",
+        message: `أحسنت! وصل واجبك (رقم ${hw.num}) وتم رصده.`,
+        date: null,
+      });
+    }
+
+    // القرآن (السور المسمَّعة، الأحدث ترتيبًا أولًا)
+    for (const su of [...surahs].filter((x) => x.done).reverse()) {
+      notifications.push({
+        kind: "quran",
+        icon: "📖",
+        message: `ما شاء الله! رُصدت تلاوتك لسورة «${su.name}»${su.grade ? ` (${su.grade})` : ""}.`,
+        date: null,
+      });
+    }
+
+    // الاختبارات المرصودة
+    for (const ex of exams.filter((x) => x.value != null)) {
+      notifications.push({
+        kind: "exam",
+        icon: "📋",
+        message: `تم رصد ${ex.label}: ${ex.value}.`,
+        date: null,
+      });
+    }
+
     reports.push({
       studentId: m.id,
       phone: m.phone || "",
@@ -302,6 +370,7 @@ export async function lookupParent(
         type: n.type,
         description: n.description,
       })),
+      notifications,
       w: cg.w,
     });
   }

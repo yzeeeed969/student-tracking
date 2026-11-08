@@ -1,7 +1,12 @@
 "use client";
 
-import { useActionState } from "react";
-import { lookupParent, type LookupState, type ParentReport } from "@/app/showcase/actions";
+import { useActionState, useState, useEffect } from "react";
+import {
+  lookupParent,
+  type LookupState,
+  type ParentReport,
+  type ParentNotification,
+} from "@/app/showcase/actions";
 import HomeworkUpload from "@/components/HomeworkUpload";
 
 const initial: LookupState = { ok: false };
@@ -102,7 +107,13 @@ function ReportCard({
     <div className="rounded-xl bg-brandsoft/40 p-4 space-y-3">
       <div className="flex items-center justify-between flex-wrap gap-2 border-b border-[var(--border)] pb-2">
         <div className="font-bold text-lg">{r.name}</div>
-        <div className="text-muted text-sm">{r.className}</div>
+        <div className="flex items-center gap-3">
+          <div className="text-muted text-sm">{r.className}</div>
+          <NotificationBell
+            studentId={r.studentId}
+            notifications={r.notifications}
+          />
+        </div>
       </div>
 
       {/* إلى أين وصل الفصل */}
@@ -433,6 +444,100 @@ function Section({
         {value && <span className="text-brand">{value}</span>}
       </div>
       <div className="p-2 bg-card/40 flex-1">{children}</div>
+    </div>
+  );
+}
+
+// جرس الإشعارات لولي الأمر — يعرض إنجازات الطالب (واجب، تلاوة، مشاركة، ورقة عمل، اختبار)
+function NotificationBell({
+  studentId,
+  notifications,
+}: {
+  studentId: number;
+  notifications: ParentNotification[];
+}) {
+  const [open, setOpen] = useState(false);
+  const [seen, setSeen] = useState(notifications.length);
+
+  useEffect(() => {
+    try {
+      const v = Number(localStorage.getItem(`ntf_seen_${studentId}`) || "0");
+      setSeen(Number.isFinite(v) ? v : 0);
+    } catch {
+      setSeen(0);
+    }
+  }, [studentId]);
+
+  const unread = Math.max(0, notifications.length - seen);
+
+  function toggle() {
+    const next = !open;
+    setOpen(next);
+    if (next) {
+      setSeen(notifications.length);
+      try {
+        localStorage.setItem(`ntf_seen_${studentId}`, String(notifications.length));
+      } catch {
+        // تجاهل: بعض المتصفحات تمنع التخزين
+      }
+    }
+  }
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={toggle}
+        aria-label="الإشعارات"
+        className="relative w-10 h-10 rounded-full bg-card border border-[var(--border)] flex items-center justify-center text-xl hover:bg-brandsoft/60"
+      >
+        🔔
+        {unread > 0 && (
+          <span className="absolute -top-1 -left-1 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[11px] font-bold flex items-center justify-center">
+            {unread > 99 ? "99+" : unread}
+          </span>
+        )}
+      </button>
+
+      {open && (
+        <>
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setOpen(false)}
+          />
+          <div className="absolute left-0 mt-2 w-80 max-w-[85vw] max-h-96 overflow-auto rounded-xl bg-card border border-[var(--border)] shadow-xl z-50">
+            <div className="sticky top-0 bg-brand text-white px-4 py-2 font-bold text-sm flex items-center justify-between">
+              <span>🔔 إشعارات ابنك</span>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="opacity-90 hover:opacity-100"
+              >
+                ✕
+              </button>
+            </div>
+            {notifications.length === 0 ? (
+              <div className="p-5 text-center text-muted text-sm">
+                لا توجد إشعارات بعد. ستظهر هنا إنجازات ابنك أولًا بأول.
+              </div>
+            ) : (
+              <ul className="divide-y divide-[var(--border)]">
+                {notifications.map((n, i) => (
+                  <li key={i} className="flex gap-2 px-3 py-2.5 items-start">
+                    <span className="text-lg leading-none mt-0.5">{n.icon}</span>
+                    <div className="flex-1">
+                      <div className="text-sm leading-snug">{n.message}</div>
+                      {n.date && (
+                        <div className="text-[11px] text-muted mt-0.5">{n.date}</div>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
