@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { setQuranCell } from "@/app/quran/actions";
 import { LEVELS } from "@/lib/surahs";
-import RecitePlay from "@/components/RecitePlay";
+import AudioPlayer from "@/components/AudioPlayer";
 import { fireToast } from "./useSelection";
 
 // صفّ تسميع واحد في صندوق المعلم: استماع + رصد مباشر (ينعكس في درجة القرآن ويحذف التسجيل)
@@ -48,17 +48,15 @@ export default function RecitationRow({
 
   return (
     <div className="card p-3 space-y-3">
-      <div className="flex items-center justify-between gap-2 flex-wrap">
-        <div>
-          <div className="font-bold">{studentName}</div>
-          <div className="text-muted text-xs">
-            {className} • سورة {surahName}
-          </div>
-        </div>
-        <div className="scale-150 px-3">
-          <RecitePlay studentId={studentId} surah={surah} />
+      <div>
+        <div className="font-bold">{studentName}</div>
+        <div className="text-muted text-xs">
+          {className} • سورة {surahName}
         </div>
       </div>
+      <AudioPlayer
+        src={`/api/recite-audio?studentId=${studentId}&surah=${surah}`}
+      />
       <div className="flex items-center gap-2">
         <span className="text-muted text-xs whitespace-nowrap">الدرجة:</span>
         {LEVELS.map((l) => (
