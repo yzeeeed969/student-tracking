@@ -1,6 +1,6 @@
 "use server";
 import { db } from "@/db";
-import { quranMarks, recitations } from "@/db/schema";
+import { quranMarks, recitations, recitationLog } from "@/db/schema";
 import { and, eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { SURAHS } from "@/lib/surahs";
@@ -27,12 +27,18 @@ export async function setQuranCell(
         target: [quranMarks.studentId, quranMarks.surah],
         set: { points },
       });
-    // حُذف التسجيل الصوتي بعد رصد الدرجة (لتوفير المساحة)
-    await db
+    // حُذف التسجيل الصوتي بعد رصد الدرجة (لتوفير المساحة) + تسجيله في الأرشيف
+    const removed = await db
       .delete(recitations)
       .where(
         and(eq(recitations.studentId, studentId), eq(recitations.surah, surah))
-      );
+      )
+      .returning({ id: recitations.id });
+    if (removed.length) {
+      await db
+        .insert(recitationLog)
+        .values({ studentId, surah, grade: points });
+    }
   }
   revalidatePath("/record");
   revalidatePath("/reports");
@@ -58,13 +64,19 @@ export async function bulkSetSurah(fd: FormData) {
         .insert(quranMarks)
         .values(ids.map((studentId) => ({ studentId, surah, points })));
   });
-  // حذف التسجيلات بعد رصد الدرجة
-  if (points !== null)
-    await db
+  // حذف التسجيلات بعد رصد الدرجة + أرشفتها
+  if (points !== null) {
+    const removed = await db
       .delete(recitations)
       .where(
         and(inArray(recitations.studentId, ids), eq(recitations.surah, surah))
+      )
+      .returning({ studentId: recitations.studentId });
+    if (removed.length)
+      await db.insert(recitationLog).values(
+        removed.map((r) => ({ studentId: r.studentId, surah, grade: points }))
       );
+  }
   revalidatePath("/quran");
   revalidatePath("/grades");
 }
@@ -98,16 +110,21 @@ export async function saveQuran(formData: FormData) {
     if (toInsert.length) await tx.insert(quranMarks).values(toInsert);
   });
 
-  // حذف التسجيلات للسور التي رُصدت درجاتها
+  // حذف التسجيلات للسور التي رُصدت درجاتها + أرشفتها
   for (const r of toInsert) {
-    await db
+    const removed = await db
       .delete(recitations)
       .where(
         and(
           eq(recitations.studentId, r.studentId),
           eq(recitations.surah, r.surah)
         )
-      );
+      )
+      .returning({ id: recitations.id });
+    if (removed.length)
+      await db
+        .insert(recitationLog)
+        .values({ studentId: r.studentId, surah: r.surah, grade: r.points });
   }
 
   revalidatePath("/quran");

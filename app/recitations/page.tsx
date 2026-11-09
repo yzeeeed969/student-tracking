@@ -3,6 +3,7 @@ import { recitations, students, classRooms } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { SURAHS } from "@/lib/surahs";
 import RecitationRow from "@/components/RecitationRow";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -28,9 +29,17 @@ export default async function RecitationsPage() {
       <main className="p-4 space-y-4 max-w-2xl mx-auto">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <h1 className="text-xl font-bold">تسميعات الطلاب</h1>
-          <span className="text-muted text-sm">
-            بانتظار الرصد: {rows.length}
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-muted text-sm">
+              بانتظار الرصد: {rows.length}
+            </span>
+            <Link
+              href="/recitations/archive"
+              className="text-brand text-sm font-bold whitespace-nowrap"
+            >
+              🗂️ الأرشيف
+            </Link>
+          </div>
         </div>
 
         <div className="card p-3 text-sm text-muted">

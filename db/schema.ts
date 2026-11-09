@@ -327,3 +327,20 @@ export const recitations = pgTable(
     uq: uniqueIndex("recite_student_surah").on(t.studentId, t.surah),
   })
 );
+
+// أرشيف نصّي لمن سمّع عبر النظام (بلا صوت) — يُسجَّل لحظة رصد درجة لتسجيل موجود
+export const recitationLog = pgTable(
+  "recitation_log",
+  {
+    id: serial("id").primaryKey(),
+    studentId: integer("student_id")
+      .notNull()
+      .references(() => students.id, { onDelete: "cascade" }),
+    surah: integer("surah").notNull(),
+    grade: integer("grade").notNull(), // النقاط 1..3
+    gradedAt: timestamp("graded_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    idx: index("recitelog_student").on(t.studentId),
+  })
+);
