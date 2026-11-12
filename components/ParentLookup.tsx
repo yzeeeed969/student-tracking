@@ -9,7 +9,6 @@ import {
 } from "@/app/showcase/actions";
 import RecorderModal from "@/components/RecorderModal";
 import HomeworkUpload from "@/components/HomeworkUpload";
-import { huthaifiAudio } from "@/lib/surahs";
 
 const initial: LookupState = { ok: false };
 
@@ -267,7 +266,7 @@ function ReportCard({
                   {listenNum === su.num && !isLocked && !su.done && (
                     <div className="px-3 pb-2 pt-0.5 space-y-1">
                       <audio
-                        src={huthaifiAudio(su.num)}
+                        src={`/api/recite-ref?surah=${su.num}`}
                         controls
                         autoPlay
                         preload="none"
