@@ -222,14 +222,14 @@ function ReportCard({
                       : "bg-card/60"
                   }`}
                 >
-                  <div className="flex items-center justify-between gap-2 px-3 py-1.5">
-                    <span className="font-medium">سورة {su.name}</span>
+                  <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 px-3 py-1.5">
+                    <span className="font-medium shrink-0">سورة {su.name}</span>
                     {isLocked ? (
                       <Badge kind="locked">🔒 لم نصل إليها بعد</Badge>
                     ) : su.done ? (
                       <Badge kind="done">{su.grade}</Badge>
                     ) : (
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap justify-end">
                         {su.recorded || recitedLocal[su.num] ? (
                           <Badge kind="pending">⏺ بانتظار المعلم</Badge>
                         ) : isNext ? (
