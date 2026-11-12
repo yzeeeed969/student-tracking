@@ -22,6 +22,13 @@ export const SURAHS: { num: number; name: string }[] = [
   { num: 95, name: "التين" },
 ];
 
+// رابط تلاوة الشيخ علي الحذيفي (مصحف إسلام واي، المصحف 317) لكل سورة — اختياري للاستماع
+export const huthaifiAudio = (num: number) =>
+  `https://download.quran.islamway.net/quran3/317/${String(num).padStart(
+    3,
+    "0"
+  )}.mp3`;
+
 // النقاط → القيمة من 1 لكل سورة
 export const LEVELS: { label: string; points: number }[] = [
   { label: "ممتاز", points: 3 }, // = 1

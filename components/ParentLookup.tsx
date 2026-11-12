@@ -9,6 +9,7 @@ import {
 } from "@/app/showcase/actions";
 import RecorderModal from "@/components/RecorderModal";
 import HomeworkUpload from "@/components/HomeworkUpload";
+import { huthaifiAudio } from "@/lib/surahs";
 
 const initial: LookupState = { ok: false };
 
@@ -98,6 +99,7 @@ function ReportCard({
     name: string;
   } | null>(null);
   const [recitedLocal, setRecitedLocal] = useState<Record<number, boolean>>({});
+  const [listenNum, setListenNum] = useState<number | null>(null);
 
   const reachedIdx = r.currentSurahIdx; // -1 إن لم يبدأ
   const reachedCount = reachedIdx + 1; // عدد السور التي وصل إليها الفصل
@@ -213,7 +215,7 @@ function ReportCard({
               return (
                 <div
                   key={su.num}
-                  className={`flex items-center justify-between gap-2 text-sm rounded-md px-3 py-1.5 ${
+                  className={`text-sm rounded-md ${
                     isLocked
                       ? "bg-card/30 opacity-70"
                       : isNext && !su.done
@@ -221,29 +223,60 @@ function ReportCard({
                       : "bg-card/60"
                   }`}
                 >
-                  <span className="font-medium">سورة {su.name}</span>
-                  {isLocked ? (
-                    <Badge kind="locked">🔒 لم نصل إليها بعد</Badge>
-                  ) : su.done ? (
-                    <Badge kind="done">{su.grade}</Badge>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      {su.recorded || recitedLocal[su.num] ? (
-                        <Badge kind="pending">⏺ بانتظار المعلم</Badge>
-                      ) : isNext ? (
-                        <Badge kind="next">🎯 استعدّوا لها</Badge>
-                      ) : (
-                        <Badge kind="pending">⏳ لم يُسمّع بعد</Badge>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setOpenRecite({ num: su.num, name: su.name })
-                        }
-                        className="whitespace-nowrap rounded-lg bg-emerald-600 text-white text-xs px-2.5 py-1 hover:opacity-90"
-                      >
-                        🎙 {su.recorded || recitedLocal[su.num] ? "إعادة" : "تسجيل"}
-                      </button>
+                  <div className="flex items-center justify-between gap-2 px-3 py-1.5">
+                    <span className="font-medium">سورة {su.name}</span>
+                    {isLocked ? (
+                      <Badge kind="locked">🔒 لم نصل إليها بعد</Badge>
+                    ) : su.done ? (
+                      <Badge kind="done">{su.grade}</Badge>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        {su.recorded || recitedLocal[su.num] ? (
+                          <Badge kind="pending">⏺ بانتظار المعلم</Badge>
+                        ) : isNext ? (
+                          <Badge kind="next">🎯 استعدّوا لها</Badge>
+                        ) : (
+                          <Badge kind="pending">⏳ لم يُسمّع بعد</Badge>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setListenNum((n) => (n === su.num ? null : su.num))
+                          }
+                          title="استماع لتلاوة الشيخ علي الحذيفي قبل التسميع (اختياري)"
+                          className={`whitespace-nowrap rounded-lg text-xs px-2.5 py-1 border transition ${
+                            listenNum === su.num
+                              ? "bg-brand text-white border-brand"
+                              : "bg-brand/10 text-brand border-brand/40 hover:bg-brand/20"
+                          }`}
+                        >
+                          🔊 استماع
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setOpenRecite({ num: su.num, name: su.name })
+                          }
+                          className="whitespace-nowrap rounded-lg bg-emerald-600 text-white text-xs px-2.5 py-1 hover:opacity-90"
+                        >
+                          🎙 {su.recorded || recitedLocal[su.num] ? "إعادة" : "تسجيل"}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  {listenNum === su.num && !isLocked && !su.done && (
+                    <div className="px-3 pb-2 pt-0.5 space-y-1">
+                      <audio
+                        src={huthaifiAudio(su.num)}
+                        controls
+                        autoPlay
+                        preload="none"
+                        className="w-full h-9"
+                      />
+                      <div className="text-[11px] text-muted">
+                        تلاوة الشيخ علي الحذيفي (رواية حفص) — اختياري، للاستماع قبل
+                        التسميع.
+                      </div>
                     </div>
                   )}
                 </div>
