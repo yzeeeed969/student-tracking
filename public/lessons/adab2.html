@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>آداب قضاء الحاجة (٢)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --teal:#5fa9a6; --teal-d:#3f8784; --teal-l:#e6f3f2; --blue:#3c66b1; --gold:#b27a3a;
+  --ok:#2e9e5b; --bad:#d94b4b; --ink:#1f2d3a; --muted:#5d6b78; --paper:#fdfaf4; --card:#fff;
+  --sky:#7ec4ec;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:Tajawal,system-ui,sans-serif;background:var(--paper);color:var(--ink);font-size:18px;line-height:1.6;-webkit-user-select:none;user-select:none}
+header{background:var(--teal);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:20;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+header .num{background:#fff;color:var(--teal-d);font-weight:800;border-radius:12px;width:44px;height:44px;display:grid;place-items:center;font-size:26px}
+header h1{margin:0;font-size:22px;font-weight:800;flex:1;min-width:180px}
+header h1 small{display:block;font-size:14px;font-weight:500;opacity:.9}
+.stars{background:rgba(255,255,255,.2);padding:6px 12px;border-radius:999px;font-weight:700;white-space:nowrap}
+.btn{border:0;border-radius:12px;padding:10px 16px;font:inherit;font-weight:700;cursor:pointer}
+.btn-w{background:#fff;color:var(--teal-d)}
+.btn-t{background:var(--teal);color:#fff}
+.btn-g{background:#eef1f4;color:var(--ink)}
+nav{display:flex;gap:8px;justify-content:center;padding:12px 16px;flex-wrap:wrap}
+nav button{border:2px solid var(--teal);background:#fff;color:var(--teal-d);border-radius:999px;padding:8px 18px;font:inherit;font-weight:700;cursor:pointer}
+nav button.on{background:var(--teal);color:#fff}
+main{max-width:980px;margin:0 auto;padding:0 16px 60px}
+section{display:none}
+section.on{display:block;animation:fade .35s}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.q{background:var(--card);border-radius:20px;padding:18px;margin:16px 0;box-shadow:0 2px 10px rgba(30,50,70,.07)}
+.qt{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:800;margin:0 0 12px}
+.badge{background:var(--blue);color:#fff;border-radius:50%;width:38px;height:38px;display:grid;place-items:center;font-size:20px;flex:none}
+.sub{color:var(--blue);font-weight:700;margin:6px 0 10px}
+.hint{color:var(--muted);font-size:15px;margin:-4px 0 12px}
+.grid4{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.place{position:relative;border-radius:16px;overflow:hidden;cursor:pointer;border:3px solid #e2d6c3;background:#000;aspect-ratio:16/10}
+.place img{width:100%;height:100%;object-fit:cover;display:block;transition:filter .3s}
+.place .lab{position:absolute;inset:auto 0 0 0;background:rgba(31,45,58,.82);color:#fff;padding:8px 10px;font-weight:700;font-size:18px;transform:translateY(100%);transition:transform .35s}
+.place .lab small{display:block;font-weight:500;font-size:14px;opacity:.9}
+.place .tap{position:absolute;top:8px;right:8px;background:#fff;color:var(--teal-d);border-radius:999px;padding:3px 10px;font-size:14px;font-weight:700}
+.place.open .lab{transform:none}
+.place.open .tap{display:none}
+.place.open{border-color:var(--teal)}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{border:2px solid #dfe5ea;background:#fff;border-radius:14px;padding:12px 14px;font:inherit;text-align:right;cursor:pointer;font-weight:600}
+.opt.ok{border-color:var(--ok);background:#e8f6ee;color:#1d6b3e}
+.opt.bad{border-color:var(--bad);background:#fdeaea;animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.fb{min-height:28px;font-weight:700;margin-top:10px}
+.fb.ok{color:var(--ok)} .fb.bad{color:var(--bad)}
+.note{background:#f8e4d0;color:#b23a2f;border-radius:18px;padding:16px;font-weight:700;text-align:center;font-size:19px}
+.rule{background:var(--teal-l);border-right:6px solid var(--teal);border-radius:12px;padding:12px 14px;font-weight:700}
+/* drag activity */
+.zones{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.zone{border:3px dashed var(--sky);background:#eef8fe;border-radius:18px;min-height:150px;padding:10px;transition:background .2s,border-color .2s}
+.zone h4{margin:0 0 8px;text-align:center;color:#1d5f8a;font-size:18px}
+.zone.no{border-color:#e9a3a3;background:#fff3f3}
+.zone.no h4{color:#a33}
+.zone.hot{background:#d7efff;border-style:solid}
+.zone.no.hot{background:#ffe1e1}
+.zone .in{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.items{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;min-height:120px;padding:8px;border-radius:16px;background:#faf6ee}
+.item{width:110px;text-align:center;cursor:grab;touch-action:none}
+.item .ph{width:100px;height:100px;border-radius:50%;overflow:hidden;border:4px solid var(--gold);margin:0 auto;background:#fff;box-shadow:0 3px 8px rgba(0,0,0,.12)}
+.item .ph img{width:100%;height:100%;object-fit:cover;pointer-events:none}
+.item span{display:block;font-weight:700;font-size:15px;margin-top:4px}
+.item.sel .ph{border-color:var(--blue);box-shadow:0 0 0 4px rgba(60,102,177,.3)}
+.zone .item{width:84px;cursor:default}
+.zone .item .ph{width:70px;height:70px;border-width:3px;border-color:var(--ok)}
+.zone .item span{font-size:13px}
+.ghost{position:fixed;z-index:100;pointer-events:none;opacity:.9;transform:translate(-50%,-50%) scale(1.08)}
+.done-msg{text-align:center;font-weight:800;color:var(--ok);font-size:20px;margin-top:10px}
+/* eval */
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{border:2px solid #dfe5ea;background:#fff;border-radius:999px;padding:9px 16px;font:inherit;font-weight:700;cursor:pointer}
+.chip.pick{border-color:var(--blue);background:#e9effa;color:var(--blue)}
+.chip.ok{border-color:var(--ok);background:#e8f6ee;color:#1d6b3e}
+.chip.bad{border-color:var(--bad);background:#fdeaea;color:#a33}
+.tf{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.tfc{border-radius:16px;overflow:hidden;border:3px solid #e2d6c3;background:#fff}
+.tfc img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+.tfc .row{display:flex;gap:8px;padding:8px}
+.tfc .row button{flex:1;border:2px solid #dfe5ea;background:#fff;border-radius:12px;font-size:24px;padding:6px;cursor:pointer;font-weight:800}
+.tfc.ok{border-color:var(--ok)} .tfc.bad{border-color:var(--bad);animation:shake .4s}
+.tfc .row button.y{color:var(--ok)} .tfc .row button.n{color:var(--bad)}
+.tfc.ok .row button.chosen{background:#e8f6ee;border-color:var(--ok)}
+.tfc .why{padding:0 10px 10px;font-size:14px;font-weight:700;color:var(--muted);min-height:10px}
+.sentence{min-height:58px;border-bottom:3px dotted #b9a789;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:6px 0;margin-bottom:12px;font-size:22px;font-weight:800}
+.sentence .w{background:var(--teal-l);border-radius:10px;padding:4px 12px;cursor:pointer}
+.sentence.ok .w{background:#e8f6ee;color:#1d6b3e}
+.bank{display:flex;flex-wrap:wrap;gap:10px}
+.bank .w{border:2px solid var(--teal);background:#fff;border-radius:12px;padding:8px 16px;font:inherit;font-size:20px;font-weight:800;cursor:pointer}
+.bank .w.used{visibility:hidden}
+.navb{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(15,25,35,.6);display:none;place-items:center;z-index:200;padding:16px}
+.modal.on{display:grid}
+.modal .box{background:#fff;border-radius:22px;padding:22px;text-align:center;max-width:420px;width:100%}
+#qr{display:inline-block;padding:10px;background:#fff;margin:10px 0}
+.url{direction:ltr;font-size:14px;word-break:break-all;color:var(--muted);background:#f3f5f7;border-radius:10px;padding:8px}
+.confetti{position:fixed;top:-10px;width:10px;height:14px;z-index:300;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg)}}
+@media (max-width:560px){
+  body{font-size:17px}
+  .qt{font-size:19px}
+  .grid4,.tf{grid-template-columns:1fr 1fr;gap:10px}
+  .place .lab{font-size:15px}
+  .zones{grid-template-columns:1fr 1fr;gap:8px}
+  .zone h4{font-size:15px}
+  .item{width:88px}.item .ph{width:78px;height:78px}
+  header h1{font-size:18px;min-width:0}
+  header h1 small{display:none}
+  header{padding:8px 10px;gap:8px}
+  header .num{width:36px;height:36px;font-size:20px}
+  header .btn{padding:7px 10px;font-size:14px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="num">٢</div>
+  <h1>آدابُ قضاءِ الحاجةِ (٢)<small>الدرس الثاني — القرآن الكريم والدراسات الإسلامية</small></h1>
+  <div class="stars">⭐ <span id="score">0</span></div>
+  <button class="btn btn-w" onclick="openQR()">📱 رابط الطلاب</button>
+  <button class="btn btn-w" onclick="resetAll()">↺ من جديد</button>
+</header>
+
+<nav id="tabs">
+  <button data-p="0" class="on">صفحة ٤٥</button>
+  <button data-p="1">صفحة ٤٦</button>
+  <button data-p="2">التقويم ٤٧</button>
+</nav>
+
+<main>
+<!-- ===== صفحة 45 ===== -->
+<section class="on" id="p0">
+  <div class="q">
+    <div class="qt"><span class="badge">٣</span> أَجْتَنِبُ قَضاءَ الحاجةِ في:</div>
+    <p class="hint">👆 اضغطْ على كلِّ صورةٍ لتعرفَ المكانَ</p>
+    <div class="grid4" id="places"></div>
+  </div>
+  <div class="q">
+    <div class="sub">◀ الحِكْمَةُ مِنْ تَحْريمِ قَضاءِ الحاجةِ في هذهِ الأَماكِنِ:</div>
+    <div class="rule">١) وُقوعُ الضَّرَرِ لِلنّاسِ.</div>
+    <p style="font-weight:700;margin:14px 0 8px">٢) اخترِ الحكمةَ الثانيةَ:</p>
+    <div class="opts" id="wisdom"></div>
+    <div class="fb" id="wisdomFb"></div>
+  </div>
+  <div class="note">يُعَدُّ حِفاظُنا عَلى بيئَتِنا الطَّبيعيَّةِ مِنْ واجِبِنا الدِّينيِّ وَمِنِ احْتِرامِ الذَّوْقِ العامِّ، وَمِنْ مَسْؤولِيّاتِنا تُجاهَ الأَجْيالِ القادِمَةِ</div>
+  <div class="navb"><span></span><button class="btn btn-t" onclick="go(1)">التالي: صفحة ٤٦ ←</button></div>
+</section>
+
+<!-- ===== صفحة 46 ===== -->
+<section id="p1">
+  <div class="q">
+    <div class="qt"><span class="badge">٤</span> لا أَتَكَلَّمُ عِنْدَ قَضاءِ الحاجةِ</div>
+    <div class="sub">◀ أَخْتارُ السُّلوكَ الصَّحيحَ لِلْمَوْقِفِ الآتي:</div>
+    <p style="font-weight:700;margin:0 0 10px">تَحَدَّثَ سَعْدٌ مَعَ أَخيهِ وَهُوَ يَقْضي حاجَتَهُ:</p>
+    <div class="opts" id="saad"></div>
+    <div class="fb" id="saadFb"></div>
+  </div>
+  <div class="q">
+    <div class="qt"><span class="badge">٥</span> لا أَدْخُلُ دَوْرَةَ المِياهِ بِمُصْحَفٍ أَوْ شَيْءٍ فيهِ ذِكْرُ اللهِ عَزَّ وَجَلَّ.</div>
+  </div>
+  <div class="q">
+    <div class="qt" style="color:var(--teal-d)">🧩 نشاط: أَرْبِطُ بَيْنَ العِبارَةِ وَما يُناسِبُها مِنَ الصُّوَرِ</div>
+    <p class="hint">✋ اسحبْ كلَّ صورةٍ إلى الخانةِ المناسبةِ (أو اضغطْ الصورةَ ثم اضغطْ الخانةَ)</p>
+    <div class="zones">
+      <div class="zone" data-z="yes"><h4>✅ أَشْياءُ يَجوزُ دُخولُ دَوْرَةِ المِياهِ بِها</h4><div class="in"></div></div>
+      <div class="zone no" data-z="no"><h4>⛔ أَشْياءُ لا يَجوزُ دُخولُ دَوْرَةِ المِياهِ بِها</h4><div class="in"></div></div>
+    </div>
+    <div class="items" id="items"></div>
+    <div class="fb" id="dragFb"></div>
+  </div>
+  <div class="navb"><button class="btn btn-g" onclick="go(0)">→ السابق</button><button class="btn btn-t" onclick="go(2)">التالي: التقويم ←</button></div>
+</section>
+
+<!-- ===== التقويم 47 ===== -->
+<section id="p2">
+  <div class="q">
+    <div class="qt"><span class="badge" style="background:var(--gold)">١</span> أَخْتارُ ثَلاثَةَ أَشْياءَ تُعَدُّ مَجْموعَةً واحِدَةً:</div>
+    <p class="hint">اضغطْ على ثلاثِ كلماتٍ ثم اضغطْ «تحقّقْ»</p>
+    <div class="chips" id="three"></div>
+    <div style="margin-top:12px"><button class="btn btn-t" onclick="checkThree()">تحقّقْ ✔</button></div>
+    <div class="fb" id="threeFb"></div>
+    <div id="gatherBox" style="display:none">
+      <p style="font-weight:700;margin:12px 0 8px">ما يَجْمَعُها؟</p>
+      <div class="opts" id="gather"></div>
+      <div class="fb" id="gatherFb"></div>
+    </div>
+  </div>
+  <div class="q">
+    <div class="qt"><span class="badge" style="background:var(--gold)">٢</span> أَضَعُ (✓) بِجانِبِ الصّورَةِ الَّتي يَجوزُ قَضاءُ الحاجَةِ فيها، و(✗) الَّتي يَحْرُمُ</div>
+    <div class="tf" id="tf"></div>
+    <div class="fb" id="tfFb"></div>
+  </div>
+  <div class="q">
+    <div class="qt"><span class="badge" style="background:var(--gold)">٣</span> أُرَتِّبُ الكَلِماتِ لِتُصْبِحَ جُمْلَةً مُفيدَةً:</div>
+    <p class="hint">اضغطِ الكلماتِ بالترتيبِ الصحيحِ (اضغطْ كلمةً في الجملةِ لإرجاعِها)</p>
+    <div class="sentence" id="sentence"></div>
+    <div class="bank" id="bank"></div>
+    <div class="fb" id="sentFb"></div>
+  </div>
+  <div class="navb"><button class="btn btn-g" onclick="go(1)">→ السابق</button><button class="btn btn-t" onclick="finish()">🏁 انتهيتُ</button></div>
+</section>
+</main>
+
+<div class="modal" id="qrModal" onclick="if(event.target===this)this.classList.remove('on')">
+  <div class="box">
+    <h3 style="margin:0">📱 امسحْ الرمزَ لتفتحَ الدرسَ على جوالِك</h3>
+    <div id="qr"></div>
+    <div class="url" id="url"></div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:12px">
+      <button class="btn btn-t" onclick="copyUrl()" id="copyBtn">نسخ الرابط</button>
+      <button class="btn btn-g" onclick="document.getElementById('qrModal').classList.remove('on')">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="endModal" onclick="if(event.target===this)this.classList.remove('on')">
+  <div class="box">
+    <div style="font-size:56px">🏆</div>
+    <h2 style="margin:6px 0">أحسنتَ يا بطل!</h2>
+    <p style="font-weight:700;font-size:20px">مجموعُ نجومِك: ⭐ <span id="endScore">0</span></p>
+    <button class="btn btn-t" onclick="document.getElementById('endModal').classList.remove('on')">حسنًا</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const IMG = n => 'qh2/' + n + '.jpg';
+let score = 0;
+const scored = new Set();
+function addStar(key){ if(scored.has(key)) return; scored.add(key); score++; document.getElementById('score').textContent = score; }
+
+/* أصوات بسيطة */
+let actx;
+function tone(ok){
+  try{
+    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.connect(g); g.connect(actx.destination);
+    const t = actx.currentTime;
+    o.type = 'sine';
+    if(ok){ o.frequency.setValueAtTime(660,t); o.frequency.setValueAtTime(880,t+.12); }
+    else { o.frequency.setValueAtTime(220,t); }
+    g.gain.setValueAtTime(.18,t); g.gain.exponentialRampToValueAtTime(.001,t+(ok?.35:.3));
+    o.start(t); o.stop(t+.4);
+  }catch(e){}
+}
+function confetti(n=40){
+  const cols=['#5fa9a6','#3c66b1','#b27a3a','#2e9e5b','#f2c14e','#e86f6f'];
+  for(let i=0;i<n;i++){
+    const d=document.createElement('div'); d.className='confetti';
+    d.style.left=Math.random()*100+'vw'; d.style.background=cols[i%cols.length];
+    d.style.animationDuration=(1.6+Math.random()*1.6)+'s'; d.style.animationDelay=(Math.random()*.4)+'s';
+    document.body.appendChild(d); setTimeout(()=>d.remove(),3600);
+  }
+}
+function fb(id,ok,text){ const e=document.getElementById(id); e.className='fb '+(ok?'ok':'bad'); e.textContent=text; tone(ok); }
+
+/* التنقل */
+function go(i){
+  document.querySelectorAll('section').forEach((s,k)=>s.classList.toggle('on',k===i));
+  document.querySelectorAll('#tabs button').forEach((b,k)=>b.classList.toggle('on',k===i));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>go(+b.dataset.p));
+
+/* أسئلة الاختيار */
+function mcq(boxId, fbId, options, correctIdx, okText, badText, key, after){
+  const box=document.getElementById(boxId); box.innerHTML='';
+  let solved=false;
+  options.forEach((t,i)=>{
+    const b=document.createElement('button'); b.className='opt'; b.textContent=t;
+    b.onclick=()=>{
+      if(solved) return;
+      if(i===correctIdx){ b.classList.add('ok'); solved=true; fb(fbId,true,okText); addStar(key); confetti(25); after&&after(); }
+      else { b.classList.remove('bad'); void b.offsetWidth; b.classList.add('bad'); fb(fbId,false,badText); }
+    };
+    box.appendChild(b);
+  });
+}
+
+/* ===== صفحة 45: الأماكن ===== */
+const PLACES=[
+  ['road','١) طَريقُ النّاسِ','لأنه يؤذي المارّين'],
+  ['shade','٢) الظِّلُّ النّافِعُ','لأن الناس يجلسون فيه'],
+  ['water','٣) الماءُ الذي لا يَجْري','لأنه يُفسِد الماءَ ويؤذي الناس'],
+  ['fruit','٤) تحتَ شَجَرَةٍ مُثْمِرَةٍ','لأن الناس يأكلون من ثمرِها'],
+];
+function buildPlaces(){
+  const g=document.getElementById('places'); g.innerHTML='';
+  let opened=0;
+  PLACES.forEach(([img,name,why])=>{
+    const d=document.createElement('div'); d.className='place';
+    d.innerHTML=`<img src="${IMG(img)}" alt=""><span class="tap">👆 اضغط</span><div class="lab">${name}<small>${why}</small></div>`;
+    d.onclick=()=>{ if(d.classList.contains('open')) return; d.classList.add('open'); tone(true); opened++; if(opened===PLACES.length){ addStar('places'); confetti(20);} };
+    g.appendChild(d);
+  });
+}
+
+/* ===== صفحة 46: النشاط ===== */
+const THINGS=[
+  ['watch','ساعة','yes'],['mushaf','مصحف','no'],['pen','قلم','yes'],['cards','بطاقات فيها ذكر الله','no'],['siwak','سواك','yes'],
+];
+let selected=null, placed=0;
+function buildItems(){
+  placed=0; selected=null;
+  document.querySelectorAll('.zone .in').forEach(z=>z.innerHTML='');
+  const box=document.getElementById('items'); box.innerHTML='';
+  document.getElementById('dragFb').textContent='';
+  [...THINGS].sort(()=>Math.random()-.5).forEach(([img,name,zone])=>{
+    const it=document.createElement('div'); it.className='item'; it.dataset.zone=zone;
+    it.innerHTML=`<div class="ph"><img src="${IMG(img)}" alt=""></div><span>${name}</span>`;
+    attachDrag(it); box.appendChild(it);
+  });
+}
+function dropInto(it, zoneEl){
+  if(!zoneEl) return;
+  const want=it.dataset.zone, got=zoneEl.dataset.z;
+  it.classList.remove('sel'); selected=null;
+  if(want===got){
+    zoneEl.querySelector('.in').appendChild(it); it.onpointerdown=null; it.style.cursor='default';
+    placed++; tone(true);
+    const msg = want==='no' ? 'صحيح ✔ فيه ذكرُ الله، فلا ندخلُ به دورةَ المياه' : 'صحيح ✔ يجوزُ الدخولُ به';
+    fb('dragFb',true,msg);
+    if(placed===THINGS.length){ document.getElementById('dragFb').textContent='🎉 ممتاز! أنهيتَ النشاطَ كاملًا'; addStar('drag'); confetti(50); }
+  } else {
+    fb('dragFb',false,'حاولْ مرةً أخرى 🤔 فكِّرْ: هل فيه ذكرُ الله؟');
+    it.animate([{transform:'translateX(-8px)'},{transform:'translateX(8px)'},{transform:'none'}],{duration:350});
+  }
+}
+function zoneAt(x,y){ const el=document.elementFromPoint(x,y); return el?el.closest('.zone'):null; }
+function attachDrag(it){
+  it.onpointerdown=(e)=>{
+    e.preventDefault();
+    const sx=e.clientX, sy=e.clientY; let ghost=null, moved=false;
+    const move=(ev)=>{
+      if(!moved && Math.hypot(ev.clientX-sx,ev.clientY-sy)<8) return;
+      if(!moved){ moved=true; ghost=it.cloneNode(true); ghost.classList.add('ghost'); document.body.appendChild(ghost); it.style.opacity=.35; }
+      ghost.style.left=ev.clientX+'px'; ghost.style.top=ev.clientY+'px';
+      document.querySelectorAll('.zone').forEach(z=>z.classList.remove('hot'));
+      const z=zoneAt(ev.clientX,ev.clientY); if(z) z.classList.add('hot');
+    };
+    const up=(ev)=>{
+      window.removeEventListener('pointermove',move); window.removeEventListener('pointerup',up); window.removeEventListener('pointercancel',up);
+      document.querySelectorAll('.zone').forEach(z=>z.classList.remove('hot'));
+      it.style.opacity='';
+      if(moved){ ghost&&ghost.remove(); const z=zoneAt(ev.clientX,ev.clientY); if(z) dropInto(it,z); }
+      else { // ضغطة: تحديد ثم اختيار الخانة
+        document.querySelectorAll('#items .item').forEach(x=>x.classList.remove('sel'));
+        if(selected===it){ selected=null; } else { selected=it; it.classList.add('sel'); }
+      }
+    };
+    window.addEventListener('pointermove',move); window.addEventListener('pointerup',up); window.addEventListener('pointercancel',up);
+  };
+}
+document.querySelectorAll('.zone').forEach(z=>z.addEventListener('click',()=>{ if(selected) dropInto(selected,z); }));
+
+/* ===== التقويم 47 ===== */
+const WORDS=['مُصْحَف','هاتِفٌ مَحْمول','كِتابُ التَّوْحيد','مِفْتاح','وَرَقٌ مَكْتوبٌ فيهِ ذِكْرُ الله'];
+const RIGHT3=new Set([0,2,4]);
+let picks=new Set(), threeDone=false;
+function buildThree(){
+  picks=new Set(); threeDone=false;
+  const box=document.getElementById('three'); box.innerHTML='';
+  document.getElementById('threeFb').textContent='';
+  document.getElementById('gatherBox').style.display='none';
+  WORDS.forEach((w,i)=>{
+    const c=document.createElement('button'); c.className='chip'; c.textContent=w;
+    c.onclick=()=>{ if(threeDone) return; if(picks.has(i)){picks.delete(i);c.classList.remove('pick');} else if(picks.size<3){picks.add(i);c.classList.add('pick');} };
+    box.appendChild(c);
+  });
+}
+function checkThree(){
+  if(threeDone) return;
+  const chips=[...document.querySelectorAll('#three .chip')];
+  if(picks.size<3){ fb('threeFb',false,'اخترْ ثلاثَ كلماتٍ أولًا'); return; }
+  const ok=[...picks].every(i=>RIGHT3.has(i));
+  if(ok){
+    threeDone=true; chips.forEach((c,i)=>{ if(picks.has(i)) {c.classList.remove('pick');c.classList.add('ok');} });
+    fb('threeFb',true,'أحسنتَ! ✔'); addStar('three'); confetti(25);
+    document.getElementById('gatherBox').style.display='block';
+    mcq('gather','gatherFb',['كلُّها فيها ذِكْرُ اللهِ؛ فلا يَجوزُ دُخولُ دَوْرَةِ المِياهِ بِها','كلُّها مِنَ الوَرَقِ','كلُّها نَحْمِلُها في الجَيْبِ'],0,'صحيح ✔ كلُّها فيها ذكرُ الله','ليس هذا ما يجمعُها، حاولْ مرةً أخرى','gather');
+  } else {
+    chips.forEach((c,i)=>{ if(picks.has(i) && !RIGHT3.has(i)){ c.classList.add('bad'); setTimeout(()=>c.classList.remove('bad'),900);} });
+    fb('threeFb',false,'ليستْ كلُّها صحيحةً. فكِّرْ: ما الذي فيه ذكرُ الله؟');
+  }
+}
+
+const TF=[
+  ['pool','n','مسبح: ماءٌ لا يجري ✗'],
+  ['desert','y','صحراء بعيدة عن الناس ✓'],
+  ['bath','y','دورة مياه: مكانُها الصحيح ✓'],
+  ['palms','n','أشجار مثمرة ✗'],
+];
+let tfDone=0;
+function buildTF(){
+  tfDone=0;
+  const g=document.getElementById('tf'); g.innerHTML=''; document.getElementById('tfFb').textContent='';
+  TF.forEach(([img,ans,why])=>{
+    const c=document.createElement('div'); c.className='tfc';
+    c.innerHTML=`<img src="${IMG(img)}" alt=""><div class="row"><button class="y">✓</button><button class="n">✗</button></div><div class="why"></div>`;
+    let solved=false;
+    c.querySelectorAll('.row button').forEach(b=>b.onclick=()=>{
+      if(solved) return;
+      const choice=b.classList.contains('y')?'y':'n';
+      if(choice===ans){ solved=true; c.classList.remove('bad'); c.classList.add('ok'); b.classList.add('chosen'); c.querySelector('.why').textContent=why; tone(true); tfDone++;
+        if(tfDone===TF.length){ fb('tfFb',true,'🎉 أحسنتَ! أجبتَ عن الصورِ كلِّها'); addStar('tf'); confetti(30); } }
+      else { c.classList.remove('bad'); void c.offsetWidth; c.classList.add('bad'); tone(false); }
+    });
+    g.appendChild(c);
+  });
+}
+
+const ORDER=['لا','أتكلَّمُ','عِنْدَ','قَضاءِ','الحاجَةِ'];
+const SHOW=['الحاجَةِ','عِنْدَ','قَضاءِ','لا','أتكلَّمُ'];
+let built=[];
+function buildSentence(){
+  built=[];
+  const s=document.getElementById('sentence'); s.innerHTML=''; s.className='sentence';
+  document.getElementById('sentFb').textContent='';
+  const bank=document.getElementById('bank'); bank.innerHTML='';
+  SHOW.forEach((w,i)=>{
+    const b=document.createElement('button'); b.className='w'; b.textContent=w;
+    b.onclick=()=>{
+      if(b.classList.contains('used')) return;
+      b.classList.add('used'); built.push({w,b});
+      const span=document.createElement('span'); span.className='w'; span.textContent=w;
+      span.onclick=()=>{ if(s.classList.contains('ok')) return; const k=built.findIndex(x=>x.b===b); built.splice(k,1); span.remove(); b.classList.remove('used'); document.getElementById('sentFb').textContent=''; };
+      s.appendChild(span);
+      if(built.length===ORDER.length){
+        const ok=built.every((x,k)=>x.w===ORDER[k]);
+        if(ok){ s.classList.add('ok'); fb('sentFb',true,'✔ لا أتكلَّمُ عِنْدَ قَضاءِ الحاجَةِ'); addStar('sent'); confetti(40); }
+        else fb('sentFb',false,'الترتيبُ غيرُ صحيح، اضغطْ على كلمةٍ لإرجاعِها');
+      }
+    };
+    bank.appendChild(b);
+  });
+}
+
+/* البناء والإعادة */
+function resetAll(){
+  score=0; scored.clear(); document.getElementById('score').textContent=0;
+  document.querySelectorAll('.fb').forEach(f=>{f.textContent='';f.className='fb';});
+  buildPlaces();
+  mcq('wisdom','wisdomFb',['تلويثُ البيئةِ وإفسادُها','لأنَّ المكانَ بعيدٌ','لأنَّ الجوَّ حارٌّ'],0,'صحيح ✔ نحافظُ على بيئتِنا نظيفةً','ليستْ هذه الحكمة، حاولْ مرةً أخرى','wisdom');
+  mcq('saad','saadFb',['أ. لا يَرُدُّ عليهِ حتّى يَنْتَهيَ','ب. يَتَحَدَّثُ مَعَهُ'],0,'صحيح ✔ لا نتكلَّمُ عند قضاءِ الحاجة','خطأ ✗ لا نتكلَّمُ عند قضاءِ الحاجة','saad');
+  buildItems(); buildThree(); buildTF(); buildSentence();
+}
+function finish(){ document.getElementById('endScore').textContent=score; document.getElementById('endModal').classList.add('on'); confetti(70); tone(true); }
+
+/* رابط الطلاب */
+let qrMade=false;
+function openQR(){
+  const url=location.href.split('#')[0];
+  document.getElementById('url').textContent=url;
+  if(!qrMade && window.QRCode){ new QRCode(document.getElementById('qr'),{text:url,width:220,height:220}); qrMade=true; }
+  document.getElementById('qrModal').classList.add('on');
+}
+function copyUrl(){
+  const url=location.href.split('#')[0];
+  (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(()=>{document.getElementById('copyBtn').textContent='تم النسخ ✔';}).catch(()=>{});
+}
+resetAll();
+</script>
+</body>
+</html>

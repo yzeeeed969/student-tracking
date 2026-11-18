@@ -14,6 +14,7 @@ const PUBLIC = [
   "/api/ws-submit",
   "/api/recite-submit",
   "/api/recite-ref",
+  "/lessons",
 ];
 
 export async function middleware(req: NextRequest) {
